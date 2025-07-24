@@ -14,8 +14,17 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                customBG: '#E0F2F1',
+                customIT: '#2C6E49',
+                btncolor: '#4C956C',
+            },
+            borderColor: {
+                Gborder: '#2C6E49',
+            }
+            
         },
     },
-
+    
     plugins: [forms],
 };
