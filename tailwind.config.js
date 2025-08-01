@@ -12,7 +12,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Rubik', 'sans-serif'],
+                product: ['"Product Sans"', 'sans-serif'],
             },
             colors: {
                 customBG: '#E0F2F1',
