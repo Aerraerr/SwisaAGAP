@@ -19,6 +19,12 @@ export default {
                 customBG: '#E0F2F1',
                 customIT: '#2C6E49',
                 btncolor: '#4C956C',
+                snbg: '#E8F6EF',
+                iconsClr: '#68B2AB',
+                approved: '#4C956C',
+                rejected: '#F15B66',
+                pending: '#FFC20E',
+
             },
             borderColor: {
                 Gborder: '#2C6E49',
