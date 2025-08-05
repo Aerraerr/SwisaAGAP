@@ -1,4 +1,5 @@
-<x-app-layout>
+@extends('layouts.sidebar')
+@section('content')
     <div>
         Registered Members
     </div>
@@ -90,4 +91,4 @@
 
             </div>
         </div>
-</x-app-layout>
+@endsection

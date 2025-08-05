@@ -7,6 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ asset('css/forsidebar.css') }}">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
 
@@ -28,7 +32,7 @@
             <i class="material-icons dropdown-icon">expand_more</i>
         </div>
         <div class="submenu">
-            <a class="submenu-item" href="#">Overview</a>
+            <a class="submenu-item" href="{{ route('dashboard') }}">Overview</a>
             <a class="submenu-item" href="#">Reports</a>
         </div>
 
@@ -38,7 +42,7 @@
             <i class="material-icons dropdown-icon">expand_more</i>
         </div>
         <div class="submenu">
-            <a class="submenu-item" href="#">List of Members</a>
+            <a class="submenu-item" href="{{ route('members') }}">List of Members</a>
             <a class="submenu-item" href="#">Add Member</a>
         </div>
 
@@ -88,7 +92,9 @@
 
     <!-- Fixed User Section -->
     <div class="user-section">
-        <img src="{{ asset('images/profile-user.png') }}" class="user-avatar" alt="User Avatar">
+        <a href="{{ route('profile.edit') }}">
+            <img src="{{ asset('images/profile-user.png') }}" class="user-avatar" alt="User Avatar">
+        </a>
         <div class="user-name menu-text">{{ auth()->user()->name ?? 'User Admin' }}</div>
         <div class="admin-role menu-text text-xs text-gray-500">Admin Acc</div>
         <form method="POST" action="{{ route('logout') }}">
