@@ -1,12 +1,16 @@
-/* Import Product Sans font */
 @font-face {
   font-family: 'Product Sans';
   src: url("../fonts/ProductSans-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: 'Rubik';
+  src: url('../fonts/Rubik1/Rubik-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
 
-/* Root Variables */
 :root {
   --primary-green: #2C6E49;
   --accent-green: #2f8f4e;
@@ -15,7 +19,6 @@
   --submenu-bg: #f3faf4;
 }
 
-/* Global Layout */
 body {
   margin: 0;
   display: flex;
@@ -23,39 +26,46 @@ body {
   background-color: white;
 }
 
-/* Brand Title */
 .brand-title {
-  font-family: 'Product Sans', sans-serif;
-  font-weight: bold;
-  font-size: 23px;
+  font-family: 'Rubik';
+  font-weight: 900;
+  font-size: 22px;
   letter-spacing: 1px;
   color: var(--primary-green);
-
+  margin-left: -45px; /* This will now work */
 }
 
-/* Hamburger Button */
 .hamburger {
   position: fixed;
-  top: 15px;
-  left: 15px;
-  background-color: var(--accent-green);
-  color: white;
+  top: 10px;
+  left: 210px;
+  background-color: transparent; /* default is transparent */
+  color: var(--accent-green); /* matches sidebar color */
   border: none;
   border-radius: 4px;
   padding: 10px 15px;
-  font-size: 20px;
+  font-size: 30px;
   cursor: pointer;
   z-index: 1001;
   transition: all 0.3s ease;
   font-weight: bold;
 }
 
-/* Sidebar */
+/* When sidebar is collapsed (☰), show green bg */
+.hamburger.active-bg {
+  background-color: var(--accent-green) !important;
+  color: white;
+  font-size: 20px;
+  left: 15px;
+}
+
+
 .sidebar {
+  display: flex;
+  flex-direction: column;
   width: 250px;
-  background-color: var(--light-bg);
+  background-color: #E8F6EF;
   height: 100vh;
-  overflow-y: auto;
   position: fixed;
   left: 0;
   top: 0;
@@ -70,33 +80,56 @@ body {
   width: 70px;
 }
 
-.sidebar.collapsed .menu-text,
-.sidebar.collapsed .user-name,
-.sidebar.collapsed .admin-role,
-.sidebar.collapsed .submenu {
-  display: none;
-}
-
-/* Sidebar Header */
 .sidebar-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-  font-weight: bold;
-  font-size: 18px;
+  justify-content: flex-start;;
+  padding: 15px;
   color: var(--primary-green);
 }
+.sidebar-logo {
+  height: 60px;
+  width: 60px;
+  object-fit: contain;
+  margin-right: 30px;
+}
 
-/* Menu Items */
+.sidebar.collapsed .brand-title {
+  display: transparent !important;
+  color: transparent;
+}
+
+.sidebar.collapsed .menu-text,
+.sidebar.collapsed .submenu,
+.sidebar.collapsed .dropdown-icon,
+.sidebar.collapsed .managesec {
+  display: none !important;
+}
+
+.sidebar.collapsed .sidebar-header {
+  justify-content: center;
+}
+
+/* Scrollable menu content */
+.sidebar-menu {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 10px;
+}
+
+.sidebar.collapsed .sidebar-menu {
+  overflow: hidden;
+}
+
 .sidebar .menu-item {
-  padding: 15px 20px;
+  padding: 10px 10px;
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
   color: var(--primary-green);
   text-decoration: none;
+  margin-left: 10px;
 }
 
 .menu-item:hover {
@@ -104,10 +137,10 @@ body {
 }
 
 .menu-item i {
-  font-size: 20px;
+  font-size: 30px;
+  color: #68B2AB;
 }
 
-/* Submenu */
 .submenu {
   display: none;
   flex-direction: column;
@@ -126,7 +159,6 @@ body {
   background-color: var(--hover-green);
 }
 
-/* Dropdown Icon */
 .dropdown-icon {
   margin-left: auto;
   transition: transform 0.3s ease;
@@ -136,17 +168,19 @@ body {
   transform: rotate(180deg);
 }
 
-/* User Section */
+/* Fixed user section at bottom */
 .user-section {
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
+  padding: 10px 0;
+  width: 80%;
+  margin: 0 auto; /* centers the element */
   text-align: center;
+  border-top: 1px solid #ccc;
+  background-color: var(--light-bg);
 }
 
 .user-avatar {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   display: block;
   margin: 0 auto;
@@ -163,7 +197,7 @@ body {
   padding: 10px;
   border: none;
   border-radius: 5px;
-  width: 80%;
+  width: 75%;
   cursor: pointer;
 }
 
@@ -173,7 +207,6 @@ body {
   padding: 5px;
 }
 
-/* Main Content */
 .main-content {
   margin-left: 250px;
   padding: 20px;
@@ -185,9 +218,18 @@ body {
   margin-left: 70px;
 }
 
-/* Responsive */
 @media screen and (max-width: 768px) {
   .main-content {
     margin-left: 70px;
   }
 }
+
+
+
+/* For Scrollbar */
+.sidebar-menu::-webkit-scrollbar {
+  width: 0px;
+}
+
+
+
