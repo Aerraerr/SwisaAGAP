@@ -26,7 +26,7 @@
     </div>
 
     <div class="flex justify-between space-x-2">
-        <a href="#" class="flex-1 px-6 py-2 text-sm text-center text-gray-800 bg-gray-100 rounded-lg hover:bg-gray-200 transition">View Profile</a>
-        <a href="#" class="flex-1 px-6 py-2 text-sm text-center text-white bg-green-600 rounded-lg hover:bg-green-700 transition">View Applications</a>
+        <a href="#" class="flex-1 p-2 text-sm text-center text-gray-800 bg-gray-100 rounded-lg hover:bg-gray-200 transition">View Profile</a>
+        <a href="#" class="flex-1 p-2 text-sm text-center text-white bg-green-600 rounded-lg hover:bg-green-700 transition">View Applications</a>
     </div>
 </div>
