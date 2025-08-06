@@ -8,11 +8,18 @@
 /* Custom Font Utility */
 .font-product {
   font-family: 'Product Sans', sans-serif !important;
+
+}
+.font-rubik{
+  font-family: 'Rubik', sans-serif !important;
 }
 
 /* Custom Color Utility */
 .text-custom{
   color: #2C6E49 !important;
+  font-weight: 900;
+  letter-spacing: 1px;
+  
 }
 
 /* Root Variables */
@@ -20,7 +27,7 @@
   --primary-green: #2C6E49;
   --accent-green: #2f8f4e;
   --hover-green: #d0e9d4;
-  --light-bg: #eaf4ec;
+  --light-bg: #ececec;
   --submenu-bg: #f3faf4;
 }
 
@@ -29,5 +36,5 @@ body {
   margin: 0;
   display: flex;
   font-family: 'Product Sans', sans-serif;
-  background-color: white;
+  background-color: var(--light-bg);
 }

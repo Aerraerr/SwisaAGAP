@@ -175,7 +175,7 @@ body {
   margin: 0 auto; /* centers the element */
   text-align: center;
   border-top: 1px solid #ccc;
-  background-color: var(--light-bg);
+
 }
 
 .user-avatar {
