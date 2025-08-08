@@ -3,32 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>SwisaAGAP</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ asset('css/forsidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
 
 <!-- Hamburger -->
-<button class="hamburger" id="toggleButton" onclick="toggleSidebar()">‹</button>
+<button class="hamburger sidebar-closebtn" id="toggleButton" onclick="toggleSidebar()">‹</button>
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
-    <div class="sidebar-header">
+    <div class="sidebar-header mb-5">
         <img class="sidebar-logo" src="{{ asset('images/swisalogo.png') }}" alt="swisalogo">
         <span class="brand-title ">SwisaAGAP</span>
     </div>
 
     <!-- Scrollable Menu Section -->
-    <div class="sidebar-menu">
-        <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
+    <div class=" sidebar-menu">
+        <div class="managesec" style="">
+            <span class="text-sm ml-5">MAIN MENU</span>
+        </div>
+        <div class="menu-item dropdown-toggle" onclick="toggleSidebarDropdown(this)">
             <i class="material-icons">dashboard</i>
-            <span class="menu-text">Dashboard</span>
+            <span class="menu-text ">Dashboard</span>
             <i class="material-icons dropdown-icon">expand_more</i>
         </div>
         <div class="submenu">
@@ -36,7 +39,7 @@
             <a class="submenu-item" href="#">Reports</a>
         </div>
 
-        <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
+        <div class="menu-item dropdown-toggle" onclick="toggleSidebarDropdown(this)">
             <i class="material-icons">person</i>
             <span class="menu-text">Members</span>
             <i class="material-icons dropdown-icon">expand_more</i>
@@ -46,7 +49,7 @@
             <a class="submenu-item" href="#">Add Member</a>
         </div>
 
-        <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
+        <div class="menu-item dropdown-toggle" onclick="toggleSidebarDropdown(this)">
             <i class="material-icons">inventory</i>
             <span class="menu-text">Grant & Equipment</span>
             <i class="material-icons dropdown-icon">expand_more</i>
@@ -56,7 +59,7 @@
             <a class="submenu-item" href="#">Add Equipment</a>
         </div>
 
-        <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
+        <div class="menu-item dropdown-toggle" onclick="toggleSidebarDropdown(this)">
             <i class="material-icons">school</i>
             <span class="menu-text">Training</span>
             <i class="material-icons dropdown-icon">expand_more</i>
@@ -66,7 +69,7 @@
             <a class="submenu-item" href="#">Past Training</a>
         </div>
 
-        <div class="menu-item dropdown-toggle" onclick="toggleDropdown(this)">
+        <div class="menu-item dropdown-toggle" onclick="toggleSidebarDropdown(this)">
             <i class="material-icons">campaign</i>
             <span class="menu-text">Announcements</span>
             <i class="material-icons dropdown-icon">expand_more</i>
@@ -76,8 +79,8 @@
             <a class="submenu-item" href="#">All Announcements</a>
         </div>
 
-        <div class="managesec" style="opacity: 0.5; cursor: default;">
-            <span class="text-sm ml-5">Management Section</span>
+        <div class="managesec mt-3" style="opacity: 0.5; cursor: default;">
+            <span class="text-sm ml-5">MANAGEMENT SECTION</span>
         </div>
 
         <a class="menu-item"><i class="material-icons">folder</i><span class="menu-text">Requests</span></a>
@@ -97,12 +100,6 @@
         </a>
         <div class="user-name menu-text">{{ auth()->user()->name ?? 'User Admin' }}</div>
         <div class="admin-role menu-text text-xs text-gray-500">Admin Acc</div>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="logout h-12">
-                <span class="material-icons">logout</span>
-            </button>
-        </form>
     </div>
 </div>
 
@@ -135,8 +132,8 @@
         }
     }
 
-
-    function toggleDropdown(element) {
+    // Sidebar submenu toggle
+    function toggleSidebarDropdown(element) {
         const sidebar = document.getElementById("sidebar");
         if (sidebar.classList.contains("collapsed")) return;
 
@@ -155,7 +152,25 @@
             element.classList.add('open');
         }
     }
+
+    // Profile dropdown toggle (renamed)
+    function toggleProfileDropdown() {
+        const menu = document.getElementById('dropdownMenu');
+        menu.classList.toggle('hidden');
+    }
+
+    // Optional: close profile dropdown if clicked outside
+    window.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('dropdownMenu');
+        if (!dropdown) return; // safety check
+        const trigger = dropdown.previousElementSibling;
+        if (!dropdown.contains(e.target) && !trigger.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
 </script>
+
+
 
 </body>
 </html>
