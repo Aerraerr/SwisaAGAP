@@ -1,6 +1,7 @@
 @extends('layouts.sidebar')
 
 @section('content')
+@include('layouts.loading-overlay')
 <!DOCTYPE html>
 <html lang="en">
 <head>
