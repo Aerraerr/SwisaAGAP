@@ -54,3 +54,15 @@
   color: #68B2AB;
 }
 
+
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #2C6E49;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f0f0f0;
+}

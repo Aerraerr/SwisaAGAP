@@ -107,7 +107,6 @@
 <div class="main-content">
     @yield('content')
 </div>
-
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById("sidebar");
@@ -169,8 +168,5 @@
         }
     });
 </script>
-
-
-
 </body>
 </html>
