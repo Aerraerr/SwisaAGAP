@@ -5,21 +5,54 @@
   font-style: normal;
 }
 
-/* Custom Font Utility */
+@font-face {
+  font-family: 'Rubik';
+  src: url('../fonts/Rubik1/Rubik-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Added Poppins Fonts */
+@font-face {
+  font-family: 'Poppins';
+  src: url('../fonts/poppins/Poppins-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../fonts/poppins/Poppins-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../fonts/poppins/Poppins-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Custom Font Utilities */
 .font-product {
   font-family: 'Product Sans', sans-serif !important;
-
 }
-.font-rubik{
+
+.font-rubik {
   font-family: 'Rubik', sans-serif !important;
 }
 
+.font-poppins {
+  font-family: 'Poppins', sans-serif !important;
+}
+
 /* Custom Color Utility */
-.text-custom{
+.text-custom {
   color: #2C6E49 !important;
   font-weight: 900;
   letter-spacing: 1px;
-  
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Root Variables */
@@ -35,6 +68,28 @@
 body {
   margin: 0;
   display: flex;
-  font-family: 'Product Sans', sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: var(--light-bg);
+}
+
+.poppinscustom1 {
+  font-weight: 900;
+  font-family: 'Poppins', sans-serif;
+}
+.top-bg{
+  background-color: #4C956C;
+  width: 100%;
+  padding: 0%;
+}
+.dashheader{
+  font-size: 16px;
+  margin-top: -10px;
+}
+.header1{
+  font-size: 20px;
+  line-height: 1.2;
+  font-family: 'Poppins', sans-serif;
+}
+.text-poppins{
+  font-family: 'Poppins', sans-serif;
 }
