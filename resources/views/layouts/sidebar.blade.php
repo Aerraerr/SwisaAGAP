@@ -104,7 +104,7 @@
 </div>
 
 <!-- Main Content -->
-<div class="main-content">
+<div class="main-content bg-[#F2F5F3] font-product">
     @yield('content')
 </div>
 <script>
