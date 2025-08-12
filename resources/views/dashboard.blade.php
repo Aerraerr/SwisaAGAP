@@ -86,36 +86,10 @@
 
 
         <!-- Top Requested Equipment / Grants Monitoring -->
-        <div class="lg:col-span-2 bg-white p-7 rounded-xl shadow">
-            <p class="font-semibold mb-2 primary-color dashheader">Top Requested Equipment / Grants Monitoring</p>
-            <div class="text-sm space-y-2">
-                <div class="flex justify-between">
-                    <span>01 Item Name</span>
-                    <span>85%</span>
-                </div>
-                <div class="w-full h-2 bg-gray-200 rounded-full">
-                    <div class="h-2 bg-green-600 rounded-full w-[85%]"></div>
-                </div>
-
-                <div class="flex justify-between">
-                    <span>02 Item Name</span>
-                    <span>17%</span>
-                </div>
-                <div class="w-full h-2 bg-gray-200 rounded-full">
-                    <div class="h-2 bg-green-600 rounded-full w-[17%]"></div>
-                </div>
-            </div>
-        </div>
+         @include('charts.top-requested')
 
         <!-- Shortcuts / Quick Links -->
-        <div class="lg:col-span-2 bg-white p-7 rounded-xl shadow">
-            <p class="font-semibold primary-color dashheader">Shortcuts / Quick Links</p>
-            <ul class="text-sm mt-2 space-y-1">
-                <li><a href="#" class="text-custom">Add Member</a></li>
-                <li><a href="#" class="text-custom">Post Announcement</a></li>
-                <li><a href="#" class="text-custom">View Training</a></li>
-            </ul>
-        </div>
+         @include('charts.shortcuts-quicklinks')
     </div>
 </body>
 

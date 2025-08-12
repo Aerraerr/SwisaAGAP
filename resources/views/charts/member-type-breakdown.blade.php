@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Create a horizontal gradient (left → right)
     const gradient = ctxMember.createLinearGradient(0, 0, ctxMember.canvas.width, 0);
     gradient.addColorStop(0, '#2C6E49');  // Left (original green)
-    gradient.addColorStop(1, '#68B2AB');  // Right (lighter green)
+    gradient.addColorStop(1, '#68b2abad');  // Right (lighter green)
 
     window.memberTypeChartInstance = new Chart(ctxMember, {
         type: 'bar',
