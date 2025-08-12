@@ -12,6 +12,8 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+
+
 <body>
 
 <!-- Hamburger -->
@@ -88,7 +90,7 @@
         <a class="menu-item">
             <i class="material-icons">email</i>
             <span class="menu-text">Messages</span>
-            <span class="material-icons ml-[-5px]" style="color:red; font-size: 14px;">fiber_manual_record</span>
+            <span class="material-icons ml-[-10px]" style="color:red; font-size: 14px;">fiber_manual_record</span>
         </a>
         <a class="menu-item"><i class="material-icons">settings</i><span class="menu-text">Settings</span></a>
     </div>
@@ -107,6 +109,9 @@
 <div class="main-content bg-[#F2F5F3] font-product">
     @yield('content')
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+@stack('scripts')
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById("sidebar");

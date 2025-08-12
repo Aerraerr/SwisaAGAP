@@ -81,6 +81,13 @@ body {
   font-size: 30px;
   left: 8px;
 }
+.hamburger.active-bg:hover {
+  background-color: var(--hover-green) !important; /* change background on hover */
+  color: var(--primary-green) !important;          /* change icon color on hover */
+  border-radius: 2px;                               /* optional: rounded hover effect */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 
 .sidebar {
   display: flex;
@@ -167,8 +174,17 @@ body {
 }
 
 .menu-item i {
-  font-size: 30px;
+  font-size: 20px;
   color: #68B2AB;
+}
+
+.sidebar.collapsed .menu-item i {
+  font-size: 30px;      
+  margin-left: 10px;      
+  text-align: center; 
+}
+.sidebar.collapsed .menu-item {
+  padding-left: 10px;     
 }
 
 .submenu {
@@ -266,6 +282,9 @@ body {
   font-family: 'Producs Sans', sans-serif; 
   color: #68B2AB;
 }
+
+
+
 
 
 

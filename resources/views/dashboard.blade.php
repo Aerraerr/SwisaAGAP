@@ -60,25 +60,15 @@
         </div>
 
         <!-- Monthly Request Submissions -->
-        <div class="lg:col-span-3 h-[330px] bg-white p-6 rounded-xl shadow">
-            <p class="font-semibold mb-2 primary-color dashheader">Monthly Request Submissions</p>
-            <div class="h-40 bg-gray-100 flex items-center justify-center">[Line Chart]</div>
-            <div class="text-right mt-2">
-                <a href="#" class="text-xs text-custom">View &rarr;</a>
-            </div>
-        </div>
+        @include('charts.monthly-requests')
+
 
         <!-- Request Status Overview -->
-        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow">
-            <p class="font-semibold mb-2 primary-color dashheader">Request Status Overview</p>
-            <div class="h-40 bg-gray-100 flex items-center justify-center">[Pie Chart]</div>
-            <div class="text-right mt-2">
-                <a href="#" class="text-xs text-custom">View &rarr;</a>
-            </div>
-        </div>
+        @include('charts.request-status-overview')
+
 
         <!-- Recent Activity -->
-        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow">
+        <div class="lg:col-span-2 bg-white p-7 rounded-xl shadow">
             <p class="font-semibold mb-2 primary-color dashheader">Recent Activity</p>
             <ul class="text-sm space-y-1">
                 <li><span class="text-green-600">●</span> Aeron Jead Marquez submitted a new request. <span class="text-gray-500">2 hours ago</span></li>
@@ -91,8 +81,12 @@
             </div>
         </div>
 
+        <!-- Member Type Breakdown -->
+         @include('charts.member-type-breakdown')
+
+
         <!-- Top Requested Equipment / Grants Monitoring -->
-        <div class="lg:col-span-3 h-[330px] bg-white p-6 rounded-xl shadow">
+        <div class="lg:col-span-2 bg-white p-7 rounded-xl shadow">
             <p class="font-semibold mb-2 primary-color dashheader">Top Requested Equipment / Grants Monitoring</p>
             <div class="text-sm space-y-2">
                 <div class="flex justify-between">
@@ -113,17 +107,8 @@
             </div>
         </div>
 
-        <!-- Member Type Breakdown -->
-        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow">
-            <p class="font-semibold mb-2 primary-color dashheader">Member Type Breakdown</p>
-            <div class="h-40 bg-gray-100 flex items-center justify-center">[Bar Chart]</div>
-            <div class="text-right mt-2">
-                <a href="#" class="text-xs text-custom">View &rarr;</a>
-            </div>
-        </div>
-
         <!-- Shortcuts / Quick Links -->
-        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow">
+        <div class="lg:col-span-2 bg-white p-7 rounded-xl shadow">
             <p class="font-semibold primary-color dashheader">Shortcuts / Quick Links</p>
             <ul class="text-sm mt-2 space-y-1">
                 <li><a href="#" class="text-custom">Add Member</a></li>
@@ -133,5 +118,6 @@
         </div>
     </div>
 </body>
+
 </html>
 @endsection

@@ -22,7 +22,7 @@ export default {
                 snbg: '#E8F6EF',
                 iconsClr: '#68B2AB',
                 approved: '#4C956C',
-                rejected: '#F15B66',
+                rejected: '#FD8686',
                 pending: '#FFC20E',
 
             },
