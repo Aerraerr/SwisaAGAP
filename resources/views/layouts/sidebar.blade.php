@@ -21,10 +21,10 @@
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
-    <div class="sidebar-header mb-5">
-        <img class="sidebar-logo" src="{{ asset('images/swisalogo.png') }}" alt="swisalogo">
-        <span class="brand-title ">SwisaAGAP</span>
-    </div>
+<div class="sidebar-header mb-5">
+    <img class="sidebar-logo" src="{{ asset('images/swisa-agap4.png') }}" alt="Swisa AGAP Logo">
+</div>
+
 
     <!-- Scrollable Menu Section -->
     <div class=" sidebar-menu">

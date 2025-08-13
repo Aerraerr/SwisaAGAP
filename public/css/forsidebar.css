@@ -99,10 +99,11 @@ body {
   left: 0;
   top: 0;
   bottom: 0;
-  transition: width 0.3s ease;
+  transition: width 0.5s ease;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   color: var(--primary-green);
+    overflow: hidden;
 }
 .managesec{
   opacity: 0.5; 
@@ -116,17 +117,23 @@ body {
 
 .sidebar-header {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  align-items: center;   /* vertically aligns inside header height */
+  justify-content: flex-start; /* keep it on the left side */
   padding: 15px;
   color: var(--primary-green);
 }
 
 .sidebar-logo {
-  height: 60px;
-  width: 60px;
+  height: 70px;
+  width: 180px;
   object-fit: contain;
-  margin-right: 30px;
+  margin-right: 0; /* remove old spacing */
+  margin-left: 10px;
+  margin-top: -5px;
+}
+
+.sidebar.collapsed .sidebar-header {
+  justify-content: center; /* center when collapsed */
 }
 
 .sidebar.collapsed .brand-title {
@@ -137,13 +144,11 @@ body {
 .sidebar.collapsed .menu-text,
 .sidebar.collapsed .submenu,
 .sidebar.collapsed .dropdown-icon,
-.sidebar.collapsed .managesec {
+.sidebar.collapsed .managesec,
+.sidebar.collapsed .sidebar-logo {
   display: none !important;
 }
 
-.sidebar.collapsed .sidebar-header {
-  justify-content: center;
-}
 
 .sidebar-menu {
   flex: 1;
@@ -176,6 +181,7 @@ body {
 .menu-item i {
   font-size: 20px;
   color: #68B2AB;
+  
 }
 
 .sidebar.collapsed .menu-item i {
@@ -184,7 +190,12 @@ body {
   text-align: center; 
 }
 .sidebar.collapsed .menu-item {
-  padding-left: 10px;     
+  padding-left: 10px;  
+     
+
+}
+.sidebar.collapsed .sidebar-menu{
+  padding-top: 50px;
 }
 
 .submenu {
@@ -210,10 +221,12 @@ body {
 .dropdown-icon {
   margin-left: auto;
   transition: transform 0.3s ease;
+  color: rgba(104, 178, 171, 0.46) !important; /* same as var(--icon-color) but 80% */
 }
 
 .dropdown-toggle.open .dropdown-icon {
   transform: rotate(180deg);
+  
   
 }
 .dropdown-toggle.open{
@@ -225,6 +238,7 @@ body {
 .dropdown-toggle.open i{
   color: var(--primary-green);
 }
+
 
 
 .user-section {
