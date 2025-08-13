@@ -55,7 +55,7 @@
             <i class="material-icons dropdown-icon">expand_more</i>
         </div>
         <div class="submenu">
-            <a class="submenu-item" href="#">View Grants</a>
+            <a class="submenu-item" href="{{ route('grantsNequipment') }}">View Grants</a>
             <a class="submenu-item" href="#">Add Equipment</a>
         </div>
 
@@ -104,7 +104,7 @@
 </div>
 
 <!-- Main Content -->
-<div class="main-content bg-[#F2F5F3] font-product">
+<div class="main-content bg-mainbg">
     @yield('content')
 </div>
 
