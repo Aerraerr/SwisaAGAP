@@ -93,3 +93,14 @@ body {
 .text-poppins{
   font-family: 'Poppins', sans-serif;
 }
+.viewbtn {
+  position: absolute;
+  bottom: 30px;
+  right: 20px;
+  color: #2C6E49 !important;
+  font-weight: 900;
+  letter-spacing: 1px;
+  font-family: 'Poppins', sans-serif;
+}
+
+

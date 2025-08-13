@@ -30,6 +30,6 @@
     window.addEventListener("load", function () {
         setTimeout(function () {
             hideLoadingOverlay();
-        }, 3000); // 3000ms = 3 seconds
+        }, 500); // 3000ms = 3 seconds
     });
 </script>

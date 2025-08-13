@@ -1,11 +1,11 @@
-# SwisaAGAP: Agricultural Grant and Equipment Acquisition System
+# SwisaAGAP: Agricultural Grant and Equipment Acquisition System 
 
 **SWISA-AGAP** is a digital system designed to support farmers, fishers, swine producers, and small agribusiness owners in Sorsogon. This platform enables efficient grant requests, resource monitoring, and program management through a web-based admin dashboard and a mobile app for members.
 
----
-
+---  
+       
 ## 📌 Features 
- 
+     
 ### 👤 For Members (Mobile App)  
 - 📋 Submit support/grant requests
 - 🔍 View available programs and services
