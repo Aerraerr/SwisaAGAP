@@ -1,5 +1,11 @@
+<!-- Add this in your <head> if not already -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 <div class="lg:col-span-3 h-[330px] bg-white p-7 rounded-xl shadow flex flex-col">
-    <p class="font-semibold mb-2 primary-color dashheader">Monthly Request Submissions</p>
+    <p class="font-semibold mb-2 primary-color dashheader flex items-center">
+        <span class="material-icons mr-2 text-custom">show_chart</span>
+        Monthly Request Submissions
+    </p>
     
     {{-- Chart Container --}}
     <div class="flex-1">
@@ -10,6 +16,7 @@
         <a href="#" class="text-xs text-custom">View &rarr;</a>
     </div>
 </div>
+
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
