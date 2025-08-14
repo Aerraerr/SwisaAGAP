@@ -1,6 +1,12 @@
+<!-- Add this in your <head> if not already -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
 <!-- Top Requested Equipment / Grants Monitoring -->
 <div class="lg:col-span-2 bg-white p-5 rounded-xl shadow relative">
-    <p class="font-semibold mb-4 primary-color dashheader">Top Requested Equipment / Grants Monitoring</p>
+    <p class="font-semibold mb-4 pt-2 primary-color dashheader flex items-center">
+        <span class="material-icons mr-2 text-custom">leaderboard</span>
+        Top Requested Equipment / Grants Monitoring
+    </p>
     
     <div class="text-sm space-y-4 ">
         <!-- Row -->
@@ -55,7 +61,8 @@
                 15%
             </div>
         </div>
-                <div class="flex items-center justify-between">
+
+        <div class="flex items-center justify-between">
             <div class="w-10 font-bold text-green-700 text-lg">05</div>
             <div class="flex-1">
                 <p class="text-gray-700">Item Name</p>
