@@ -18,6 +18,10 @@ Route::get('/members', function () {
     return view('swisa-admin.members');
 })->middleware(['auth', 'verified'])->name('members');
 
+Route::get('/grantsNequipment', function () {
+    return view('swisa-admin.grantsNequipment');
+})->middleware(['auth', 'verified'])->name('grantsNequipment');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -24,7 +24,7 @@ export default {
                 approved: '#4C956C',
                 rejected: '#FD8686',
                 pending: '#FFC20E',
-
+                mainbg: "#F2F5F3",
             },
             borderColor: {
                 Gborder: '#2C6E49',
