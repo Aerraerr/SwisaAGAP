@@ -7,7 +7,7 @@
             <h1>Monday, 00 Month 2025</h1>
         </div>
 <!-- Alpine.js wrapper so tab works -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-3" x-data="{ tab: 'message' }">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-3">
         <!-- left part-->
         <div class="col-span-12 md:col-span-3 ">
             <div class="bg-white shadow flex justify-center pt-3 rounded-md">

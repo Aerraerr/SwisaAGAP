@@ -25,7 +25,7 @@
     </div>
 
     <div class="flex justify-between space-x-2">
-        <a href="view-profile" class="flex-1 p-2 text-xs text-center font-medium text-customIT bg-snbg rounded-md hover:bg-gray-100 transition">View Profile</a>
+        <a href="{{ route('view-profile') }}" class="flex-1 p-2 text-xs text-center font-medium text-customIT bg-snbg rounded-md hover:bg-gray-100 transition">View Profile</a>
         <a href="#" class="flex-1 p-2 text-xs text-center font-medium text-white bg-btncolor rounded-md hover:bg-green-700 transition">View Applications</a>
     </div>
 </div>
