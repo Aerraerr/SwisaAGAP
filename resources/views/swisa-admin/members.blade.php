@@ -1,6 +1,6 @@
 @extends('layouts.sidebar')
 @section('content')
-<body class="bg-mainbg">
+<body class="bg-mainbg px-2">
     <div class="text-customIT text-2xl flex justify-between items-center mb-4">
         <h1 class="font-bold">Registered Members</h1>
         <h1>Monday, 00 Month 2025</h1>

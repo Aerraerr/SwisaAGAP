@@ -1,6 +1,6 @@
 @extends('layouts.sidebar')
 @section('content')
-<body class="bg-mainbg">
+<body class="bg-mainbg px-2">
     <div class="text-customIT text-2xl flex justify-between items-center mb-4">
         <h1 class="font-bold">Available Grants & Equipments</h1>
         <h1>Monday, 00 Month 2025</h1>
@@ -53,7 +53,7 @@
             approved="6"
             addedOn="12 units"
             lastUpdated="24"
-            eligibility="Registered Members only"
+            eligibility="Registered Members"
             allocationPercentage="50"
         />
 
@@ -90,7 +90,7 @@
             approved="6"
             addedOn="12 units"
             lastUpdated="24"
-            eligibility="Registered Members only"
+            eligibility="Registered Members"
             allocationPercentage="50"
         />
         <x-grant-card
@@ -101,7 +101,7 @@
             approved="6"
             addedOn="12 units"
             lastUpdated="24"
-            eligibility="Registered Members only"
+            eligibility="Registered Members"
             allocationPercentage="50"
         />
         <x-grant-card
@@ -112,7 +112,7 @@
             approved="6"
             addedOn="12 units"
             lastUpdated="24"
-            eligibility="Registered Members only"
+            eligibility="Registered Members"
             allocationPercentage="50"
         />
     </div>

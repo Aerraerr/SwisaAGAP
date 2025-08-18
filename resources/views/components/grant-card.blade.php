@@ -52,12 +52,15 @@
 
         <!-- Eligibility and Progress Bar Section -->
         <div class="flex items-center justify-between mb-4">
-            <div class="flex items-start">
+            <div class="items-start">
                 <h4 class="font-semibold text-sm text-customIT flex items-center mr-2">
                     <!-- Badge icon -->
                     <svg class="h-4 w-4 mr-1 text-customIT" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 10a1 1 0 012 0v5a1 1 0 11-2 0v-5zm1-3a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>
                     Eligibility Info
                 </h4>
+                <p class="text-xs text-gray-500 ml-5">
+                For: <span class="font-medium text-gray-800">{{ $eligibility }}</span>
+                </p>
             </div>
             <div class="w-1/2 flex items-center ml-auto">
                 <div class="h-2 w-full bg-gray-200 rounded-full mr-2">
@@ -71,13 +74,10 @@
         </div>
 
         <!-- View Button Section -->
-        <div class="flex justify-between grid-cols-2 text-right mb-2 gap-2">
-            <p class="text-xs text-gray-500 col-span-1 ">
-                For: <span class="font-medium text-gray-800">{{ $eligibility }}</span>
-            </p>
-            <button class="bg-customIT text-white text-sm py-1 px-12 rounded-md hover:bg-green-700 transition duration-300">
+        <div class="grid-cols-2 text-right mb-2 gap-2">
+            <a href="{{ route('view-grant') }}" class="bg-customIT text-white text-sm py-1 px-12 rounded-md hover:bg-green-700 transition duration-300">
                 View
-            </button>
+            </a>
         </div>
     </div>
 </div>

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>SwisaAGAP</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{{ asset('css/forsidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">

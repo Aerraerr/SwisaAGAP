@@ -22,6 +22,14 @@ Route::get('/grantsNequipment', function () {
     return view('swisa-admin.grantsNequipment');
 })->middleware(['auth', 'verified'])->name('grantsNequipment');
 
+Route::get('/view-profile', function () {
+    return view('swisa-admin.view-profile');
+})->middleware(['auth', 'verified'])->name('view-profile');
+
+Route::get('/view-grant', function () {
+    return view('swisa-admin.view-grant');
+})->middleware(['auth', 'verified'])->name('view-grant');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
