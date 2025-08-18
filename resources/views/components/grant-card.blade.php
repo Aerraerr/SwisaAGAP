@@ -75,7 +75,7 @@
 
         <!-- View Button Section -->
         <div class="grid-cols-2 text-right mb-2 gap-2">
-            <a href="{{ route('view-grant') }}" class="bg-customIT text-white text-sm py-1 px-12 rounded-md hover:bg-green-700 transition duration-300">
+            <a href="{{ route('view-grant') }}" class="bg-customIT text-white text-sm py-1.5 px-12 rounded-md hover:bg-green-700 transition duration-300">
                 View
             </a>
         </div>

@@ -69,7 +69,7 @@
             <i class="material-icons dropdown-icon">expand_more</i>
         </div>
         <div class="submenu">
-            <a class="submenu-item" href="#">Schedule</a>
+            <a class="submenu-item" href="{{ route('training-workshop') }}">Schedule</a>
             <a class="submenu-item" href="#">Past Training</a>
         </div>
 
