@@ -87,7 +87,7 @@
             <span class="text-sm ml-5">MANAGEMENT SECTION</span>
         </div>
 
-        <a class="menu-item"><i class="material-icons">folder</i><span class="menu-text">Requests</span></a>
+        <a class="menu-item" href="{{ route('grant-request') }}"><i class="material-icons">folder</i><span class="menu-text">Requests</span></a>
         <a class="menu-item"><i class="material-icons">app_registration</i><span class="menu-text">Applications</span></a>
         <a class="menu-item">
             <i class="material-icons">email</i>
