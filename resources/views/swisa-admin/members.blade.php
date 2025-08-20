@@ -7,6 +7,8 @@
     </div>
 
         <div class="flex mb-2 gap-1">
+            <button onclick="toggleModal('upload-modal')" class="active:bg-btncolor active:text-white active:shadow hover:bg-btncolor hover:text-white w-[80px] text-xs text-btncolor font-semibold rounded-[3px] p-1">Grid</button>
+            <button onclick="toggleModal('upload-modal')" class="active:bg-btncolor active:text-white active:shadow hover:bg-btncolor hover:text-white w-[80px] text-xs text-btncolor font-semibold rounded-[3px] p-1">List</button>
             <button onclick="toggleModal('upload-modal')" class="bg-btncolor w-[50px] text-white border rounded-[3px] ml-[38%] p-1">&#43;</button>
             <div class="relative w-[180px]">
                 <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor border rounded-[3px]">
