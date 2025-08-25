@@ -2,7 +2,7 @@
 @section('content')
 <body class="bg-mainbg px-2">
     <div class="text-customIT text-2xl flex justify-between items-center mb-4">
-        <h1 class="font-bold">Available Trainings & Workshops</h1>
+        <h1 class="font-bold">Initiatives & Events</h1>
         <h1>Monday, 00 Month 2025</h1>
     </div>
 
@@ -45,7 +45,7 @@
         </div>
 
     <!-- Example of using the reusable component -->
-    <div class="pt-2 bg-gray-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+    <div class="pt-2 bg-gray-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         <!-- Card with specific data -->
         <x-training-card
             title="Pangkagkag ni Peter"
@@ -95,24 +95,6 @@
             description="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
             attendees="24"
         />
-        <x-training-card
-            title="Pangkagkag ni Peter"
-            category="farmvile"
-            date="sept 20, 2025"
-            time="9:00 am"
-            description="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-            attendees="24"
-        />
-        <x-training-card
-            title="Pangkagkag ni Peter"
-            category="farmvile"
-            date="sept 20, 2025"
-            time="9:00 am"
-            description="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-            attendees="24"
-        />
-
-        
     </div>
 
 </body>
