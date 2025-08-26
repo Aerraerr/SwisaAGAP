@@ -6,6 +6,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="{{ asset('images/swisa-logo1.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('css/forsidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('css/global.css') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
