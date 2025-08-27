@@ -22,8 +22,8 @@ export default {
                 snbg: '#E8F6EF',
                 iconsClr: '#68B2AB',
                 approved: '#4C956C',
-                rejected: '#FD8686',
-                pending: '#FFC20E',
+                rejected: '#F15B66',
+                pending: '#E8CC5E',
                 mainbg: "#F2F5F3",
             },
             borderColor: {
