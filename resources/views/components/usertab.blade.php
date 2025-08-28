@@ -1,6 +1,6 @@
-<div class="flex justify-between items-center w-[28%] px-6 py-4 bg-white shadow-lg rounded-xl font-product relative">
+<div class="flex justify-between items-center w-[28%] px-6 py-4 bg-white shadow-lg rounded-xl font-poppins  relative">
     <!-- Live Clock Display -->
-    <div class="text-gray-700 text-sm font-medium tracking-wide text-custom" id="live-time">
+    <div class="text-[#2C6E49] text-sm font-bold tracking-wide text-custom" id="live-time">
         <!-- Initial time loaded by PHP, but updated live by JS -->
         {{ \Carbon\Carbon::now()->format('F d, Y - h:i:s A') }}
     </div>

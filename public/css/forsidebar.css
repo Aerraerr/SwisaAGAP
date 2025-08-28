@@ -297,7 +297,25 @@ body {
   color: #68B2AB;
 }
 
+    .menu-item.active {
+      background-color: var(--hover-green) !important;
+      border-right: 4px solid var(--primary-green);
+      color: var(--primary-green) !important;
+      font-weight: bold;
+    }
+    .menu-item.active i { 
+      color: var(--primary-green) !important; 
+    }
 
+    .submenu { display: none; flex-direction: column; padding-left: 20px; }
+    .submenu.show { display: flex; }
+
+    .submenu-item.active {
+        background: #E6F4EA;
+        color: #2C6E49 !important;
+        font-weight: bold;
+        border-radius: 4px;
+    }
 
 
 

@@ -1,87 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>SwisaAGAP</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="//unpkg.com/alpinejs" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="{{ asset('css/forsidebar.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/global.css') }}">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-
-<body>
-
 <!-- Hamburger -->
 <button class="hamburger sidebar-closebtn" id="toggleButton" onclick="toggleSidebar()">‹</button>
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
-<div class="sidebar-header mb-5">
-    <img class="sidebar-logo" src="{{ asset('images/swisa-agap4.png') }}" alt="Swisa AGAP Logo">
-</div>
-
+    <div class="sidebar-header mb-5">
+        <img class="sidebar-logo" src="{{ asset('images/swisa-agap4.png') }}" alt="Swisa AGAP Logo">
+    </div>
 
     <!-- Scrollable Menu Section -->
-    <div class=" sidebar-menu">
-        <div class="managesec" style="">
-            <span class="text-sm ml-5">MAIN MENU</span>
-        </div>
-        <div class="menu-item dropdown-toggle" onclick="toggleSidebarDropdown(this)">
+    <div class="sidebar-menu">
+        <div class="managesec"><span class="text-sm ml-5">MAIN MENU</span></div>
+
+        <!-- Dashboard -->
+        <div class="menu-item dropdown-toggle {{ request()->routeIs('dashboard*') ? 'active open' : '' }}"
+             onclick="toggleSidebarDropdown(this)">
             <i class="material-icons">dashboard</i>
-            <span class="menu-text ">Dashboard</span>
+            <span class="menu-text">Dashboard</span>
             <i class="material-icons dropdown-icon">expand_more</i>
         </div>
-        <div class="submenu">
-            <a class="submenu-item" href="{{ route('dashboard') }}">Overview</a>
+        <div class="submenu {{ request()->routeIs('dashboard*') ? 'show' : '' }}">
+            <a class="submenu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
+               href="{{ route('dashboard') }}">Overview</a>
             <a class="submenu-item" href="#">Reports</a>
         </div>
 
-        <div class="menu-item dropdown-toggle" onclick="toggleSidebarDropdown(this)">
+        <!-- Members -->
+        <div class="menu-item dropdown-toggle {{ request()->routeIs('members*') ? 'active open' : '' }}"
+             onclick="toggleSidebarDropdown(this)">
             <i class="material-icons">person</i>
             <span class="menu-text">Members</span>
             <i class="material-icons dropdown-icon">expand_more</i>
         </div>
-        <div class="submenu">
-            <a class="submenu-item" href="{{ route('members') }}">List of Members</a>
+        <div class="submenu {{ request()->routeIs('members*') ? 'show' : '' }}">
+            <a class="submenu-item {{ request()->routeIs('members') ? 'active' : '' }}" 
+               href="{{ route('members') }}">List of Members</a>
             <a class="submenu-item" href="#">Add Member</a>
         </div>
 
-        <div class="menu-item dropdown-toggle" onclick="toggleSidebarDropdown(this)">
+        <!-- Grant & Equipment -->
+        <div class="menu-item dropdown-toggle {{ request()->routeIs('grantsNequipment*') ? 'active open' : '' }}"
+             onclick="toggleSidebarDropdown(this)">
             <i class="material-icons">inventory</i>
             <span class="menu-text">Grant & Equipment</span>
             <i class="material-icons dropdown-icon">expand_more</i>
         </div>
-        <div class="submenu">
-            <a class="submenu-item" href="{{ route('grantsNequipment') }}">View Grants</a>
+        <div class="submenu {{ request()->routeIs('grantsNequipment*') ? 'show' : '' }}">
+            <a class="submenu-item {{ request()->routeIs('grantsNequipment') ? 'active' : '' }}" 
+               href="{{ route('grantsNequipment') }}">View Grants</a>
             <a class="submenu-item" href="#">Add Equipment</a>
         </div>
 
-        <div class="menu-item dropdown-toggle" onclick="toggleSidebarDropdown(this)">
+        <!-- Initiatives & Events -->
+        <div class="menu-item dropdown-toggle"
+             onclick="toggleSidebarDropdown(this)">
             <i class="material-icons">school</i>
-            <span class="menu-text">Training</span>
+            <span class="menu-text">Initiatives & Events</span>
             <i class="material-icons dropdown-icon">expand_more</i>
         </div>
         <div class="submenu">
-            <a class="submenu-item" href="#">Schedule</a>
+            <a class="submenu-item">Schedule</a>
             <a class="submenu-item" href="#">Past Training</a>
         </div>
 
-        <div class="menu-item dropdown-toggle" onclick="toggleSidebarDropdown(this)">
-            <i class="material-icons">campaign</i>
-            <span class="menu-text">Announcements</span>
-            <i class="material-icons dropdown-icon">expand_more</i>
-        </div>
-        <div class="submenu">
-            <a class="submenu-item" href="#">Post Announcement</a>
-            <a class="submenu-item" href="#">All Announcements</a>
-        </div>
+        <!-- Announcements -->
+        <a class="menu-item {{ request()->routeIs('announcements') ? 'active' : '' }}" 
+           href="{{ route('announcements') }}">
+           <i class="material-icons">campaign</i>
+           <span class="menu-text">Announcements</span>
+        </a>
 
         <div class="managesec mt-3" style="opacity: 0.5; cursor: default;">
             <span class="text-sm ml-5">MANAGEMENT SECTION</span>
@@ -107,13 +93,7 @@
     </div>
 </div>
 
-<!-- Main Content -->
-<div class="main-content bg-mainbg">
-    @yield('content')
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-@stack('scripts')
+
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById("sidebar");
@@ -121,59 +101,27 @@
         const isCollapsed = sidebar.classList.toggle("collapsed");
 
         toggleButton.innerText = isCollapsed ? "☰" : "‹";
-        if (isCollapsed) {
-            toggleButton.classList.add("active-bg");
-        } else {
-            toggleButton.classList.remove("active-bg");
-        }
+        toggleButton.classList.toggle("active-bg", isCollapsed);
 
-        // Collapse all dropdowns
         if (isCollapsed) {
-            document.querySelectorAll('.submenu').forEach(menu => {
-                menu.style.display = 'none';
-            });
-            document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
-                toggle.classList.remove('open');
-            });
+            document.querySelectorAll('.submenu').forEach(menu => menu.style.display = 'none');
+            document.querySelectorAll('.dropdown-toggle').forEach(toggle => toggle.classList.remove('open'));
         }
     }
 
-    // Sidebar submenu toggle
     function toggleSidebarDropdown(element) {
         const sidebar = document.getElementById("sidebar");
         if (sidebar.classList.contains("collapsed")) return;
 
         const submenu = element.nextElementSibling;
-        const isOpen = submenu.style.display === "flex";
+        const isOpen = submenu.classList.contains("show");
 
-        document.querySelectorAll('.submenu').forEach(menu => {
-            menu.style.display = 'none';
-        });
-        document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
-            toggle.classList.remove('open');
-        });
+        document.querySelectorAll('.submenu').forEach(menu => menu.classList.remove('show'));
+        document.querySelectorAll('.dropdown-toggle').forEach(toggle => toggle.classList.remove('open'));
 
         if (!isOpen) {
-            submenu.style.display = "flex";
+            submenu.classList.add("show");
             element.classList.add('open');
         }
     }
-
-    // Profile dropdown toggle (renamed)
-    function toggleProfileDropdown() {
-        const menu = document.getElementById('dropdownMenu');
-        menu.classList.toggle('hidden');
-    }
-
-    // Optional: close profile dropdown if clicked outside
-    window.addEventListener('click', function(e) {
-        const dropdown = document.getElementById('dropdownMenu');
-        if (!dropdown) return; // safety check
-        const trigger = dropdown.previousElementSibling;
-        if (!dropdown.contains(e.target) && !trigger.contains(e.target)) {
-            dropdown.classList.add('hidden');
-        }
-    });
 </script>
-</body>
-</html>

@@ -22,6 +22,10 @@ Route::get('/grantsNequipment', function () {
     return view('swisa-admin.grantsNequipment');
 })->middleware(['auth', 'verified'])->name('grantsNequipment');
 
+Route::get('/announcements', function () {
+    return view('swisa-admin.announcements');
+})->middleware(['auth', 'verified'])->name('announcements');
+
 Route::get('/view-profile', function () {
     return view('swisa-admin.view-profile');
 })->middleware(['auth', 'verified'])->name('view-profile');
