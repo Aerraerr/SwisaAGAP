@@ -10,9 +10,9 @@
     'allocationPercentage' => 0,
 ])
 
-<div class="max-w-xl bg-white pt-2 pl-4 pr-4 rounded-md shadow-lg overflow-hidden">
+<div class="bg-white py-2 px-4 rounded-md shadow-lg overflow-hidden">
     <!-- Image Placeholder Section -->
-    <div class="bg-gray-200 rounded-md h-40 flex items-center justify-center border-b border-gray-300">
+    <div class="bg-gray-200 rounded-md h-44 flex items-center justify-center border-b border-gray-300">
         <span class="text-white text-md">IMAGE</span>
     </div>
 
@@ -68,14 +68,17 @@
                         class="h-full bg-customIT rounded-full"
                         style="width: {{ $allocationPercentage }}%;">
                     </div>
+                    <div class="text-center">
+                        <span class="text-xs  text-gray-600">{{ $allocationPercentage }}% Allocated</span>
+                    </div>
                 </div>
                 {{--<span class="text-sm text-gray-600">{{ $allocationPercentage }}% Allocated</span>--}}
             </div>
         </div>
 
         <!-- View Button Section -->
-        <div class="grid-cols-2 text-right mb-2 gap-2">
-            <a href="{{ route('view-grant') }}" class="bg-customIT text-white text-sm py-1 px-12 rounded-md hover:bg-green-700 transition duration-300">
+        <div class="grid grid-cols-2 mb-2">
+            <a href="{{ route('view-grant') }}" class="col-start-2 bg-btncolor text-white text-sm text-center py-1.5 rounded-[3px] hover:bg-green-700 transition duration-300">
                 View
             </a>
         </div>

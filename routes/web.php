@@ -25,6 +25,17 @@ Route::get('/grantsNequipment', function () {
 Route::get('/announcements', function () {
     return view('swisa-admin.announcements');
 })->middleware(['auth', 'verified'])->name('announcements');
+Route::get('/training-workshop', function () {
+    return view('swisa-admin.training-workshop');
+})->middleware(['auth', 'verified'])->name('training-workshop');
+
+Route::get('/grant-request', function () {
+    return view('swisa-admin.grant-request');
+})->middleware(['auth', 'verified'])->name('grant-request'); 
+
+Route::get('/member-application', function () {
+    return view('swisa-admin.member-application');
+})->middleware(['auth', 'verified'])->name('member-application');
 
 Route::get('/view-profile', function () {
     return view('swisa-admin.view-profile');
