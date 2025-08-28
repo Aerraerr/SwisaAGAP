@@ -11,42 +11,42 @@
     <!-- Example of using the reusable component -->
     <div class="pt-2 bg-gray-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         <!-- Card with specific data -->
-        <x-training-card
+        <x-cards.training-card
             title="Suntukan sa B4"
             category="farmvile"
             date="sept 20, 2025"
             time="9:00 am"
             participants="24"
         />
-        <x-training-card
+        <x-cards.training-card
             title="Suntukan sa B4"
             category="farmvile"
             date="sept 20, 2025"
             time="9:00 am"
             participants="24"
         />
-        <x-training-card
+        <x-cards.training-card
             title="Suntukan sa B4"
             category="farmvile"
             date="sept 20, 2025"
             time="9:00 am"
             participants="24"
         />
-        <x-training-card
+        <x-cards.training-card
             title="Suntukan sa B4"
             category="farmvile"
             date="sept 20, 2025"
             time="9:00 am"
             participants="24"
         />
-        <x-training-card
+        <x-cards.training-card
             title="Suntukan sa B4"
             category="farmvile"
             date="sept 20, 2025"
             time="9:00 am"
             participants="24"
         />
-        <x-training-card
+        <x-cards.training-card
             title="Suntukan sa B4"
             category="farmvile"
             date="sept 20, 2025"

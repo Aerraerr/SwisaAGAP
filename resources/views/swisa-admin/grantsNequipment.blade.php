@@ -11,7 +11,7 @@
     <!-- Example of using the reusable component -->
     <div class="pt-2 bg-gray-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         <!-- Card with specific data -->
-        <x-grant-card
+        <x-cards.grant-card
             title="Pangkagkag ni Peter"
             category="Machinery"
             stockAvailable="12"
@@ -24,7 +24,7 @@
         />
 
         <!-- Another card with different data -->
-        <x-grant-card
+        <x-cards.grant-card
             title="Another Grant"
             category="Agriculture"
             stockAvailable="5"
@@ -37,7 +37,7 @@
         />
 
         <!-- A third card -->
-        <x-grant-card
+        <x-cards.grant-card
             title="Third Grant"
             category="Technology"
             stockAvailable="20"
@@ -48,7 +48,7 @@
             eligibility="New Members"
             allocationPercentage="75"
         />
-        <x-grant-card
+        <x-cards.grant-card
             title="Pangkagkag ni Peter"
             category="Machinery"
             stockAvailable="12"
@@ -59,7 +59,7 @@
             eligibility="Registered Members"
             allocationPercentage="50"
         />
-        <x-grant-card
+        <x-cards.grant-card
             title="Pangkagkag ni Peter"
             category="Machinery"
             stockAvailable="12"
@@ -70,7 +70,7 @@
             eligibility="Registered Members"
             allocationPercentage="50"
         />
-        <x-grant-card
+        <x-cards.grant-card
             title="Pangkagkag ni Peter"
             category="Machinery"
             stockAvailable="12"

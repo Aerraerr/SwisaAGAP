@@ -116,6 +116,15 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 @stack('scripts')
 <script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+</script>
+<script>
     function toggleSidebar() {
         const sidebar = document.getElementById("sidebar");
         const toggleButton = document.getElementById("toggleButton");

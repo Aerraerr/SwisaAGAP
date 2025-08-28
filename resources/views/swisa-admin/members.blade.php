@@ -13,7 +13,7 @@
                 {{-- For demonstration, hardcoded cards are used --}}
                 
                 {{-- Active Members --}}
-                <x-member-card
+                <x-cards.member-card
                     status="active"
                     name="Full Name"
                     role="General Producer"
@@ -21,7 +21,7 @@
                     registered="1/01/2023"
                     meetings="Meetings: 10/10"
                 />
-                <x-member-card
+                <x-cards.member-card
                     status="active"
                     name="Full Name"
                     role="General Producer"
@@ -29,7 +29,7 @@
                     registered="1/01/2023"
                     meetings="Meetings: 10/10"
                 />
-                <x-member-card
+                <x-cards.member-card
                     status="active"
                     name="Full Name"
                     role="General Producer"
@@ -37,7 +37,7 @@
                     registered="1/01/2023"
                     meetings="Meetings: 10/10"
                 />
-                <x-member-card
+                <x-cards.member-card
                     status="active"
                     name="Full Name"
                     role="General Producer"
@@ -45,7 +45,7 @@
                     registered="1/01/2023"
                     meetings="Meetings: 10/10"
                 />
-                <x-member-card
+                <x-cards.member-card
                     status="active"
                     name="Full Name"
                     role="General Producer"
@@ -53,7 +53,7 @@
                     registered="1/01/2023"
                     meetings="Meetings: 10/10"
                 />
-                <x-member-card
+                <x-cards.member-card
                     status="active"
                     name="Full Name"
                     role="General Producer"
@@ -63,7 +63,7 @@
                 />
 
                 {{-- Inactive Members --}}
-                <x-member-card
+                <x-cards.member-card
                     status="inactive"
                     name="Full Name"
                     role="General Producer"
@@ -71,7 +71,7 @@
                     registered="1/01/2023"
                     meetings="Meetings: 10/10"
                 />
-                <x-member-card
+                <x-cards.member-card
                     status="inactive"
                     name="Full Name"
                     role="General Producer"
@@ -79,7 +79,7 @@
                     registered="1/01/2023"
                     meetings="Meetings: 10/10"
                 />
-                <x-member-card
+                <x-cards.member-card
                     status="inactive"
                     name="Full Name"
                     role="General Producer"

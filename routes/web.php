@@ -42,6 +42,10 @@ Route::get('/view-grant', function () {
     return view('swisa-admin.view-grant');
 })->middleware(['auth', 'verified'])->name('view-grant');
 
+Route::get('/view-training', function () {
+    return view('swisa-admin.view-training');
+})->middleware(['auth', 'verified'])->name('view-training');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
