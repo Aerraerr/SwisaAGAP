@@ -9,14 +9,22 @@
                 <button 
                     @click="activeTab = 'grid'"
                     :class="activeTab === 'grid' ? 'bg-btncolor text-white shadow' : 'text-btncolor'" 
-                    class="w-1/2 tab-button h-9 hover:bg-btncolor hover:text-white w-[80px] text-xs text-btncolor font-semibold rounded-[3px] p-1">
+                    class="flex items-center justify-center gap-1 w-1/2 tab-button h-9 hover:bg-btncolor hover:text-white w-[80px] text-xs text-btncolor font-medium rounded-[3px] p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                        <path d="M3 3h4v4H3V3zm5 0h4v4H8V3zm5 0h4v4h-4V3zM3 8h4v4H3V8zm5 0h4v4H8V8zm5 0h4v4h-4V8zM3 13h4v4H3v-4zm5 0h4v4H8v-4zm5 0h4v4h-4v-4z"/>
+                    </svg>
                     Grid
                 </button>
                 
                 <button 
                 @click="activeTab = 'list'"
                 :class="activeTab === 'list' ? 'bg-btncolor text-white shadown' : 'text-btncolor'"
-                class="w-1/2 tab-button h-9 hover:bg-btncolor hover:text-white w-[80px] text-xs text-btncolor font-semibold rounded-[3px] p-1" data-tab="list">List</button>
+                class="flex items-center justify-center gap-1 w-1/2 tab-button h-9 hover:bg-btncolor hover:text-white w-[80px] text-xs text-btncolor font-medium rounded-[3px] p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                    <path d="M4 6h12v2H4V6zm0 4h12v2H4v-2zm0 4h12v2H4v-2z"/>
+                </svg>
+                List
+                </button>
             </div>
             <button onclick="toggleModal('upload-modal')" class="col-start-5 col-span-1 bg-btncolor h-9 text-xs text-white border rounded-[3px] p-1">&#43; Add New</button>
             <div class="col-span-2 relative">
@@ -52,3 +60,6 @@
                 </button>
             </div>
 </div>
+
+
+

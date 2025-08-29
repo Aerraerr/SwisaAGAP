@@ -39,9 +39,9 @@
                         </div>
                         <div class="hidden xl:flex flex-col text-sm text-customIT font-medium m-14 gap-1">
                             <button class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">QR Code</button>
-                            <button onclick="openModal('addStockModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Edit Info</button>
-                            <button onclick="openModal('editGrantModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Generate Report</button>
-                            <button onclick="openModal('deleteGrantModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">End Program</button>
+                            <button class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Edit Info</button>
+                            <button class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Generate Report</button>
+                            <button class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">End Program</button>
                         </div>
                         <div class="block xl:hidden flex justify-end" x-data="{ open: false }">
                             <!-- Main trigger button -->
@@ -72,7 +72,7 @@
             <!-- table -->
             <div class="col-start-1 col-span-8 bg-white shadow-lg p-4 rounded-md mt-2 overflow-auto">
                 <div class="text-customIT text-lg flex justify-between gap-2 mb-2">
-                    <h1 class="font-bold mr-40">Request Summary Table</h1>
+                    <h1 class="font-bold mr-40">Program Attendees</h1>
                 </div>
                 <div class="overflow-auto" style="max-height: 90vh;">
                     <table class="min-w-full border-spacing-y-1">
@@ -202,11 +202,15 @@
                 </div>
             </div>
 
-            <div class="col-start-9 col-span-4 ">
-                <div class="flex flex-col items-center bg-white shadow-lg p-10 h-1/2 rounded-md mt-2 text-center overflow-auto">
-                    <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
-                    class="w-20 h-20 rounded-full shadow-md object-cover" />
-                    <p class="text-2xl text-gray-300 font-semibold">Select User to View</p>
+            <div class="col-start-9 col-span-4 grid grid-rows-">
+                <div class="flex flex-col bg-white shadow-lg p-10 rounded-md mt-2 overflow-auto">
+                    <h2 class="text-2xl text-customIT font-semibold">Program Description</h2>
+                    <p class="text-left text-sm text-gray-500 font-light">
+                        This comprehensive training program is designed to equip farmers with the latest knowledge and practical skills in crop management.
+                        The curriculum covers key areas from advanced land preparation techniques to post-harvest technology. Participants will learn about 
+                        integrated pest management (IPM) strategies to reduce chemical use, and effective methods for ensuring crop quality and minimizing 
+                        post-harvest losses. The program combines theoretical knowledge with hands-on field sessions, allowing participants to apply what they learn in a real-world setting.
+                    </p>
                 </div>
                 
                 <div class="bg-white shadow-lg p-4 h-auto rounded-md mt-2 overflow-auto">

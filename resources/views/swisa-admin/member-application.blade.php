@@ -1,9 +1,10 @@
 @extends('layouts.app')
 @section('content')
-<body class="bg-mainbg px-2">
+<div class="p-4">
+    <div class="bg-mainbg px-2">
     <div class="text-customIT text-2xl flex justify-between items-center mb-4">
         <h1 class="font-bold">Member Application Management</h1>
-        <h1>Monday, 00 Month 2025</h1>
+            @include('components.UserTab')
     </div>
 
     <div class="grid grid-cols-12 gap-1 md:gap-2">
@@ -215,5 +216,6 @@
         </div>
         
     </div>
-</body>
+</div>
+</div>
 @endsection

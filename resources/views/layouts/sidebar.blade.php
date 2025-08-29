@@ -51,17 +51,11 @@
         </div>
 
         <!-- Initiatives & Events -->
-        <div class="menu-item dropdown-toggle {{ request()->routeIs('training-workshop*') ? 'active open' : '' }}"
-             onclick="toggleSidebarDropdown(this)">
-            <i class="material-icons">school</i>
-            <span class="menu-text">Initiatives & Events</span>
-            <i class="material-icons dropdown-icon">expand_more</i>
-        </div>
-        <div class="submenu {{ request()->routeIs('training-workshop*') ? 'show' : '' }}">
-            <a class="submenu-item {{ request()->routeIs('training-workshop') ? 'active' : '' }}"
-                href="{{ route('training-workshop') }}">Schedule</a>
-            <a class="submenu-item" href="#">Past Training</a>
-        </div>
+        <a class="menu-item {{ request()->routeIs('training-workshop') ? 'active' : '' }}" 
+           href="{{ route('training-workshop') }}">
+           <i class="material-icons">school</i>
+           <span class="menu-text">Initiatives & Events</span>
+        </a>
 
         <!-- Announcements -->
         <a class="menu-item {{ request()->routeIs('announcements') ? 'active' : '' }}" 

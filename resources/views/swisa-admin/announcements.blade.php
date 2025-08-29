@@ -77,34 +77,41 @@
             <!-- Announcement List (Right) -->
             <div class="md:col-span-2">
                 <!-- Filters & Search -->
-                <div class="flex flex-col sm:flex-row mb-4 gap-2 items-center">
-                    <div class="relative flex-grow w-full sm:w-auto">
-                        <input type="text" placeholder="Search by Title, Audience or Status" class="w-full bg-white text-xs text-gray-700 pl-3 pr-8 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-customIT focus:border-transparent">
-                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <circle cx="11" cy="11" r="8"/>
-                                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                                </svg>
-                        </span>
-                    </div>
-
+                <div class="w-full flex flex-col sm:flex-row mb-4 gap-2 sm:items-center">
+                    <!-- Dropdowns -->
                     <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                        <select class="w-full sm:w-auto pl-3 pr-8 py-2 text-xs border rounded-md focus:ring-2 focus:ring-customIT focus:border-transparent">
+                        <!-- Status -->
+                        <select class="w-full sm:w-auto min-w-[150px] pl-3 pr-8 py-2 text-xs border rounded-md focus:ring-2 focus:ring-customIT focus:border-transparent">
                             <option>All Status</option>
                             <option>Published</option>
                             <option>Draft</option>
                             <option>Archived</option>
                         </select>
 
-                        <select class="w-full sm:w-auto pl-3 pr-8 py-2 text-xs border rounded-md focus:ring-2 focus:ring-customIT focus:border-transparent">
+                        <!-- Audience -->
+                        <select class="w-full sm:w-auto min-w-[150px] pl-3 pr-8 py-2 text-xs border rounded-md focus:ring-2 focus:ring-customIT focus:border-transparent">
                             <option>All Audience</option>
                             <option>Farmers</option>
                             <option>Staff</option>
                             <option>All members</option>
                         </select>
                     </div>
-                </div>
 
+                    <!-- Search Box -->
+                    <div class="flex w-full sm:w-full items-center shadow-md rounded overflow-hidden">
+                        <input 
+                            type="text" 
+                            placeholder="Search here" 
+                            class="flex-1 h-9 bg-white text-xs text-gray-700 px-3 focus:outline-none"
+                        >
+                        <button class="bg-btncolor text-white p-2 hover:bg-customIT transition duration-300 ease-in-out h-9 w-9 flex items-center justify-center">
+                            <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.35-1.42 1.42-5.35-5.35zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
                 <!-- Example Pinned Announcement -->
                 <div class="bg-green-50 border-l-4 border-green-500 rounded-md p-4 mb-4 shadow-sm">
                     <div class="flex items-center justify-between">

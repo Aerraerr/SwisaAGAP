@@ -1,34 +1,42 @@
 @props(['status' => 'active', 'name', 'role', 'memberId', 'registered'])
 
 @php
-    $statusColor = $status === 'active' ? 'text-customIT' : 'text-red-600';
+    $statusColor = $status === 'active' ? 'text-green-600' : 'text-red-600';
 @endphp
 
-<div class="bg-white p-6 rounded-md shadow-xl flex flex-col space-y-2">
-    <div class="flex items-center space-x-4">
+<div class="w-full max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl bg-white p-4 sm:p-6 rounded-xl shadow-lg flex flex-col space-y-6">
+    <!-- Top Section -->
+    <div class="flex flex-col sm:flex-row items-center sm:items-start sm:space-x-5 space-y-4 sm:space-y-0">
+        <!-- Profile Image -->
         <div>
             <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
-             class="w-16 h-16 rounded-full shadow-md object-cover" />
+                class="w-20 h-20 sm:w-16 sm:h-16 rounded-full shadow-md object-cover" />
         </div>
-        <div class="flex-grow">
-            <div class="flex items-center justify-between">
+
+        <!-- Name, Status, Role -->
+        <div class="flex-grow text-center sm:text-left">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <h3 class="text-lg font-bold text-customIT break-words">{{ $name }}</h3>
                 <span class="text-sm font-bold {{ $statusColor }}">{{ ucfirst($status) }}</span>
             </div>
-            <p class="text-xs text-gray-600">{{ $role }}</p>
-            <p class="text-xs text-gray-600">Member: {{ $memberId }}</p>
+            <p class="text-xs sm:text-sm text-gray-600">{{ $role }}</p>
+            <p class="text-xs sm:text-sm text-gray-600">Member: {{ $memberId }}</p>
         </div>
     </div>
-    
-    <div class="flex justify-between ml-20 text-xs text-gray-600">
+
+    <!-- Registered Date -->
+    <div class="text-center sm:text-left text-xs sm:text-sm text-gray-600">
         <span>Registered: {{ $registered }}</span>
     </div>
 
-    <div class="flex justify-between space-x-2">
-        <a href="{{ route('view-profile') }}" class="flex-1 p-2 text-xs text-center font-medium text-customIT bg-snbg rounded-md hover:bg-gray-100 transition">
+    <!-- Buttons -->
+    <div class="flex flex-col sm:flex-row justify-between gap-2">
+        <a href="{{ route('view-profile') }}" 
+           class="flex-1 p-2 text-xs sm:text-sm text-center font-medium text-customIT bg-snbg rounded-md hover:bg-gray-100 transition">
             View Profile
         </a>
-        <a href="#" class="flex-1 p-2 text-xs text-center font-medium text-white bg-btncolor rounded-md hover:bg-green-700 transition">
+        <a href="#" 
+           class="flex-1 p-2 text-xs sm:text-sm text-center font-medium text-white bg-btncolor rounded-md hover:bg-green-700 transition">
             View Applications
         </a>
     </div>

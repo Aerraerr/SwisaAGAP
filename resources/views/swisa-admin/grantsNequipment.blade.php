@@ -1,9 +1,53 @@
 @extends('layouts.app')
 @section('content')
 <div class="bg-mainbg px-2">
-    <div class="text-customIT text-2xl flex justify-between items-center mb-4">
-        <h1 class="font-bold">Available Grants & Equipments</h1>
-        <h1>Monday, 00 Month 2025</h1>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
+        <div class="text-customIT flex flex-col">
+            <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Initiatives and Events</h2>
+        </div>
+        @include('components.UserTab')
+    </div>
+
+    <!-- Top Stats + Charts -->
+    <div class="grid grid-cols-12 gap-2 mb-3">
+        <!-- Stats Cards -->
+        <div class="flex flex-col gap-2 col-span-3">
+            <div class="bg-white shadow rounded-lg p-4 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-semibold text-gray-600">Total Session</p>
+                    <h3 class="text-xl font-bold text-customIT">123</h3>
+                </div>
+            </div>
+            <div class="bg-white shadow rounded-lg p-4 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-semibold text-gray-600">Total Participants</p>
+                    <h3 class="text-xl font-bold text-customIT">123</h3>
+                </div>
+            </div>
+            <div class="bg-white shadow rounded-lg p-4 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-semibold text-gray-600">Upcoming</p>
+                    <h3 class="text-xl font-bold text-customIT">123</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-start-4 col-span-5">
+            <div class="bg-white shadow h-full rounded-lg p-4 flex items-center justify-between">
+                <p class="item-center start-center">line graph</p>
+            </div>
+        </div>
+        <div class="col-start-9 col-span-2">
+            <div class="bg-white shadow h-full rounded-lg p-4 flex items-center justify-between">
+                <p class="item-center start-center">Grants Allocated</p>
+                pie chart
+            </div>
+        </div>
+        <div class="col-start-11 col-span-2">
+            <div class="bg-white shadow h-full rounded-lg p-4 flex items-center justify-between">
+                <p class="item-center start-center">Status Request</p>
+                pie chart
+            </div>
+        </div>
     </div>
 
     <div x-data="{ activeTab: 'grid' }" class="mt-4">
