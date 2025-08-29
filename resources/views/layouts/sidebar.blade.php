@@ -68,14 +68,23 @@
             <span class="text-sm ml-5">MANAGEMENT SECTION</span>
         </div>
 
-        <a class="menu-item" href="{{ route('grant-request') }}"><i class="material-icons">folder</i><span class="menu-text">Requests</span></a>
-        <a class="menu-item" href="{{ route('member-application') }}"><i class="material-icons">app_registration</i><span class="menu-text">Applications</span></a>
+        <a class="menu-item {{ request()->routeIs('grant-request') ? 'active' : '' }}" href="{{ route('grant-request') }}"><i class="material-icons">folder</i><span class="menu-text">Requests</span></a>
+        <a class="menu-item {{ request()->routeIs('member-application') ? 'active' : '' }}" href="{{ route('member-application') }}"><i class="material-icons">app_registration</i><span class="menu-text">Applications</span></a>
         <a class="menu-item">
             <i class="material-icons">email</i>
             <span class="menu-text">Messages</span>
             <span class="material-icons ml-[-10px]" style="color:red; font-size: 14px;">fiber_manual_record</span>
         </a>
-        <a class="menu-item"><i class="material-icons">settings</i><span class="menu-text">Settings</span></a>
+        <a class="menu-item {{ request()->routeIs('logs') ? 'active' : '' }}" 
+        href="{{ route('logs') }}">
+            <i class="material-icons ">history</i>
+            <span class="menu-text">Activity Logs</span>
+        </a>
+
+
+        <a class="menu-item {{ request()->routeIs('settings') ? 'active' : '' }}"
+        href="{{ route('settings') }}"><i class="material-icons">settings</i><span class="menu-text">Settings</span>
+        </a>
     </div>
 
     <!-- Fixed User Section -->

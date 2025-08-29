@@ -45,6 +45,18 @@ Route::get('/view-profile', function () {
     return view('swisa-admin.view-profile');
 })->middleware(['auth', 'verified'])->name('view-profile');
 
+Route::get('/settings', function () {
+    return view('swisa-admin.settings');
+})->middleware(['auth', 'verified'])->name('settings');
+
+Route::get('/logs', function () {
+    return view('swisa-admin.logs');
+})->middleware(['auth', 'verified'])->name('logs');
+
+
+
+
+
 Route::get('/view-grant', function () {
     return view('swisa-admin.view-grant');
 })->middleware(['auth', 'verified'])->name('view-grant');
