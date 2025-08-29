@@ -51,16 +51,11 @@
         </div>
 
         <!-- Initiatives & Events -->
-        <div class="menu-item dropdown-toggle"
-             onclick="toggleSidebarDropdown(this)">
-            <i class="material-icons">school</i>
-            <span class="menu-text">Initiatives & Events</span>
-            <i class="material-icons dropdown-icon">expand_more</i>
-        </div>
-        <div class="submenu">
-            <a class="submenu-item">Schedule</a>
-            <a class="submenu-item" href="#">Past Training</a>
-        </div>
+        <a class="menu-item {{ request()->routeIs('initandevents') ? 'active' : '' }}" 
+           href="{{ route('initandevents') }}">
+           <i class="material-icons">school</i>
+           <span class="menu-text">Initiatives & Events</span>
+        </a>
 
         <!-- Announcements -->
         <a class="menu-item {{ request()->routeIs('announcements') ? 'active' : '' }}" 
