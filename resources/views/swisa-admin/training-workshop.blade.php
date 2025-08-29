@@ -1,4 +1,4 @@
-@extends('layouts.sidebar')
+@extends('layouts.app')
 @section('content')
 <body class="bg-mainbg px-2">
     <div class="text-customIT text-2xl flex justify-between items-center mb-4">

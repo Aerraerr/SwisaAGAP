@@ -150,7 +150,7 @@
             </div>
 
             <!-- Footer -->
-            <div class="bg-gray-50 py-3 px-6 text-center text-sm text-gray-500 page-content page-delay-3">
+            <div class="bg-green-50 py-3 px-6 text-center text-sm text-gray-500 page-content page-delay-3">
                 Don’t have an account?
                 @if (Route::has('register'))
                     <a href="{{ route('register') }}" class="text-[#2f8f4e] font-semibold hover:underline">Sign up</a>
@@ -158,6 +158,8 @@
             </div>
         </div>
     </div>
+    div
+
 
 <script>
 function togglePassword() {

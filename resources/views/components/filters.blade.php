@@ -1,6 +1,23 @@
-<div class="flex grid grid-cols-12 mb-2 gap-1">
-            <button onclick="toggleModal('upload-modal')" class="col-span-1 active:bg-btncolor h-9 active:text-white active:shadow hover:bg-btncolor hover:text-white w-[80px] text-xs text-btncolor font-semibold rounded-[3px] p-1">Grid</button>
-            <button onclick="toggleModal('upload-modal')" class="col-span-1 active:bg-btncolor h-9 active:text-white active:shadow hover:bg-btncolor hover:text-white w-[80px] text-xs text-btncolor font-semibold rounded-[3px] p-1">List</button>
+<div class="flex grid grid-cols-12 mb-4 gap-1">
+            <div class="tab-buttons flex col-span-2 gap-1">
+                <button 
+                    x-show="activeTab === 'list'"
+                    class=" active:bg-btncolor h-9 active:text-white active:shadow hover:bg-btncolor hover:text-white w-[80px] text-xs text-btncolor font-semibold rounded-[3px] p-1">
+                    Export
+                </button>
+
+                <button 
+                    @click="activeTab = 'grid'"
+                    :class="activeTab === 'grid' ? 'bg-btncolor text-white shadow' : 'text-btncolor'" 
+                    class="w-1/2 tab-button h-9 hover:bg-btncolor hover:text-white w-[80px] text-xs text-btncolor font-semibold rounded-[3px] p-1">
+                    Grid
+                </button>
+                
+                <button 
+                @click="activeTab = 'list'"
+                :class="activeTab === 'list' ? 'bg-btncolor text-white shadown' : 'text-btncolor'"
+                class="w-1/2 tab-button h-9 hover:bg-btncolor hover:text-white w-[80px] text-xs text-btncolor font-semibold rounded-[3px] p-1" data-tab="list">List</button>
+            </div>
             <button onclick="toggleModal('upload-modal')" class="col-start-5 col-span-1 bg-btncolor h-9 text-xs text-white border rounded-[3px] p-1">&#43; Add New</button>
             <div class="col-span-2 relative">
                 <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor border rounded-[3px]">

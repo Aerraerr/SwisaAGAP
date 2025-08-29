@@ -1,4 +1,4 @@
-@extends('layouts.sidebar')
+@extends('layouts.app')
 
 @section('content')
     <body class="bg-mainbg px-2">
@@ -230,7 +230,7 @@
                     </table>
                 </div>
             </div>
-
+            <!-- right side pane -->
             <div class="col-start-9 col-span-4 ">
                 <div class="flex flex-col items-center bg-white shadow-lg p-10 h-1/2 rounded-md mt-2 text-center overflow-auto">
                     <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
