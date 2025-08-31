@@ -1,4 +1,4 @@
-<div id="addStockModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-50 h-full w-full flex items-center justify-center">
+<div id="addStockModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-20 h-full w-full flex items-center justify-center">
     <div class="relative w-1/2 max-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
         <!-- Modal Header -->
         <div class="flex items-center justify-between pb-2">

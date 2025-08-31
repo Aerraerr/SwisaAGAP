@@ -81,80 +81,28 @@
                 <!-- Main Grid Layout -->
             <div x-show="activeTab === 'grid'" class="grid gap-2 grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 w-full">
                 {{-- Active Members --}}
-                <x-cards.member-card
-                    status="active"
-                    name="Full Name"
-                    role="General Producer"
-                    memberId="123-456"
-                    registered="1/01/2023"
-                    meetings="Meetings: 10/10"
-                />
-                <x-cards.member-card
-                    status="active"
-                    name="Full Name"
-                    role="General Producer"
-                    memberId="123-456"
-                    registered="1/01/2023"
-                    meetings="Meetings: 10/10"
-                />
-                <x-cards.member-card
-                    status="active"
-                    name="Full Name"
-                    role="General Producer"
-                    memberId="123-456"
-                    registered="1/01/2023"
-                    meetings="Meetings: 10/10"
-                />
-                <x-cards.member-card
-                    status="active"
-                    name="Full Name"
-                    role="General Producer"
-                    memberId="123-456"
-                    registered="1/01/2023"
-                    meetings="Meetings: 10/10"
-                />
-                <x-cards.member-card
-                    status="active"
-                    name="Full Name"
-                    role="General Producer"
-                    memberId="123-456"
-                    registered="1/01/2023"
-                    meetings="Meetings: 10/10"
-                />
-                <x-cards.member-card
-                    status="active"
-                    name="Full Name"
-                    role="General Producer"
-                    memberId="123-456"
-                    registered="1/01/2023"
-                    meetings="Meetings: 10/10"
-                />
-
+                @for ($i = 1; $i <= 3; $i++)
+                    <x-cards.member-card
+                        status="active"
+                        name="Full Name"
+                        role="General Producer"
+                        memberId="123-456"
+                        registered="1/01/2023"
+                        meetings="Meetings: 10/10"
+                    />
+                @endfor
+            
                 {{-- Inactive Members --}}
-                <x-cards.member-card
-                    status="inactive"
-                    name="Full Name"
-                    role="General Producer"
-                    memberId="123-456"
-                    registered="1/01/2023"
-                    meetings="Meetings: 10/10"
-                />
-                <x-cards.member-card
-                    status="inactive"
-                    name="Full Name"
-                    role="General Producer"
-                    memberId="123-456"
-                    registered="1/01/2023"
-                    meetings="Meetings: 10/10"
-                />
-                <x-cards.member-card
-                    status="inactive"
-                    name="Full Name"
-                    role="General Producer"
-                    memberId="123-456"
-                    registered="1/01/2023"
-                    meetings="Meetings: 10/10"
-                />
+                @for ($i =1; $i <= 3; $i++)
+                    <x-cards.member-card
+                        status="inactive"
+                        name="Full Name"
+                        role="General Producer"
+                        memberId="123-456"
+                        registered="1/01/2023"
+                        meetings="Meetings: 10/10"
+                    />
+                @endfor
             </div>
             <!-- for table/list front -->
             <div x-show="activeTab === 'list'" class="tab-pane">
@@ -207,7 +155,7 @@
                                                     <a href="{{ route('view-profile') }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
                                                 </li>
                                                 <li>
-                                                    <a href="#" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Application</a>
+                                                    <a onclick="openModal('viewApplicationModal')" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Application</a>
                                                 </li>
                                                 <li>
                                                     <a href="#" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-red-600 font-medium">Delete Member</a>
@@ -225,5 +173,6 @@
             </div>
         </div> 
     </div>
+    @include('components.modals.view-applications')
 </div>
 @endsection
