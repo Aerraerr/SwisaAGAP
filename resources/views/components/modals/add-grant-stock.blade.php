@@ -15,50 +15,57 @@
         <!-- Modal Body: Activity Log Entries -->
         <div class="mt-4 overflow-y-auto mr-2" style="max-height: 70vh;">
             <!-- Log Group 1 -->
-            <div class="grid grid-cols-2 gap-4 relative">
+            <div class="grid grid-cols-3 gap-4 relative">
                 <div class="col-span-1">
                     <div class="bg-gray-200 rounded-md h-44 flex items-center justify-center border-b border-gray-300">
                         <span class="text-white text-md">IMAGE</span>
                     </div>
                 </div>
-                <div>
+                <div class="col-start-2">
                     <p class="text-2xl font-medium text-customIT mb-2">Grant Name</p>
-                    <p class="text-lg font-medium text-customIT mb-2">Requirements</p>
-                    <div class="flex">
-                        <input type="checkbox" class="h-4 w-4 text-customIT rounded-sm border-customIT mr-4">
-                        <p class="text-sm font-light text-customIT mb-2">Basic Requirements</p>
+                    <p class="text-lg font-medium text-customIT mb-2">Basic Requirements</p>
+                    <div class="flex justify-between">
+                        <p class="text-sm font-light text-customIT mb-2">Requirement 1</p>
                     </div>
-                    <div class="flex">
-                        <input type="checkbox" class="h-4 w-4 text-customIT rounded-sm border-customIT mr-4">
-                        <p class="text-sm font-light text-customIT mb-2">Additional Requirements</p>
+                    <div class="flex justify-between">
+                        <p class="text-sm font-light text-customIT mb-2">Requirement 2</p>
+                    </div>
+                </div>
+                <div class="col-start-3">
+                    <p class="text-lg font-medium text-customIT mt-10 mb-2">Additional Requirements</p>
+                    <div class="flex justify-between">
+                        <p class="text-sm font-light text-customIT mb-2">Requirement 1</p>
+                    </div>
+                    <div class="flex justify-between">
+                        <p class="text-sm font-light text-customIT mb-2">Requirement 1</p>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 relative p-4">
+            <div class="grid grid-cols-2 gap-8 relative p-4">
                 <h2 class="text-lg font-medium text-customIT my-4">Item Summary</h2>
                 <div class="col-start-1">
                     <div class="flex justify-between items-center">
                         <p class="text-sm font-medium text-customIT ">ITEM ID</p>
-                        <span class="text-sm font-extralight text-customIT">112233445566</span>
+                        <span class="text-sm font-extralight text-gray-700">112233445566</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <p class="text-sm font-medium text-customIT ">Type</p>
-                        <span class="text-sm font-extralight text-customIT">Type</span>
+                        <span class="text-sm font-extralight text-gray-700">Type</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <p class="text-sm font-medium text-customIT ">Category</p>
-                        <span class="text-sm font-extralight text-customIT">Category</span>
+                        <span class="text-sm font-extralight text-gray-700">Category</span>
                     </div>
                 </div>
                 <div>
                     <div class="flex justify-between items-center">
                         <p class="text-sm font-medium text-customIT ">Last Updated</p>
-                        <span class="text-sm font-extralight text-customIT">Jan 25, 2025</span>
+                        <span class="text-sm font-extralight text-gray-700">Jan 25, 2025</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <p class="text-sm font-medium text-customIT ">Program Source</p>
-                        <span class="text-sm font-extralight text-customIT">CIF - Confidential Funds</span>
+                        <span class="text-sm font-extralight text-gray-700">CIF - Confidential Funds</span>
                     </div>
                 </div>
             </div>
@@ -69,11 +76,11 @@
                     <div>
                         <div class="flex justify-between items-center">
                             <p class="text-sm font-medium text-customIT ">Start Date</p>
-                            <span class="text-sm font-extralight text-customIT">Jan 25, 2025</span>
+                            <span class="text-sm font-extralight text-gray-700">Jan 25, 2025</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <p class="text-sm font-medium text-customIT ">End Date</p>
-                            <span class="text-sm font-extralight text-customIT">July 25, 2025</span>
+                            <p class="text-sm font-medium text-gray-700 ">End Date</p>
+                            <span class="text-sm font-extralight text-gray-700">July 25, 2025</span>
                         </div>
                     </div>
                 </div>
@@ -81,7 +88,7 @@
             <div class="grid grid-cols-2 relative gap-4 p-4">
                 <div class="col-start-1">
                     <h2 class="text-lg font-medium text-customIT mt-4">Stock Quantity to Add</h2>
-                    <div class="flex justify-between gap-2">
+                    <div class="flex justify-between text-gray-700 gap-2">
                         <button class="flex-grow border border-btncolor h-9 rounded-lg text-xs shadow-lg hover:bg-btncolor hover:text-white">+5</button>
                         <button class="flex-grow border border-btncolor h-9 rounded-lg text-xs shadow-lg hover:bg-btncolor hover:text-white">+10</button>
                         <button class="flex-grow border border-btncolor h-9 rounded-lg text-xs shadow-lg hover:bg-btncolor hover:text-white">+20</button>
@@ -92,7 +99,7 @@
                 <div class="col-start-2 flex mt-12">
                         <div class="bg-customIT rounded-full h-5 w-5 mr-2"></div>
                         <p class="text-sm font-medium text-customIT mr-2">Current Stock:</p>
-                        <p class="text-sm font-medium text-customIT ">12 unit/s</p>
+                        <p class="text-sm font-medium text-gray-700">12 unit/s</p>
                 </div>
             </div>
             

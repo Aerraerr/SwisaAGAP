@@ -88,7 +88,7 @@
                 </div>
             </div>
             <!-- table -->
-            <div class="col-start-1 col-span-8 bg-white shadow-lg p-4 rounded-md mt-2 overflow-auto">
+            <div class="col-start-1 col-span-12 lg:col-span-8 bg-white shadow-lg p-4 rounded-md mt-2 overflow-auto">
                 <div class="text-customIT text-lg flex justify-between gap-2 mb-2">
                     <h1 class="font-bold mr-40">Request Summary Table</h1>
                 </div>
@@ -231,16 +231,16 @@
                 </div>
             </div>
             <!-- right side pane -->
-            <div class="col-start-9 col-span-4 ">
-                <div class="flex flex-col items-center bg-white shadow-lg p-10 h-1/2 rounded-md mt-2 text-center overflow-auto">
+            <div class="col-span-12 lg:col-start-9 lg:col-span-4 ">
+                <div class="flex flex-col items-center bg-white shadow-lg p-10 h-3/4 rounded-md mt-2 text-center overflow-auto">
                     <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
                     class="w-20 h-20 rounded-full shadow-md object-cover" />
                     <p class="text-2xl text-gray-300 font-semibold">Select User to View</p>
                 </div>
                 
-                <div class="bg-white shadow-lg p-4 h-auto rounded-md mt-2 overflow-auto">
+                <div class="bg-white shadow-lg p-3 h-auto rounded-md mt-2 overflow-auto">
                     <p class="text-lg text-gray-400 font-medium text-center">View All list for this Grant?</p>
-                    <div class="px-10 py-3">
+                    <div class="px-10 py-2">
                         <button class="w-full px-4 py-2 bg-btncolor text-white rounded-md hover:bg-opacity-80">
                             Close
                         </button>
