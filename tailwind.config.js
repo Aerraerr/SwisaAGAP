@@ -21,10 +21,11 @@ export default {
                 btncolor: '#4C956C',
                 snbg: '#E8F6EF',
                 iconsClr: '#68B2AB',
-                bsctxt: '555555',
+                bsctxt: '#555555',
                 approved: '#4C956C',
                 rejected: '#F15B66',
                 pending: '#E8CC5E',
+                neutral: '#B2D6D3',
                 mainbg: "#F2F5F3",
             },
             borderColor: {

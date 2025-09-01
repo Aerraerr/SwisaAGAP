@@ -88,12 +88,12 @@
                 </div>
             </div>
             <!-- table -->
-            <div class="col-start-1 col-span-12 lg:col-span-8 bg-white shadow-lg p-4 rounded-md mt-2 overflow-auto">
-                <div class="text-customIT text-lg flex justify-between gap-2 mb-2">
+            <div class="col-start-1 col-span-12 lg:col-span-8 bg-white shadow-lg px-4 rounded-md mt-2 relative overflow-auto">
+                <div class="text-customIT text-lg flex justify-between gap-2 my-4">
                     <h1 class="font-bold mr-40">Request Summary Table</h1>
                 </div>
-                <div class="overflow-auto" style="max-height: 90vh;">
-                    <table class="min-w-full border-spacing-y-1">
+                <div class="overflow-auto" style="max-height: 86vh;">
+                    <table class="min-w-full overflow-auto border-spacing-y-1">
                     <thead class="bg-snbg border border-gray-100">
                         <tr class="text-customIT text-left ">
                             <th class="px-4 py-3 text-xs font-medium">NAME</th>
@@ -202,7 +202,7 @@
                                 id: '112233445566', 
                                 type: 'Member Type', 
                                 date: '25 Aug 2025', 
-                                status: 'Rejected' 
+                                status: 'Rejected', 
                                 phone: '09090909090',
                                 email: 'ajm@gmail.com'
                             }">
@@ -241,14 +241,14 @@
                                 </div>
                             </td>
                         </tr>
-                        @for($i = 1; $i < 7; $i++)
+                        @for($i = 1; $i < 14; $i++)
                             <tr class="border border-gray-300 hover:bg-gray-100 cursor-pointer"
                                 @click="selectedUser = { 
                                 name: 'Aeron Jead Marquez', 
                                 id: '112233445566', 
                                 type: 'Member Type', 
                                 date: '25 Aug 2025', 
-                                status: 'Pending'
+                                status: 'Pending',
                                 phone: '09090909090',
                                 email: 'ajm@gmail.com' 
                                 }">
@@ -291,6 +291,7 @@
                     </tbody>
                     </table>
                 </div>
+                @include('components.pagination')
             </div>
             <!-- right side pane -->
             <div class="col-span-12 lg:col-start-9 lg:col-span-4 ">
@@ -323,7 +324,7 @@
                                 <p class="text-[30px] text-customIT font-bold" x-text="selectedUser.name"></p>
                                 <p class="text-btncolor">Registered Member</p>
                             </div>
-                            <div class="text-left m-6">
+                            <div class="text-left mx-6 mt-6">
                                 <p class="text-md text-gray-600 font-semibold">ID NO: <span x-text="selectedUser.id" class="text-sm ml-4 font-extralight text-bsctxt"></span></p>
                                 <p class="text-md text-gray-600 font-semibold">MEMBER TYPE: <span x-text="selectedUser.type" class="text-sm ml-4 font-extralight text-bsctxt"></span></p>
                                 <p class="ttext-md text-gray-600 font-semibold">DOB: <span x-text="selectedUser.date" class="text-sm ml-4 font-extralight text-bsctxt"></span></p>
@@ -341,36 +342,99 @@
                     </template>
                 </div>
                 
-                <div class="bg-white shadow-lg p-3 h-auto rounded-md mt-2 overflow-auto">
-                    <p class="text-lg text-gray-400 font-medium text-center">Feedback Insghts</p>
-                    <div class="grid grid-cols-2">
-                        <div class="col-span-1">
-                            {{--details--}}
+                <div class="bg-white shadow-lg p-8 h-auto rounded-md mt-2 overflow-auto">
+                    <p class="text-xl text-customIT font-semibold">Feedback Insghts</p>
+                    <div class="grid grid-cols-2 mb-6">
+                        <div class="col-span-1 mb-2">
+                            <div class="my-6">
+                                <p class="text-md text-customIT font-semibold">4.5/5<span class="text-md text-bsctxt ml-2 font-medium ">Assessed</span></p>
+                                <p class="text-md text-customIT font-semibold">12<span class="text-md text-bsctxt ml-2 font-medium">Reviews</span></p>
+                            </div>
+                            <div class="flex text-btncolor items-center gap-2 md:gap-1">
+                                <p class="w-6 h-6 md:w-4 md:h-4 rounded-full bg-approved shadow-lg"></p> 
+                                <p class="font-medium">Positive</p>
+                            </div>
+                            <div class="flex text-iconsClr items-center gap-2 md:gap-1">
+                                <p class="w-6 h-6 md:w-4 md:h-4 rounded-full bg-neutral shadow-lg"></p>
+                                <p class="font-medium">Neutral</p>
+                            </div>
+                            <div class="flex text-iconsClr items-center gap-2 md:gap-1">
+                                <p class="w-6 h-6 md:w-4 md:h-4 rounded-full bg-rejected shadow-lg"></p>
+                                <p class="font-medium">Negative</p>
+                            </div>
                         </div>
 
                         <div class="cols-start-2">
-                           {{--Circle chart--}}
+                           <!-- Chart container on the right -->
+                            <div class="flex justify-center items-center h-44">
+                                <!-- Canvas element where the chart will be drawn -->
+                                <canvas id="feedbackChart"></canvas>
+                            </div>
                         </div>
                     </div>
-                    <div class="px-10 py-2">
-                        <button class="w-full px-4 py-2 bg-btncolor text-white rounded-md hover:bg-opacity-80">
+                    <div class="px-5 py-2">
+                        <p class="text-bsctxt font-medium mb-2">View all feedback for this Grant / Equipment?</p>
+                        <button class="w-full px-4 py-3 bg-btncolor text-white rounded-md hover:bg-opacity-80">
                             View All Feedback
                         </button>
                     </div>
                 </div>
 
-                <div class="bg-white shadow-lg p-3 h-auto rounded-md mt-2 overflow-auto">
+                <!--<div class="bg-white shadow-lg p-3 h-auto rounded-md mt-2 overflow-auto">
                     <p class="text-lg text-gray-400 font-medium text-center">View All list for this Grant?</p>
                     <div class="px-10 py-2">
-                        <button class="w-full px-4 py-2 bg-btncolor text-white rounded-md hover:bg-opacity-80">
+                        <button class="w-full px-4 py-3 bg-btncolor text-white rounded-md hover:bg-opacity-80">
                             Close
                         </button>
                     </div>
-                </div>
+                </div>-->
             </div>
         </div>
         @include('components.modals.edit-grant')
         @include('components.modals.add-grant-stock')
         @include('components.modals.delete-grant')
+        <script>
+            // Get the canvas element to render the chart on
+            const ctx = document.getElementById('feedbackChart');
+
+            // Define the data for the chart
+            const data = {
+                labels: ['Positive', 'Neutral', 'Negative'],
+                datasets: [{
+                    data: [65, 20, 15],
+                    backgroundColor: [
+                        '#4C956C', // Positive
+                        '#B2D6D3', // Neutral
+                        '#F15B66'  // Negative
+                    ],
+                    hoverOffset: 4,
+                    // Add border between slices to match the image
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            };
+
+            // Define the options for the chart
+            const options = {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '40%', // Creates the donut hole
+                plugins: {
+                    legend: {
+                        display: false // Hide the default Chart.js legend
+                    },
+                    tooltip: {
+                        enabled: false // Hide tooltips on hover
+                    }
+                }
+            };
+
+            // Create the new Chart.js instance
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: options
+            });
+        </script>
     </body>
 @endsection
