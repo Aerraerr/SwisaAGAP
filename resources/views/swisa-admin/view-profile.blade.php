@@ -1,4 +1,4 @@
-@extends('layouts.sidebar')
+@extends('layouts.app')
 
 @section('content')
     <body class="bg-mainbg">
@@ -25,8 +25,8 @@
             <div class="bg-white shadow  mt-2 p-3 rounded-md">
                 <div class="flex flex-col text-customIT font-medium items-center gap-2">
                     <button class="w-full py-2 px-3 border-[3px] border-btncolor rounded-md items-center shadow hover:bg-btncolor hover:text-white">Send message </button>
-                    <button class="w-full py-2 px-3 border-[3px] border-btncolor rounded-md items-center shadow hover:bg-btncolor hover:text-white">View All Application </button>
-                    <button class="w-full py-2 px-3 border-[3px] border-btncolor rounded-md items-center shadow hover:bg-btncolor hover:text-white">View Logs </button>
+                    <button onclick="openModal('viewApplicationModal')" class="w-full py-2 px-3 border-[3px] border-btncolor rounded-md items-center shadow hover:bg-btncolor hover:text-white">View All Application </button>
+                    <button onclick="openModal('activityLogsModal')" class="w-full py-2 px-3 border-[3px] border-btncolor rounded-md items-center shadow hover:bg-btncolor hover:text-white">View Logs </button>
                     <button class="w-full py-2 px-3 border-[3px] border-btncolor rounded-md items-center shadow hover:bg-btncolor hover:text-white">Edit Profile </button>
                 </div>
             </div>
@@ -100,13 +100,13 @@
                 </div>
             </div>
             <!--tab content lower middle part -->
-            <div class="bg-white shadow h-[350px] p-4 rounded-md">
+            <div class="bg-white shadow h-[350px] overflow-auto p-4 rounded-md">
                 <div class="text-customIT text-lg flex justify-between mb-2">
                     <h1 class="font-bold">Grant and Equipment History</h1>
                 </div>
                 <div class="overflow-auto">
                     <table class="min-w-full border-spacing-y-1">
-                    <thead class="bg-snbg border-y border-customIT">
+                    <thead class="bg-snbg border-y border-gray-300">
                         <tr class="text-customIT text-left ">
                             <th class="px-4 py-2 text-sm font-semibold">Request Type</th>
                             <th class="px-4 py-2 text-sm font-semibold">Date Submitted</th>
@@ -115,7 +115,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="border-b border-customIT">
+                        <tr class="border border-gray-300">
                             <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
                             <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
                             <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
@@ -123,7 +123,7 @@
                             </td>
                             <td class="px-4 py-2 text-sm text-green-600 font-medium"><button>Reason.txt</button></td>
                         </tr>
-                        <tr class="border-b border-customIT">
+                        <tr class="border border-gray-300">
                             <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
                             <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
                             <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
@@ -131,7 +131,7 @@
                             </td>
                             <td class="px-4 py-2 text-sm text-green-600 font-medium"><button>Reason.txt</button></td>
                         </tr>
-                        <tr class="border-b border-customIT">
+                        <tr class="border border-gray-300">
                             <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
                             <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
                             <td class="px-4 py-2 text-sm font-medium text-rejected flex items-center gap-1">
@@ -139,7 +139,39 @@
                             </td>
                             <td class="px-4 py-2 text-sm text-green-600 font-medium"><button>Reason.txt</button></td>
                         </tr>
-                        <tr class="border-b border-customIT">
+                        <tr class="border border-gray-300">
+                            <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
+                            <td class="px-4 py-2 text-sm font-medium text-pending flex items-center gap-1">
+                                Pending
+                            </td>
+                            <td class="px-4 py-2 text-sm text-green-600 font-medium"><button>Reason.txt</button></td>
+                        </tr>
+                        <tr class="border border-gray-300">
+                            <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
+                            <td class="px-4 py-2 text-sm font-medium text-pending flex items-center gap-1">
+                                Pending
+                            </td>
+                            <td class="px-4 py-2 text-sm text-green-600 font-medium"><button>Reason.txt</button></td>
+                        </tr>
+                        <tr class="border border-gray-300">
+                            <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
+                            <td class="px-4 py-2 text-sm font-medium text-pending flex items-center gap-1">
+                                Pending
+                            </td>
+                            <td class="px-4 py-2 text-sm text-green-600 font-medium"><button>Reason.txt</button></td>
+                        </tr>
+                        <tr class="border border-gray-300">
+                            <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
+                            <td class="px-4 py-2 text-sm font-medium text-pending flex items-center gap-1">
+                                Pending
+                            </td>
+                            <td class="px-4 py-2 text-sm text-green-600 font-medium"><button>Reason.txt</button></td>
+                        </tr>
+                        <tr class="border border-gray-300">
                             <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
                             <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
                             <td class="px-4 py-2 text-sm font-medium text-pending flex items-center gap-1">
@@ -199,6 +231,56 @@
                 </li>
                 <li class="flex justify-between items-center">
                     <div class="flex-1 min-w-0">
+                        <p class="text-xs text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
+                        <p class="text-[8px] text-gray-700">date uploaded: Jan 14, 2025</p>
+                    </div>
+                    <div class="flex gap-4 text-xs text-customIT font-medium">
+                        <button>View</button>
+                        <button>Download</button>
+                    </div>
+                </li>
+                <li class="flex justify-between items-center">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
+                        <p class="text-[8px] text-gray-700">date uploaded: Jan 14, 2025</p>
+                    </div>
+                    <div class="flex gap-4 text-xs text-customIT font-medium">
+                        <button>View</button>
+                        <button>Download</button>
+                    </div>
+                </li>
+                <li class="flex justify-between items-center">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
+                        <p class="text-[8px] text-gray-700">date uploaded: Jan 14, 2025</p>
+                    </div>
+                    <div class="flex gap-4 text-xs text-customIT font-medium">
+                        <button>View</button>
+                        <button>Download</button>
+                    </div>
+                </li>
+                <li class="flex justify-between items-center">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
+                        <p class="text-[8px] text-gray-700">date uploaded: Jan 14, 2025</p>
+                    </div>
+                    <div class="flex gap-4 text-xs text-customIT font-medium">
+                        <button>View</button>
+                        <button>Download</button>
+                    </div>
+                </li>
+                <li class="flex justify-between items-center">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
+                        <p class="text-[8px] text-gray-700">date uploaded: Jan 14, 2025</p>
+                    </div>
+                    <div class="flex gap-4 text-xs text-customIT font-medium">
+                        <button>View</button>
+                        <button>Download</button>
+                    </div>
+                </li>
+                <li class="flex justify-between items-center">
+                    <div class="flex-1 min-w-0">
                         <P class="text-xs text-gray-700 font-medium block w-28 truncate" title="Documents name 1 fit so long 123">Documents name 1 fit so long 123</P>
                         <p class="text-[8px] text-gray-700 ">date uploaded: Jan 14, 2025</p>
                     </div>
@@ -221,6 +303,9 @@
             </div>
         </div>
     </div>
+    @include('components.modals.grant-overview')
+    @include('components.modals.view-applications')
+    @include('components.modals.view-logs')
     </body>
     <script>
         const ctx = document.getElementById('programChart');

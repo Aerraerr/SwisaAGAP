@@ -53,6 +53,11 @@ Route::get('/logs', function () {
     return view('swisa-admin.logs');
 })->middleware(['auth', 'verified'])->name('logs');
 
+Route::get('/messages', function () {
+    return view('swisa-admin.messages');
+})->middleware(['auth', 'verified'])->name('messages');
+
+
 
 
 
@@ -60,6 +65,10 @@ Route::get('/logs', function () {
 Route::get('/view-grant', function () {
     return view('swisa-admin.view-grant');
 })->middleware(['auth', 'verified'])->name('view-grant');
+
+Route::get('/view-training', function () {
+    return view('swisa-admin.view-training');
+})->middleware(['auth', 'verified'])->name('view-training');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -8,14 +8,22 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 300px;
+            height: 200px; /* smaller height for mobile */
             background-color: white;
-            border-top-left-radius: 50% 250px;
-            border-top-right-radius: 50% 250px;
+            border-top-left-radius: 50% 150px;
+            border-top-right-radius: 50% 150px;
             z-index: 0;
         }
 
-        /* Keyframes */
+        @media (min-width: 640px) {
+            .curved-bg {
+                height: 300px; /* bigger height on larger screens */
+                border-top-left-radius: 50% 250px;
+                border-top-right-radius: 50% 250px;
+            }
+        }
+
+        /* Animations */
         @keyframes fadeSlideUp {
             0% { opacity: 0; transform: translateY(30px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -25,45 +33,31 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* Transition Classes */
-        .page-content {
-            animation: fadeSlideUp 0.8s ease-out forwards;
-        }
+        .page-content { animation: fadeSlideUp 0.8s ease-out forwards; }
+        .swisa-logo { animation: popUp 0.8s ease-out forwards; }
 
-        .swisa-logo {
-            animation: popUp 0.8s ease-out forwards;
-        }
-
-        input::placeholder {
-            color: #9CA3AF;
-            opacity: 1;
-        }
-
-        /* When input is not empty */
-        input.not-empty {
-            border-color: #2f8f4e !important;
-            box-shadow: 0 0 0 1px #2f8f4e;
-        }
+        input::placeholder { color: #9CA3AF; opacity: 1; }
+        input.not-empty { border-color: #2f8f4e !important; box-shadow: 0 0 0 1px #2f8f4e; }
     </style>
 
-    <div class="relative min-h-screen flex flex-col items-center justify-center bg-light-green p-6">
+    <div class="relative min-h-screen flex flex-col items-center justify-center bg-light-green p-4 sm:p-6">
         <!-- Curved background -->
         <div class="curved-bg"></div>
 
         <!-- Login card -->
-        <div class="z-10 w-full max-w-sm bg-white shadow-xl rounded-xl overflow-hidden page-content page-delay-2">
+        <div class="z-10 w-full max-w-md bg-white shadow-xl rounded-xl overflow-hidden page-content">
             
             <!-- Logo -->
             <div class="flex justify-center mt-6 swisa-logo">
-                <div class="w-[120px] h-[120px]">
+                <div class="w-[100px] h-[100px] sm:w-[120px] sm:h-[120px]">
                     <img src="{{ asset('images/swisa-logo2.png') }}" alt="SWISA Logo" 
-                         class="w-[120px] h-[120px] object-contain rounded-full">
+                         class="w-full h-full object-contain rounded-full">
                 </div>
             </div>
 
             <!-- Welcome text -->
-            <div class="text-center -mt-5 page-content page-delay-1">
-                <h1 class="font-poppins text-[#2C6E49] text-2xl font-bold">Welcome Back</h1>
+            <div class="text-center -mt-3 sm:-mt-5 page-content">
+                <h1 class="font-poppins text-[#2C6E49] text-xl sm:text-2xl font-bold">Welcome Back</h1>
                 <p class="font-poppins text-[#2C6E49] text-sm">Log in to access your account</p>
             </div>
 
@@ -84,7 +78,7 @@
                             </svg>
                         </div>
                         <input id="email" type="email" name="email" :value="old('email')" required autofocus autocomplete="username"
-                               class="border border-gray text-[#2C6E49] text-sm rounded-lg focus:ring-[#2f8f4e] focus:border-[#2f8f4e] block w-full ps-10 p-2.5 bg-transparent "
+                               class="border border-gray text-[#2C6E49] text-sm rounded-lg focus:ring-[#2f8f4e] focus:border-[#2f8f4e] block w-full ps-10 p-2.5 bg-transparent"
                                placeholder="name@example.com">
                     </div>
                     <x-input-error :messages="$errors->get('email')" class="mt-2 text-sm text-red-500" />
@@ -92,44 +86,35 @@
                     <!-- Password -->
                     <label for="password" class="block mb-2 text-sm font-medium text-[#2C6E49]">Password</label>
                     <div class="relative mb-4">
-                        <!-- Lock Icon -->
                         <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                            <!-- Lock Icon -->
                             <svg class="w-4 h-4 text-[#2f8f4e]" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v2H5a2 2 0 00-2 2v8a2 2 0 002 2h10a2 2 0 002-2v-8a2 2 0 00-2-2h-1V6a4 4 0 00-4-4zm-2 6V6a2 2 0 114 0v2H8zm2 4a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" clip-rule="evenodd"/>
                             </svg>
                         </div>
-
-                        <!-- Password Input -->
                         <input id="password" type="password" name="password" required autocomplete="current-password"
                             class="border border-gray text-[#2C6E49] text-sm rounded-lg focus:ring-[#2f8f4e] focus:border-[#2f8f4e] block w-full ps-10 pr-10 p-2.5 bg-transparent"
                             placeholder="••••••••">
 
-                        <!-- Eye Toggle Icon -->
+                        <!-- Toggle eye -->
                         <button type="button" onclick="togglePassword()" 
                             class="absolute inset-y-0 right-0 flex items-center pr-3 text-[#2f8f4e] focus:outline-none">
                             <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                             </svg>
                             <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.956 9.956 0 012.445-4.362m3.254-2.52A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.956 9.956 0 01-4.04 5.362M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M3 3l18 18"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.956 9.956 0 012.445-4.362m3.254-2.52A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.956 9.956 0 01-4.04 5.362M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18"/>
                             </svg>
                         </button>
                     </div>
-
                     <x-input-error :messages="$errors->get('password')" class="mt-2 text-sm text-red-500" />
 
                     <!-- Remember / Forgot -->
-                    <div class="flex items-center justify-between mb-5">
+                    <div class="flex flex-col sm:flex-row items-center justify-between mb-5 gap-3 sm:gap-0">
                         <label for="remember_me" class="inline-flex items-center">
-                            <input id="remember_me" type="checkbox" 
-                                   class="rounded border-gray-300 text-[#2f8f4e] shadow-sm focus:ring-[#2f8f4e]" 
-                                   name="remember">
+                            <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-[#2f8f4e] shadow-sm focus:ring-[#2f8f4e]" name="remember">
                             <span class="ml-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
                         </label>
                         @if (Route::has('password.request'))
@@ -150,7 +135,7 @@
             </div>
 
             <!-- Footer -->
-            <div class="bg-green-50 py-3 px-6 text-center text-sm text-gray-500 page-content page-delay-3">
+            <div class="bg-green-50 py-3 px-6 text-center text-sm text-gray-500">
                 Don’t have an account?
                 @if (Route::has('register'))
                     <a href="{{ route('register') }}" class="text-[#2f8f4e] font-semibold hover:underline">Sign up</a>
@@ -158,8 +143,6 @@
             </div>
         </div>
     </div>
-    div
-
 
 <script>
 function togglePassword() {
@@ -187,8 +170,6 @@ document.querySelectorAll("input").forEach(input => {
             input.classList.remove("not-empty");
         }
     });
-
-    // On page load (for autofill/old values)
     if (input.value.trim() !== "") {
         input.classList.add("not-empty");
     }

@@ -216,7 +216,6 @@
                 <p class="text-gray-300 text-md">Select a request to view details</p>
             </div>
         </div>
-        
     </div>
     
 

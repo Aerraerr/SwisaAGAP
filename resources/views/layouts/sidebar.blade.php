@@ -51,8 +51,8 @@
         </div>
 
         <!-- Initiatives & Events -->
-        <a class="menu-item {{ request()->routeIs('initandevents') ? 'active' : '' }}" 
-           href="{{ route('initandevents') }}">
+        <a class="menu-item {{ request()->routeIs('training-workshop') ? 'active' : '' }}" 
+           href="{{ route('training-workshop') }}">
            <i class="material-icons">school</i>
            <span class="menu-text">Initiatives & Events</span>
         </a>
@@ -70,7 +70,7 @@
 
         <a class="menu-item {{ request()->routeIs('grant-request') ? 'active' : '' }}" href="{{ route('grant-request') }}"><i class="material-icons">folder</i><span class="menu-text">Requests</span></a>
         <a class="menu-item {{ request()->routeIs('member-application') ? 'active' : '' }}" href="{{ route('member-application') }}"><i class="material-icons">app_registration</i><span class="menu-text">Applications</span></a>
-        <a class="menu-item">
+        <a class="menu-item {{ request()->routeIs('messages') ? 'active' : '' }}" href="{{ route('messages')}}">
             <i class="material-icons">email</i>
             <span class="menu-text">Messages</span>
             <span class="material-icons ml-[-10px]" style="color:red; font-size: 14px;">fiber_manual_record</span>
@@ -98,6 +98,15 @@
 </div>
 
 
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+</script>
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById("sidebar");
