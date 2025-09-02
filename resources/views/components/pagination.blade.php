@@ -1,4 +1,4 @@
-<div class="text-right p-4 absolute bottom-0 left-0 right-0">
+<div class="text-right p-4 bottom-0 left-0 right-0">
     <!-- Center-aligned pagination buttons -->
     <nav class="relative z-0 inline-flex rounded-md text-xs shadow-sm -space-x-px gap-1" aria-label="Pagination">
         <div class="flex ring-1 ring-inset ring-gray-300 items-center rounded- hover:bg-gray-50 focus:z-20 focus:outline-offset-0">

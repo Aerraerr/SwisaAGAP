@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <body class="bg-mainbg px-2">
+    <body class="bg-mainbg px-2 space-y-2">
         <div class="text-customIT text-2xl flex flex-col md:flex-row justify-between md:items-center mb-4">
             <h1 class="font-bold">Program Details</h1>
             <h1>Monday, 00 Month 2025</h1>
@@ -59,10 +59,10 @@
                                 class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
                             >
                                 <ul class="flex flex-col text-sm text-customIT font-medium">
-                                    <li><button class="w-full text-left px-4 py-2 hover:bg-btncolor hover:text-white">Generate Report</button></li>
-                                    <li><button class="w-full text-left px-4 py-2 hover:bg-btncolor hover:text-white">Add New Stock</button></li>
+                                    <li><button class="w-full text-left px-4 py-2 hover:bg-btncolor hover:text-white">QR Code</button></li>
                                     <li><button class="w-full text-left px-4 py-2 hover:bg-btncolor hover:text-white">Edit Info</button></li>
-                                    <li><button class="w-full text-left px-4 py-2 hover:bg-btncolor hover:text-white">Delete</button></li>
+                                    <li><button class="w-full text-left px-4 py-2 hover:bg-btncolor hover:text-white">Generate Report</button></li>
+                                    <li><button class="w-full text-left px-4 py-2 hover:bg-btncolor hover:text-white">End Program</button></li>
                                 </ul>
                             </div>
                         </div>
@@ -70,11 +70,11 @@
                 </div>
             </div>
             <!-- table -->
-            <div class="col-start-1 col-span-8 bg-white shadow-lg p-4 rounded-md mt-2 overflow-auto">
-                <div class="text-customIT text-lg flex justify-between gap-2 mb-2">
-                    <h1 class="font-bold mr-40">Program Attendees</h1>
+            <div class="col-start-1 col-span-12 xl:col-span-8 xl:col-start-1 bg-white shadow-lg p-4 rounded-md overflow-auto">
+                <div class="text-customIT flex justify-between gap-2 pb-2">
+                    <h1 class="text-lg xl:text-2xl font-bold mr-40">Program Attendees</h1>
                 </div>
-                <div class="overflow-auto" style="max-height: 90vh;">
+                <div class="overflow-auto h-[60vh]">
                     <table class="min-w-full border-spacing-y-1">
                     <thead class="bg-snbg border border-gray-100">
                         <tr class="text-customIT text-left ">
@@ -86,126 +86,53 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
-                                    Active
+                        @for($i = 0; $i < 10; $i++)
+                            <tr class="border border-gray-300 hover:bg-gray-100">
+                                <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
+                                <div class="bg-gray-400 rounded-md">
+                                    <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
+                                        Active
+                                    </td>
+                                </div>
+                                <td class="pl-4 py-3 text-sm">
+                                    <div class="relative" x-data="{ show: false }" @click.away="show = false">
+                                        <button @click="show = !show"  class="border border-gray-300 rounded-sm pl-2">
+                                            <img src="{{ asset('images/dot-menu.svg') }}"
+                                            class="w-5 h-5 rounded-sm mr-2"/>
+                                        </button>
+                                        <!-- The Popover Menu, controlled by Alpine.js -->
+                                        <div x-show="show" 
+                                        class="absolute top-full right-0 z-10 w-56 bg-white rounded-lg shadow-xl p-4 border border-gray-200 origin-top-right">
+                                            <h3 class="text-md font-bold text-customIT mb-2">
+                                                Choose an Action
+                                            </h3>
+                                            <div class="border-t border-gray-200 py-2">
+                                                <ul class="space-y-2">
+                                                    <li>
+                                                        <a href="{{ route('view-profile') }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{{ route('grant-request') }}" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View All Joined Trainings</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
-                            </div>
-                            <td class="px-4 py-2 text-sm text-gray-700">...</td>
-                        </tr>
-
-                        <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
-                                    Active
-                                </td>
-                            </div>
-                            <td class="px-4 py-2 text-sm text-gray-700">...</td>
-                        </tr>
-                        <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
-                                    Active
-                                </td>
-                            </div>
-                            <td class="px-4 py-2 text-sm text-gray-700">...</td>
-                        </tr>
-                        <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
-                                    Active
-                                </td>
-                            </div>
-                            <td class="px-4 py-2 text-sm text-gray-700">...</td>
-                        </tr>
-                        <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
-                                    Active
-                                </td>
-                            </div>
-                            <td class="px-4 py-2 text-sm text-gray-700">...</td>
-                        </tr>
-                        <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
-                                    Active
-                                </td>
-                            </div>
-                            <td class="px-4 py-2 text-sm text-gray-700">...</td>
-                        </tr>
-                        <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
-                                    Active
-                                </td>
-                            </div>
-                            <td class="px-4 py-2 text-sm text-gray-700">...</td>
-                        </tr>
-                        <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
-                                    Active
-                                </td>
-                            </div>
-                            <td class="px-4 py-2 text-sm text-gray-700">...</td>
-                        </tr>
-                        <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
-                                    Active
-                                </td>
-                            </div>
-                            <td class="px-4 py-2 text-sm text-gray-700">...</td>
-                        </tr>
-                        <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
-                                    Active
-                                </td>
-                            </div>
-                            <td class="px-4 py-2 text-sm text-gray-700">...</td>
-                        </tr>
+                            </tr>
+                        @endfor
                     </tbody>
                     </table>
                 </div>
+                @include('components.pagination')
             </div>
 
-            <div class="col-start-9 col-span-4 grid grid-rows-">
-                <div class="flex flex-col bg-white shadow-lg p-10 rounded-md mt-2 overflow-auto">
-                    <h2 class="text-2xl text-customIT font-semibold">Program Description</h2>
-                    <p class="text-left text-sm text-gray-500 font-light">
+            <div class="col-span-12 xl:col-start-9 xl:col-span-4">
+                <div class="flex flex-col bg-white shadow-lg p-4 rounded-md overflow-auto">
+                    <h2 class="text-lg xl:text-2xl text-customIT font-semibold">Program Description</h2>
+                    <p class="text-left text-sm text-bsctxt p-6">
                         This comprehensive training program is designed to equip farmers with the latest knowledge and practical skills in crop management.
                         The curriculum covers key areas from advanced land preparation techniques to post-harvest technology. Participants will learn about 
                         integrated pest management (IPM) strategies to reduce chemical use, and effective methods for ensuring crop quality and minimizing 
@@ -214,10 +141,10 @@
                 </div>
                 
                 <div class="bg-white shadow-lg p-4 h-auto rounded-md mt-2 overflow-auto">
-                    <p class="text-lg text-gray-400 font-medium text-center">View All list for this Grant?</p>
+                    <p class="text-lg xl:text-xl text-upcoming font-semibold text-center">UPCOMING - 25 AUGUST 2025</p>
                     <div class="px-10 py-3">
                         <button class="w-full px-4 py-2 bg-btncolor text-white rounded-md hover:bg-opacity-80">
-                            Close
+                            Start Initiative
                         </button>
                     </div>
                 </div>

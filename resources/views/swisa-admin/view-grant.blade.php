@@ -88,11 +88,11 @@
                 </div>
             </div>
             <!-- table -->
-            <div class="col-start-1 col-span-12 lg:col-span-8 bg-white shadow-lg px-4 rounded-md mt-2 relative overflow-auto">
+            <div class="col-start-1 col-span-12 lg:col-span-8 bg-white shadow-lg px-4 rounded-md mt-2 overflow-auto">
                 <div class="text-customIT text-lg flex justify-between gap-2 my-4">
                     <h1 class="font-bold mr-40">Request Summary Table</h1>
                 </div>
-                <div class="overflow-auto" style="max-height: 86vh;">
+                <div class="overflow-auto h-[80vh]">
                     <table class="min-w-full overflow-auto border-spacing-y-1">
                     <thead class="bg-snbg border border-gray-100">
                         <tr class="text-customIT text-left ">
@@ -142,7 +142,7 @@
                                                     <a href="{{ route('view-profile') }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
                                                 </li>
                                                 <li>
-                                                    <a href="{{ route('grant-request') }}" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Request</a>
+                                                    <a href="{{ route('grant-request') }}" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View All Request</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -241,7 +241,7 @@
                                 </div>
                             </td>
                         </tr>
-                        @for($i = 1; $i < 14; $i++)
+                        @for($i = 1; $i < 5; $i++)
                             <tr class="border border-gray-300 hover:bg-gray-100 cursor-pointer"
                                 @click="selectedUser = { 
                                 name: 'Aeron Jead Marquez', 
@@ -374,20 +374,11 @@
                     </div>
                     <div class="px-5 py-2">
                         <p class="text-bsctxt font-medium mb-2">View all feedback for this Grant / Equipment?</p>
-                        <button class="w-full px-4 py-3 bg-btncolor text-white rounded-md hover:bg-opacity-80">
+                        <button onclick="window.location.href = '{{ route('view-feedback') }}'" class="w-full px-4 py-3 bg-btncolor text-white rounded-md hover:bg-opacity-80">
                             View All Feedback
                         </button>
                     </div>
                 </div>
-
-                <!--<div class="bg-white shadow-lg p-3 h-auto rounded-md mt-2 overflow-auto">
-                    <p class="text-lg text-gray-400 font-medium text-center">View All list for this Grant?</p>
-                    <div class="px-10 py-2">
-                        <button class="w-full px-4 py-3 bg-btncolor text-white rounded-md hover:bg-opacity-80">
-                            Close
-                        </button>
-                    </div>
-                </div>-->
             </div>
         </div>
         @include('components.modals.edit-grant')

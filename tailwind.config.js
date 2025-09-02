@@ -22,6 +22,7 @@ export default {
                 snbg: '#E8F6EF',
                 iconsClr: '#68B2AB',
                 bsctxt: '#555555',
+                upcoming: '#2E9DA6',
                 approved: '#4C956C',
                 rejected: '#F15B66',
                 pending: '#E8CC5E',

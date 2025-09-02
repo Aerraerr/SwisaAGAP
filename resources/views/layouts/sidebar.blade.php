@@ -2,7 +2,7 @@
 <button class="hamburger sidebar-closebtn" id="toggleButton" onclick="toggleSidebar()">‹</button>
 
 <!-- Sidebar -->
-<div class="sidebar" id="sidebar">
+<div class="sidebar z-10" id="sidebar">
     <div class="sidebar-header mb-5">
         <img class="sidebar-logo" src="{{ asset('images/swisa-agap4.png') }}" alt="Swisa AGAP Logo">
     </div>

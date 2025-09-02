@@ -10,6 +10,7 @@ Route::get('/landing', function () {
     return view('auth.landing');
 });
 
+//Main pages
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -29,6 +30,7 @@ Route::get('/announcements', function () {
 Route::get('/initandevents', function () {
     return view('swisa-admin.initandevents');
 })->middleware(['auth', 'verified'])->name('initandevents');
+
 Route::get('/training-workshop', function () {
     return view('swisa-admin.training-workshop');
 })->middleware(['auth', 'verified'])->name('training-workshop');
@@ -41,6 +43,7 @@ Route::get('/member-application', function () {
     return view('swisa-admin.member-application');
 })->middleware(['auth', 'verified'])->name('member-application');
 
+//view pages
 Route::get('/view-profile', function () {
     return view('swisa-admin.view-profile');
 })->middleware(['auth', 'verified'])->name('view-profile');
@@ -52,6 +55,10 @@ Route::get('/view-grant', function () {
 Route::get('/view-training', function () {
     return view('swisa-admin.view-training');
 })->middleware(['auth', 'verified'])->name('view-training');
+
+Route::get('/view-feedback', function () {
+    return view('swisa-admin.view-feedback');
+})->middleware(['auth', 'verified'])->name('view-feedback');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
