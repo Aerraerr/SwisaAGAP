@@ -1,4 +1,4 @@
-<div id="viewApplicationModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+<div id="viewApplicationModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 z-20 overflow-y-auto h-full w-full flex items-center justify-center">
     <div class="relative mx-auto p-5 border w-3/7 shadow-lg rounded-md bg-white">
         <!-- Modal Header -->
         <div class="flex justify-between items-center pb-3">

@@ -19,7 +19,6 @@
         <script src="//unpkg.com/alpinejs" defer></script>
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     </head>
     
@@ -50,4 +49,9 @@
         @stack('scripts')
     </body>
 </html>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.body.style.zoom = "80%";
+    });
+</script>
 

@@ -78,7 +78,7 @@
 
             <h2 class="text-lg font-medium text-customIT mt-4">Request Justification/Purpose</h2>
 
-            <div class="h-20 w-full bg-gray-100 p-6 rounded-[3px]">
+            <div class="h-20 w-full bg-white border border-gray-600 p-4 rounded-md">
                 <p class="text-sm text-gray-600">"The tractor will be used to prepare 5 hectares of family-owned farmland to improve crop yield and reduce labor costs during planting season."</p>
             </div>
         </div>

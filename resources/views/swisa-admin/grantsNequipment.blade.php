@@ -188,13 +188,13 @@
                                         <div class="border-t border-gray-200 py-2">
                                             <ul class="space-y-2">
                                                 <li>
-                                                    <a href="#" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
+                                                    <a href="{{ route('view-grant') }}" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Grant</a>
                                                 </li>
                                                 <li>
                                                     <a href="#" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Application</a>
                                                 </li>
                                                 <li>
-                                                    <a href="#" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-red-600 font-medium">Delete Member</a>
+                                                    <a href="#" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-red-600 font-medium">Delete Grant</a>
                                                 </li>
                                             </ul>
                                         </div>
