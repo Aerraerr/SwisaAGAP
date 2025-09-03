@@ -56,7 +56,7 @@
                             </div>
                         </div>
                         <div class="hidden xl:flex flex-col text-sm text-customIT font-medium m-14 gap-1">
-                            <button class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Generate Report</button>
+                            <button onclick="openModal('geneReportModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Generate Report</button>
                             <button onclick="openModal('addStockModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Add New Stock</button>
                             <button onclick="openModal('editGrantModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Edit Info</button>
                             <button onclick="openModal('deleteGrantModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Delete</button>
@@ -384,6 +384,7 @@
         @include('components.modals.edit-grant')
         @include('components.modals.add-grant-stock')
         @include('components.modals.delete-grant')
+        @include('components.modals.generate-report')
         <script>
             // Get the canvas element to render the chart on
             const ctx = document.getElementById('feedbackChart');
