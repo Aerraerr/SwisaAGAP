@@ -5,7 +5,7 @@
 
 <div class="p-4">
     <div class="text-customIT flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
-        <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Dashboard</h2>
+        <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Welcome Back Admin!</h2>
         @include('components.UserTab')
     </div>
 
@@ -46,12 +46,13 @@
             </div>
         </div>
 
-        <!-- Charts + Other Sections -->
+        <!-- Charts -->
         @include('charts.monthly-requests')
         @include('charts.request-status-overview')
-        @include('charts.recent-activity')
-        @include('charts.member-type-breakdown')
         @include('charts.top-requested')
+        @include('charts.member-type-breakdown')
+                @include('charts.recent-activity')
+
         @include('charts.shortcuts-quicklinks')
     </div>
 </div>

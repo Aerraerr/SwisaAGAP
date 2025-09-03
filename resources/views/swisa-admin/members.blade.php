@@ -51,29 +51,30 @@
                     </div>
                 </div>
 
-                <!-- Rejected Applications -->
-                <div class="bg-white p-6 rounded-lg shadow-md flex items-center gap-4">
-                    <!-- Icon -->
-                    <div class="p-2 bg-red-100 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" 
-                            class="h-6 w-6 text-red-600" 
-                            fill="none" 
-                            viewBox="0 0 24 24" 
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </div>
-                    <!-- Text -->
-                    <div>
-                        <h3 class="text-xl font-bold text-customIT">20</h3>
-                        <p class="text-gray-600 text-sm">Rejected Applications</p>
-                    </div>
-                </div>
+        <!-- Rejected Applications -->
+        <div class="bg-white p-6 rounded-lg shadow-md flex items-center gap-4">
+            <!-- Icon -->
+            <div class="p-2 bg-red-100 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                    class="h-6 w-6 text-red-600" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12" />
+                </svg>
             </div>
-            @include('charts.member-demographics')
-            @include('charts.member-registrations')
+            <!-- Text -->
+            <div>
+                <h3 class="text-xl font-bold text-customIT">20</h3>
+                <p class="text-gray-600 text-sm">Rejected Applications</p>
+            </div>
         </div>
+    </div>
+    @include('charts.member-demographics')
+    @include('charts.member-registrations')
+    </div>
+
 
         <div x-data="{ activeTab: 'grid' }" class="mt-4">
             @include('components.filters')
