@@ -15,6 +15,10 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/reports', function () {
+    return view('swisa-admin.reports');
+})->middleware(['auth', 'verified'])->name('reports');
+
 Route::get('/members', function () {
     return view('swisa-admin.members');
 })->middleware(['auth', 'verified'])->name('members');

@@ -32,7 +32,7 @@
             <div class="flex items-center gap-3">
                 <img src="{{ asset('images/message.png') }}" alt="Check Icon" class="w-12 h-12 object-contain mt-1" />
                 <div class="mt-2">
-                    <p class="header1 font-semibold text-custom dashheader">Messages</p>
+                    <p class="header1 font-semibold dashheader text-[#2C6E49]">Messages</p>
                     <p class="text-sm text-gray-500">2 unread messages</p>
                 </div>
             </div>
@@ -49,9 +49,10 @@
         <!-- Charts -->
         @include('charts.monthly-requests')
         @include('charts.request-status-overview')
-        @include('charts.top-requested')
+
         @include('charts.member-type-breakdown')
-                @include('charts.recent-activity')
+        @include('charts.top-requested')
+        @include('charts.recent-activity')
 
         @include('charts.shortcuts-quicklinks')
     </div>

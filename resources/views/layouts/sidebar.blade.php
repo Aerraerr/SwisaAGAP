@@ -21,7 +21,8 @@
         <div class="submenu {{ request()->routeIs('dashboard*') ? 'show' : '' }}">
             <a class="submenu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
                href="{{ route('dashboard') }}">Overview</a>
-            <a class="submenu-item" href="#">Reports</a>
+            <a class="submenu-item" 
+                href="{{ route('reports') }}">Reports</a>
         </div>
 
         <!-- Members -->
