@@ -38,7 +38,7 @@
                         <p class="text-gray-500 p-24">Image</p>
                     </div>
                 </div>
-                
+            </div>
         </div>
         <!-- modal footer -->
         <div class="text-right pt-6">
