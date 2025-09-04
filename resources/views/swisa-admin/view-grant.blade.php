@@ -56,7 +56,7 @@
                             </div>
                         </div>
                         <div class="hidden xl:flex flex-col text-sm text-customIT font-medium m-14 gap-1">
-                            <button class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Generate Report</button>
+                            <button onclick="openModal('geneReportModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Generate Report</button>
                             <button onclick="openModal('addStockModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Add New Stock</button>
                             <button onclick="openModal('editGrantModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Edit Info</button>
                             <button onclick="openModal('deleteGrantModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Delete</button>
@@ -119,11 +119,11 @@
                             <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
                             <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
                             <td class="px-4 py-2 text-sm text-gray-700">25 Aug 2025</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
+                            <td class="px-4 py-3 ">
+                                <div class="inline-block text-xs font-medium bg-approved text-white text-center px-3 py-1 rounded-full">
                                     Approved
-                                </td>
-                            </div>
+                                </div>
+                            </td>
                             <td class="pl-4 py-3 text-sm">
                                 <div class="relative" x-data="{ show: false }" @click.away="show = false">
                                     <button @click="show = !show"  class="border border-gray-300 rounded-sm pl-2">
@@ -150,52 +150,6 @@
                                 </div>
                             </td>
                         </tr>
-
-                        <tr class="border border-gray-300 hover:bg-gray-100 cursor-pointer"
-                            @click="selectedUser = { 
-                                name: 'Aeron Jead Marquez', 
-                                id: '112233445566', 
-                                type: 'Member Type', 
-                                date: '25 Aug 2025', 
-                                status: 'Pending',
-                                phone: '09090909090',
-                                email: 'ajm@gmail.com'
-                            }">
-                            <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">25 Aug 2025</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-pending flex items-center gap-1">
-                                    Pending
-                                </td>
-                            </div>
-                            <td class="pl-4 py-3 text-sm">
-                                <div class="relative" x-data="{ show: false }" @click.away="show = false">
-                                    <button @click="show = !show"  class="border border-gray-300 rounded-sm pl-2">
-                                        <img src="{{ asset('images/dot-menu.svg') }}"
-                                        class="w-5 h-5 rounded-sm mr-2"/>
-                                    </button>
-                                    <!-- The Popover Menu, controlled by Alpine.js -->
-                                    <div x-show="show" 
-                                    class="absolute top-full right-0 z-10 w-56 bg-white rounded-lg shadow-xl p-4 border border-gray-200 origin-top-right">
-                                        <h3 class="text-md font-bold text-customIT mb-2">
-                                            Choose an Action
-                                        </h3>
-                                        <div class="border-t border-gray-200 py-2">
-                                            <ul class="space-y-2">
-                                                <li>
-                                                    <a href="{{ route('view-profile') }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
-                                                </li>
-                                                <li>
-                                                    <a href="{{ route('grant-request') }}" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Request</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
                         <tr class="border border-gray-300 hover:bg-gray-100 cursor-pointer"
                             @click="selectedUser = { 
                                 name: 'Aeron Jead Marquez', 
@@ -210,11 +164,11 @@
                             <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
                             <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
                             <td class="px-4 py-2 text-sm text-gray-700">25 Aug 2025</td>
-                            <div class="bg-gray-400 rounded-md">
-                                <td class="px-4 py-2 text-sm font-medium text-rejected flex items-center gap-1">
+                            <td class="px-4 py-3 ">
+                                <div class="inline-block text-xs font-medium bg-rejected text-white text-center px-3 py-1 rounded-full">
                                     Rejected
-                                </td>
-                            </div>
+                                </div>
+                            </td>
                             <td class="pl-4 py-3 text-sm">
                                 <div class="relative" x-data="{ show: false }" @click.away="show = false">
                                     <button @click="show = !show"  class="border border-gray-300 rounded-sm pl-2">
@@ -256,11 +210,11 @@
                                 <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">25 Aug 2025</td>
-                                <div class="bg-gray-400 rounded-md">
-                                    <td class="px-4 py-2 text-sm font-medium text-pending flex items-center gap-1">
+                                <td class="px-4 py-3 ">
+                                    <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
                                         Pending
-                                    </td>
-                                </div>
+                                    </div>
+                                </td>
                                 <td class="pl-4 py-3 text-sm">
                                     <div class="relative" x-data="{ show: false }" @click.away="show = false">
                                         <button @click="show = !show"  class="border border-gray-300 rounded-sm pl-2">
@@ -330,11 +284,11 @@
                                 <p class="ttext-md text-gray-600 font-semibold">DOB: <span x-text="selectedUser.date" class="text-sm ml-4 font-extralight text-bsctxt"></span></p>
                                 <p class="ttext-md text-gray-600 font-semibold">CONTACT NO: <span x-text="selectedUser.phone" class="text-sm ml-4 font-extralight text-bsctxt"></span></p>
                                 <p class="ttext-md text-gray-600 font-semibold">EMAIL: <span x-text="selectedUser.email" class="text-sm ml-4 font-extralight text-bsctxt"></span></p>
-                                <p class="text-md text-gray-600 font-semibold">REQUEST STATUS:<span class="text-md ml-4 font-semibold"
+                                <p class="text-md text-gray-600 font-semibold">REQUEST STATUS:<span class="text-xs text-white px-3 py-1 rounded-full ml-4 font-semibold"
                                 :class="{
-                                    'text-approved': selectedUser.status === 'Approved',
-                                    'text-pending': selectedUser.status === 'Pending',
-                                    'text-rejected': selectedUser.status === 'Rejected'
+                                    'bg-approved': selectedUser.status === 'Approved',
+                                    'bg-pending': selectedUser.status === 'Pending',
+                                    'bg-rejected': selectedUser.status === 'Rejected'
                                     }"
                                 x-text="selectedUser.status" class="text-sm font-extralight text-approved"></span></p>
                             </div>
@@ -384,6 +338,7 @@
         @include('components.modals.edit-grant')
         @include('components.modals.add-grant-stock')
         @include('components.modals.delete-grant')
+        @include('components.modals.generate-report')
         <script>
             // Get the canvas element to render the chart on
             const ctx = document.getElementById('feedbackChart');

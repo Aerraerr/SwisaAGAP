@@ -110,16 +110,16 @@
                 <div class="overflow-auto" style="max-height: 80vh;">
                     <table class="min-w-full bg-white border-spacing-y-1">
                     <thead class="bg-snbg border border-gray-100 px-8">
-                        <tr class="text-customIT text-left ">
-                            <th class="px-4 py-3 text-xs font-medium">NAME</th>
-                            <th class="px-4 py-3 text-xs font-medium">AGE</th>
-                            <th class="px-4 py-3 text-xs font-medium">EMAIL</th>
-                            <th class="px-4 py-3 text-xs font-medium">CONTACT NO.</th>
-                            <th class="px-4 py-3 text-xs font-medium">ID NUMBER</th>
-                            <th class="px-4 py-3 text-xs font-medium">TYPE</th>
-                            <th class="px-4 py-3 text-xs font-medium">REGISTERED SINCE</th>
-                            <th class="px-4 py-3 text-xs font-medium">STATUS</th>
-                            <th class="px-4 py-3 text-xs font-medium">ACTION</th>
+                        <tr class="text-customIT text-left text-sm font-semibold">
+                            <th class="px-4 py-3">NAME</th>
+                            <th class="px-4 py-3">AGE</th>
+                            <th class="px-4 py-3">EMAIL</th>
+                            <th class="px-4 py-3">CONTACT NO.</th>
+                            <th class="px-4 py-3">ID NUMBER</th>
+                            <th class="px-4 py-3">TYPE</th>
+                            <th class="px-4 py-3">REGISTERED SINCE</th>
+                            <th class="px-4 py-3">STATUS</th>
+                            <th class="px-4 py-3">ACTION</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -135,8 +135,10 @@
                             <td class="px-4 py-3 text-sm text-gray-700">123456789</td>
                             <td class="px-4 py-3 text-sm text-gray-700">Basic</td>
                             <td class="px-4 py-3 text-sm text-gray-700">25 Aug 2025</td>
-                            <td class="px-4 py-3 text-sm font-medium text-approved">
-                                Active
+                            <td class="px-4 py-3 ">
+                                <div class="inline-block text-xs font-medium bg-approved text-white text-center px-3 py-1 rounded-full">
+                                    Approved
+                                </div>
                             </td>
                             <td class="pl-4 py-3 text-sm">
                                 <div class="relative" x-data="{ show: false }" @click.away="show = false">

@@ -38,7 +38,10 @@
                     <div class="text-customIT text-sm md:text-xl flex justify-between items-center mb-2">
                         <h1 class="font-bold">Basic Information</h1>
                         <button @click="showDetails = !showDetails">
-                            <img src="{{ asset('images/eye-svg.svg') }}" title="see details" class="w-8 h-8"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
                         </button>
                     </div>
                     <div class="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center mb-2 text-[10px] md:text-sm lg:text-md">
@@ -54,9 +57,11 @@
                             <p class="text-customIT font-semibold">Joined Since</p>
                             <p class="text-gray-500 font-medium">January 2025</p>
                         </div>
-                        <div class="justify-center col-start-4 md:col-start-2 lg:col-start-4">
+                        <div class="justify-center col-start-4 md:col-start-2 lg:col-start-4 text-center">
                             <p class="text-customIT font-semibold">Membership Status</p>
-                            <p class="text-gray-500 font-medium bg-snbg text-center rounded-md shadow">Active</p>
+                            <p class="inline-block text-xs font-medium bg-approved text-white px-4 py-1 rounded-full">
+                                Active
+                            </p>
                         </div>
                     </div>
                     <div class="text-customIT flex grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center text-[10px] md:text-xs lg:text-md mb-2">
@@ -122,12 +127,12 @@
                     <div class="overflow-auto">
                         <table class="min-w-full border-spacing-y-1">
                         <thead class="bg-snbg border-y border-gray-300">
-                            <tr class="text-customIT text-left ">
-                                <th class="px-4 py-2 text-sm font-semibold">Requested Item</th>
-                                <th class="px-4 py-2 text-sm font-semibold">Item Type</th>
-                                <th class="px-4 py-2 text-sm font-semibold">Date Submitted</th>
-                                <th class="px-4 py-2 text-sm font-semibold">Reason</th>
-                                <th class="px-4 py-2 text-sm font-semibold">Status</th>
+                            <tr class="text-customIT text-left text-sm font-semibold">
+                                <th class="px-4 py-2">Requested Item</th>
+                                <th class="px-4 py-2">Item Type</th>
+                                <th class="px-4 py-2">Date Submitted</th>
+                                <th class="px-4 py-2">Reason</th>
+                                <th class="px-4 py-2">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -136,22 +141,22 @@
                                 <td class="px-4 py-2 text-sm text-gray-700">Tools</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
                                 <td class="px-4 py-2 text-sm text-gray-700 font-medium"><button onclick="openModal('viewReasonModal')">Reason</button></td>
-                                <td class="px-4 py-2">
-                                    <div class="inline-block text-xs font-medium bg-approved text-white text-center h-5 w-20 rounded-full">
-                                        Approved
-                                    </div>
-                                </td>
+                               <td class="px-4 py-3 ">
+                                <div class="inline-block text-xs font-medium bg-approved text-white text-center px-3 py-1 rounded-full">
+                                    Approved
+                                </div>
+                            </td>
                             </tr>
                             <tr class="border border-gray-300">
                                 <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">Tools</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
                                 <td class="px-4 py-2 text-sm text-gray-700 font-medium"><button onclick="openModal('viewReasonModal')">Reason</button></td>
-                                <td class="px-4 py-2">
-                                    <div class="inline-block text-xs font-medium bg-rejected text-white text-center h-5 w-20 rounded-full">
-                                        Rejected
-                                    </div>
-                                </td>
+                                <td class="px-4 py-3 ">
+                                <div class="inline-block text-xs font-medium bg-rejected text-white text-center px-3 py-1 rounded-full">
+                                    Rejected
+                                </div>
+                            </td>
                             </tr>
                             @for($i = 1; $i < 5; $i++)
                                 <tr class="border border-gray-300">
@@ -159,8 +164,8 @@
                                     <td class="px-4 py-2 text-sm text-gray-700">Tools</td>
                                     <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
                                     <td class="px-4 py-2 text-sm text-gray-700 font-medium"><button onclick="openModal('viewReasonModal')">Reason</button></td>
-                                    <td class="px-4 py-2">
-                                        <div class="inline-block text-xs font-medium bg-pending text-white text-center h-5 w-20 rounded-full">
+                                    <td class="px-4 py-3 ">
+                                        <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
                                             Pending
                                         </div>
                                     </td>
@@ -203,120 +208,34 @@
                                     <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
                                 </div>
                                 <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button onclick="openModal('viewDocumentModal')">View</button>
-                                    <button>Download</button>
+                                    <button onclick="openModal('viewDocumentModal')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 20" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776" />
+                                        </svg>
+                                    </button>
+                                    <button><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                        </svg>
+                                    </button>
                                 </div>
                             </li>
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
-                                    <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button onclick="openModal('viewDocumentModal')">View</button>
-                                    <button>Download</button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
-                                    <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button onclick="openModal('viewDocumentModal')">View</button>
-                                    <button>Download</button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
-                                    <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button onclick="openModal('viewDocumentModal')">View</button>
-                                    <button>Download</button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
-                                    <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button>View</button>
-                                    <button>Download</button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
-                                    <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button>View</button>
-                                    <button>Download</button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
-                                    <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button>View</button>
-                                    <button>Download</button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
-                                    <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button>View</button>
-                                    <button>Download</button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
-                                    <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button>View</button>
-                                    <button>Download</button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
-                                    <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button>View</button>
-                                    <button>Download</button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <P class="text-sm text-gray-700 font-medium block w-28 truncate" title="Documents name 1 fit so long 123">Documents name 1 fit so long 123</P>
-                                    <p class="text-[9px] text-gray-700 ">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button>View</button>
-                                    <button>Download</button>
-                                </div>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <P class="text-sm text-gray-700 font-medium block w-28 truncate" title="Documents name 1 fit so long 123">Documents name 1 fit so long 123</P>
-                                    <p class="text-[9px] text-gray-700 ">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button>View</button>
-                                    <button>Download</button>
-                                </div>
-                            </li>
+                            @for($i = 0; $i < 10; $i++)
+                                <li class="flex justify-between items-center">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
+                                        <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
+                                    </div>
+                                    <div class="flex gap-4 text-xs text-customIT font-medium">
+                                        <button onclick="openModal('viewDocumentModal')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 20" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776" />
+                                            </svg>
+                                        </button>
+                                        <button><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </li>
+                            @endfor
                             </ul>
                         </div>
                 </div>

@@ -13,7 +13,7 @@
         </div>
 
         <!-- Modal Body: Activity Log Entries -->
-        <div class="mt-4 max-h-[60vh]">
+        <div class="mt-4 max-h-auto">
             <!-- Log Group 1 -->
             <div class="mb-4">
                 <div class="flex text-md">
