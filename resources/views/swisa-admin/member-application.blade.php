@@ -565,7 +565,7 @@
 
                                 <!-- Approve Button -->
                                 <div class="grid grid-cols-2 pt-4">
-                                    <button onclick="openModal('deleteGrantModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                    <button onclick="openModal('approvedModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
                                         :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
                                         :disabled="!verified">
                                         Approve
@@ -830,7 +830,7 @@
 
                                 <!-- Approve Button -->
                                 <div class="grid grid-cols-2 pt-4">
-                                    <button onclick="openModal('deleteGrantModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                    <button onclick="openModal('approvedModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
                                         :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
                                         :disabled="!verified">
                                         Approve
