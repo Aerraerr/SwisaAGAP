@@ -81,7 +81,7 @@
                         <table class="table table-hover min-w-full border-spacing-y-1">
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
-                                    <th class="px-4 py-3 rounded-tl-md">MEMBERSHIP ID</th>
+                                    <th class="px-4 py-3 rounded-tl-md">APPLICATION ID</th>
                                     <th class="px-4 py-3">NAME</th>
                                     <th class="px-4 py-3">NUMBER </th>
                                     <th class="px-4 py-3">EMAIL</th>
@@ -347,7 +347,7 @@
                         <table class="table table-hover min-w-full border-spacing-y-1">
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
-                                    <th class="px-4 py-3 rounded-tl-md">REQUEST ID</th>
+                                    <th class="px-4 py-3 rounded-tl-md">APPLICATION ID</th>
                                     <th class="px-4 py-3">MEMBER</th>
                                     <th class="px-4 py-3">NUMBER</th>
                                     <th class="px-4 py-3">EMAIL</th>
@@ -590,7 +590,7 @@
                         <table class="table table-hover min-w-full border-spacing-y-1">
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
-                                    <th class="px-4 py-3 rounded-tl-md">REQUEST ID</th>
+                                    <th class="px-4 py-3 rounded-tl-md">APPLICATION ID</th>
                                     <th class="px-4 py-3">MEMBER</th>
                                     <th class="px-4 py-3">NUMBER</th>
                                     <th class="px-4 py-3">EMAIL</th>
@@ -855,7 +855,7 @@
                         <table class="table table-hover min-w-full border-spacing-y-1">
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
-                                    <th class="px-4 py-3 rounded-tl-md">REQUEST ID</th>
+                                    <th class="px-4 py-3 rounded-tl-md">APPLICATION ID</th>
                                     <th class="px-4 py-3">MEMBER</th>
                                     <th class="px-4 py-3">NUMBER</th>
                                     <th class="px-4 py-3">EMAIL</th>

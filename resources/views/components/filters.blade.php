@@ -26,9 +26,12 @@
                 List
                 </button>
             </div>
-            <button onclick="toggleModal('upload-modal')" class="col-start-5 col-span-1 bg-btncolor h-9 text-xs text-white border rounded-[4px] p-1">&#43; Add New</button>
+            <button onclick="toggleModal('upload-modal')" class="flex items-center col-start-5 col-span-1 bg-btncolor h-9 text-xs text-white border rounded-[4px] p-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4 mx-1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>Add New
+            </button>
             <div class="col-span-2 relative">
-                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor border rounded-[4px]">
+                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor rounded-[4px]">
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
@@ -40,7 +43,7 @@
                 </div>
             </div>
             <div class="col-span-2 relative">
-                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor border rounded-[4px]">
+                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor rounded-[4px]">
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Category</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Category</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Category</option>

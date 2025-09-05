@@ -10,7 +10,7 @@
 
 <div class="bg-white pt-2 px-4 rounded-md shadow-lg overflow-hidden">
     <!-- Image Placeholder Section -->
-    <div class="bg-gray-200 rounded-md h-44 flex items-center justify-center border-b border-gray-300">
+    <div class="bg-gray-200 rounded-md h-48 flex items-center justify-center border-b border-gray-300">
         <span class="text-white text-md">IMAGE</span>
     </div>
 
@@ -20,34 +20,22 @@
         <div class="flex justify-between mb-3">
             <div>
                 <h3 class="text-lg font-bold text-customIT">{{ $title }}</h3>
-                <p class="text-sm font-medium text-gray-400">{{ $category }}</p>
+                <p class="text-sm text-gray-600">{{ $category }}</p>
             </div>
-            <div class="flex  pt-3">
-                <p class="text-xs mr-4">Status</p>
-                <p class="text-xs text-center h-4 w-16 rounded-xl text-white bg-btncolor">{{$status}}</p>
+            <div class="py-1">
+                <p class="inline-block text-xs font-medium bg-approved text-white text-center px-3 py-1 rounded-full">{{$status}}</p>
             </div>
         </div>
         
         <div>
-            <p class="text-sm pt-1 font-semibold text-customIT">Details </p>
+            <p class="pt-1 font-semibold text-customIT">Details </p>
         </div>
 
-        <div class="flex justify-between gap-4 text-xs text-gray-600 mb-3">
-            <div class="grid grid-cols-6">
-
-                <p class="col-start-1 col-span-2 font-medium flex items-center"> Date</p>
-                <p class="col-start-4 col-span-2 font-medium text-gray-400 flex items-center">{{ $date }}</p>
-                
-                <p class="col-start-1 col-span-2 font-medium flex items-center"> Time</p>
-                <p class="col-start-4 col-span-2 font-medium text-gray-400 flex items-center"> {{$time}}</p>
-
-                <p class="col-start-1 col-span-2 font-medium flex items-center"> Venue</p>
-                <p class="col-start-4 col-span-2 font-medium text-gray-400 flex items-center"> {{$venue}}</p>
-
-                <p class="col-start-1 col-span-2 font-medium flex items-center"> Participants</p>
-                <p class="col-start-4 col-span-2 font-medium text-gray-400 flex items-center"> {{$participants}}</p>
-
-            </div>
+        <div class="text-sm mb-3">
+            <p class="font-medium ml-5 text-sm">Date: <span class="text-gray-600 ml-1">{{ $date }}</span></p>
+            <p class="font-medium ml-5 text-sm">Time: <span class="text-gray-600 ml-1">{{ $time }}</span></p>
+            <p class="font-medium ml-5 text-sm">Venue: <span class="text-gray-600 ml-1">{{ $venue }}</span></p>
+            <p class="font-medium ml-5 text-sm">Participants: <span class="text-gray-600 ml-1">{{ $participants }}</span></p>
         </div>
 
         <!-- View Button Section -->

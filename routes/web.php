@@ -10,7 +10,7 @@ Route::get('/landing', function () {
     return view('auth.landing');
 });
 
-//Main pages
+// SWISA ADMIN: Main pages
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -60,11 +60,6 @@ Route::get('/messages', function () {
     return view('swisa-admin.messages');
 })->middleware(['auth', 'verified'])->name('messages');
 
-
-
-
-
-
 Route::get('/view-grant', function () {
     return view('swisa-admin.view-grant');
 })->middleware(['auth', 'verified'])->name('view-grant');
@@ -76,6 +71,22 @@ Route::get('/view-training', function () {
 Route::get('/view-feedback', function () {
     return view('swisa-admin.view-feedback');
 })->middleware(['auth', 'verified'])->name('view-feedback');
+
+
+// SWISA ADMIN: Main pages
+
+Route::get('/reports', function () {
+    return view('swisa-support_staff.reports');
+})->middleware(['auth', 'verified'])->name('reports');
+
+Route::get('/giveback', function () {
+    return view('swisa-support_staff.giveback');
+})->middleware(['auth', 'verified'])->name('giveback');
+
+Route::get('/assisted-creation', function () {
+    return view('swisa-support_staff.assisted-creation');
+})->middleware(['auth', 'verified'])->name('assisted-creation');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

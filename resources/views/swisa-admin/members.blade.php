@@ -107,7 +107,7 @@
             </div>
             <!-- for table/list front -->
             <div x-show="activeTab === 'list'" class="tab-pane">
-                <div class="overflow-auto" style="max-height: 80vh;">
+                <div class="overflow-auto h-auto shadow-lg">
                     <table class="min-w-full bg-white border-spacing-y-1">
                     <thead class="bg-snbg border border-gray-100 px-8">
                         <tr class="text-customIT text-left text-sm font-semibold">
@@ -175,6 +175,7 @@
                 </div>
             </div>
         </div> 
+        @include('components.pagination')
     </div>
     @include('components.modals.view-applications')
 </div>
