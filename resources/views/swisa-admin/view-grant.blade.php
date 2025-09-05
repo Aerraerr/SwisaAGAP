@@ -4,7 +4,7 @@
     <body class="bg-mainbg px-2">
         <div class="text-customIT text-2xl flex flex-col md:flex-row justify-between md:items-center mb-4">
             <h1 class="font-bold">Available Grants & Equipments</h1>
-            <h1>Monday, 00 Month 2025</h1>
+            @include('components.UserTab')
         </div>
         <div class="grid grid-cols-12 gap-2 py-2" x-data="{ selectedUser: null }">
             <div class="col-span-12">
