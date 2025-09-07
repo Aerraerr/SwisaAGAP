@@ -26,6 +26,7 @@ export default {
                 approved: '#4C956C',
                 rejected: '#F15B66',
                 pending: '#E8CC5E',
+                tbr: '#F8F8F8',
                 neutral: '#B2D6D3',
                 mainbg: "#F2F5F3",
             },

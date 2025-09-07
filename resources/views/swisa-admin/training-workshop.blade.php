@@ -207,8 +207,8 @@
                 participants="24"
             />
         </div>
-        <div x-show="activeTab === 'list'" class="tab-pane bg-white p-5 rounded-lg">
-                <div class="overflow-auto" style="max-height: 80vh;">
+        <div x-show="activeTab === 'list'" class="tab-pane rounded-lg">
+                <div class="overflow-auto h-auto shadow-lg">
                     <table class="min-w-full bg-white border-spacing-y-1">
                     <thead class="bg-snbg border border-black-100 px-8">
                         <tr class="text-customIT text-left ">
@@ -271,6 +271,7 @@
                 </div>
         </div>
     </div>
+    @include('components.pagination')
 </div>
 </div>
 <script>

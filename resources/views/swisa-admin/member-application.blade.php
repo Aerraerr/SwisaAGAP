@@ -385,7 +385,7 @@
                         <table class="table table-hover min-w-full border-spacing-y-1">
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
-                                    <th class="px-4 py-3 rounded-tl-md">REQUEST ID</th>
+                                    <th class="px-4 py-3 rounded-tl-md">APPLICATION ID</th>
                                     <th class="px-4 py-3">MEMBER</th>
                                     <th class="px-4 py-3">NUMBER</th>
                                     <th class="px-4 py-3">EMAIL</th>
@@ -603,7 +603,7 @@
 
                                 <!-- Approve Button -->
                                 <div class="grid grid-cols-2 pt-4">
-                                    <button onclick="openModal('deleteGrantModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                    <button onclick="openModal('approvedModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
                                         :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
                                         :disabled="!verified">
                                         Approve
@@ -628,7 +628,7 @@
                         <table class="table table-hover min-w-full border-spacing-y-1">
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
-                                    <th class="px-4 py-3 rounded-tl-md">REQUEST ID</th>
+                                    <th class="px-4 py-3 rounded-tl-md">APPLICATION ID</th>
                                     <th class="px-4 py-3">MEMBER</th>
                                     <th class="px-4 py-3">NUMBER</th>
                                     <th class="px-4 py-3">EMAIL</th>
@@ -868,7 +868,7 @@
 
                                 <!-- Approve Button -->
                                 <div class="grid grid-cols-2 pt-4">
-                                    <button onclick="openModal('deleteGrantModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                    <button onclick="openModal('approvedModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
                                         :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
                                         :disabled="!verified">
                                         Approve
@@ -893,7 +893,7 @@
                         <table class="table table-hover min-w-full border-spacing-y-1">
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
-                                    <th class="px-4 py-3 rounded-tl-md">REQUEST ID</th>
+                                    <th class="px-4 py-3 rounded-tl-md">APPLICATION ID</th>
                                     <th class="px-4 py-3">MEMBER</th>
                                     <th class="px-4 py-3">NUMBER</th>
                                     <th class="px-4 py-3">EMAIL</th>

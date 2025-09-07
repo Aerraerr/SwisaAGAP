@@ -41,7 +41,7 @@
 
 
             <div class="col-span-2 relative">
-                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor border rounded-[4px]">
+                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor rounded-[4px]">
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="col-span-2 relative">
-                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor border rounded-[4px]">
+                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor rounded-[4px]">
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Category</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Category</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Category</option>
