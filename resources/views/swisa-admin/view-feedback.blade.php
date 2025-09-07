@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@include('layouts.loading-overlay')
     <body class="bg-mainbg px-2">
         <div class="text-customIT text-2xl flex flex-col md:flex-row justify-between md:items-center mb-4">
             <h1 class="font-bold">Available Grants & Equipments</h1>

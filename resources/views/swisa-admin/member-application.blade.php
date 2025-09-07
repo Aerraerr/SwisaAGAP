@@ -1,14 +1,22 @@
 @extends('layouts.app')
 @section('content')
+@include('layouts.loading-overlay')
 <div class="p-4">
-    <div class="bg-mainbg px-2">
-        <div class="text-customIT text-2xl flex justify-between items-center mb-4">
-            <h1 class="font-bold">Member Application Management</h1>
-                @include('components.UserTab')
+    <div class="bg-mainbg px-4 min-h-screen">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
+            <!-- Left side -->
+            <div class="text-customIT flex flex-col">
+                <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Member Application Management</h2>
+                <p class="text-sm text-gray-600">Manage, and monitor the member application of SWISA members.</p>
+            </div>
+            
+            <!-- Right side -->
+            @include('components.UserTab')
         </div>
+        
 
         <div class="grid grid-cols-12 gap-1 md:gap-2" x-data="{ selectedUser: null, activeTab: 'All-Request' }" >
-            <!-- quick stats -->
+            <!-- quick stats
             <div class="col-span-12 md:col-span-9 h-64 bg-white rounded-md shadow">
                 <p class="font-bold text-center mt-20">LINE CHART</p>
             </div>
@@ -31,6 +39,7 @@
                     <a href="{{route('logs')}}">View All Application Logs</a>
                 </div>
             </div>
+             -->
 
             <!-- tab -->
             <div class="col-span-12 col-start-1 h-auto bg-white rounded-md shadow">
@@ -69,94 +78,123 @@
 
             <!-- All Request Tab-content -->
             <div x-show="activeTab === 'All-Request'" class="col-span-12 lg:col-span-8 col-start-1 h-full bg-white px-6 py-4 rounded-md shadow">
-                    <div class="flex items-center">
-                        <img src="{{ asset('images/file-svg-green.svg') }}"
-                            class="w-12 h-12" />
-                        <p class="text-customIT text-lg font-bold">Request List</p>
-                    </div>
-                    <div class="flex justify-end mb-2">
-                        <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
-                    </div>
-                    <div class="overflow-auto h-[80vh]">
-                        <table class="table table-hover min-w-full border-spacing-y-1">
-                            <thead class="bg-snbg border-gray-300">
-                                <tr class="text-customIT text-left text-xs font-semibold ">
-                                    <th class="px-4 py-3 rounded-tl-md">MEMBERSHIP ID</th>
-                                    <th class="px-4 py-3">NAME</th>
-                                    <th class="px-4 py-3">NUMBER </th>
-                                    <th class="px-4 py-3">EMAIL</th>
-                                    <th class="px-4 py-3">Date Submitted</th>
-                                    <th class="px-4 py-3 rounded-tr-md">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border border-gray-300 hover:bg-gray-100"
-                                    @click="selectedUser = {
+                <!-- Header -->
+                <div class="flex items-center gap-3 mb-3">
+                    <img src="{{ asset('images/file-svg-green.svg') }}" class="w-12 h-12" />
+                    <p class="text-customIT text-lg font-bold">Request List</p>
+                </div>
+
+                <!-- Search -->
+                <div class="flex justify-end mb-3">
+                    <input type="text" placeholder="Search here" 
+                        class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border border-gray-300 rounded-md 
+                                focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] focus:border-[var(--accent-green)]">
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-auto h-[80vh] rounded-md border border-gray-200">
+                    <table class="min-w-full border-collapse">
+                        <thead class="bg-[var(--submenu-bg)] sticky top-0 z-10">
+                            <tr class="text-customIT text-left text-xs font-semibold">
+                                <th class="px-4 py-3">MEMBERSHIP ID</th>
+                                <th class="px-4 py-3">NAME</th>
+                                <th class="px-4 py-3">NUMBER</th>
+                                <th class="px-4 py-3">EMAIL</th>
+                                <th class="px-4 py-3">DATE SUBMITTED</th>
+                                <th class="px-4 py-3">STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Example Row -->
+                            <tr 
+                                class="border-b border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
+                                :class="{ 
+                                    'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
+                                }"
+                                @click="selectedUser = { 
                                     name: 'Ron Peter Mortega', 
                                     id: 'REQ-ITEM00001', 
                                     date: '15 Aug 2025', 
                                     status: 'Approved',
                                     number: '09090909090',
                                     email: 'rpm@gmail.com' 
-                                    }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Ron Peter Mortega</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">rpm@gmail.com</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                    <td class="px-4 py-3">
-                                        <div class="inline-block text-xs font-medium bg-approved text-white text-center px-3 py-1 rounded-full">
-                                            Approved
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="border border-gray-300 hover:bg-gray-100"
-                                    @click="selectedUser = { 
+                                }"
+                            >
+                                <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">Ron Peter Mortega</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">rpm@gmail.com</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-block text-xs font-medium bg-approved text-white px-3 py-1 rounded-full">
+                                        Approved
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <!-- Another Row -->
+                            <tr 
+                                class="border-b border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
+                                :class="{ 
+                                    'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00002' 
+                                }"
+                                @click="selectedUser = { 
                                     name: 'Aeron Jead Marquez', 
                                     id: 'REQ-ITEM00002', 
                                     date: '15 Aug 2025', 
                                     status: 'Rejected',
                                     phone: '09090909090',
                                     email: 'ajm@gmail.com'
-                                    }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Aeron Jead Marquez</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">ajm@gmail.com</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                    <td class="px-4 py-3">
-                                        <div class="inline-block text-xs font-medium bg-rejected text-white text-center px-3 py-1 rounded-full">
-                                            Rejected
-                                        </div>
-                                    </td>
-                                </tr>
-                                @for($i = 0; $i < 10; $i++)
-                                    <tr class="border border-gray-300 hover:bg-gray-100"
-                                        @click="selectedUser = {
-                                        name: 'Random People', 
-                                        id: 'REQ-ITEM00000', 
-                                        date: '15 Aug 2025', 
-                                        status: 'Pending',
-                                        phone: '09090909090',
-                                        email: 'rp@gmail.com' 
-                                        }">
-                                        <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">Random People</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">rp@gmail.com</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                        <td class="px-4 py-3">
-                                            <div class="inline-block text-xs font-medium bg-pending text-white px-3 py-1 rounded-full">
-                                                Pending
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endfor
-                            </tbody>
-                        </table>
-                    </div>
-                    @include('components.pagination')
+                                }"
+                            >
+                                <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00002</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">Aeron Jead Marquez</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">ajm@gmail.com</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-block text-xs font-medium bg-rejected text-white text-center px-3 py-1 rounded-full">
+                                        Rejected
+                                    </span>
+                                </td>
+                            </tr>
+                            
+                            <!-- Sample Loop -->
+                            @for($i = 0; $i < 10; $i++)
+                            <tr 
+                                class="border-b border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
+                                :class="{ 
+                                    'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00000' 
+                                }"
+                                @click="selectedUser = {
+                                    name: 'Random People', 
+                                    id: 'REQ-ITEM00000', 
+                                    date: '15 Aug 2025', 
+                                    status: 'Pending',
+                                    phone: '09090909090',
+                                    email: 'rp@gmail.com' 
+                                }"
+                            >
+                                <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00000</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">Random People</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">rp@gmail.com</td>
+                                <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-block text-xs font-medium bg-pending text-white px-3 py-1 rounded-full">
+                                        Pending
+                                    </span>
+                                </td>
+                            </tr>
+                            @endfor
+                        </tbody>
+                    </table>
+                </div>
+
+
+                @include('components.pagination')
             </div>
+
 
             <div x-show="activeTab === 'All-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">
                     <div class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">

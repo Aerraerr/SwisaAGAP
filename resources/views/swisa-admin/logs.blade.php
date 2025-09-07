@@ -1,8 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+@include('layouts.loading-overlay')
     <!-- Page Header -->
-    <div class="pt-6">
+    <div class="p-4">
         <div class="bg-mainbg px-6 min-h-screen">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-3">
                 <!-- Left side -->

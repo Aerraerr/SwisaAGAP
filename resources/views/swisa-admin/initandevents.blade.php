@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@include('layouts.loading-overlay')
 <div class="pt-4" x-data="{ view: 'grid' }"> {{-- Alpine.js state --}}
     <div class="bg-mainbg px-4 min-h-screen">
         <!-- Header -->

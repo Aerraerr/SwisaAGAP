@@ -1,17 +1,23 @@
 @extends('layouts.app')
 @section('content')
+@include('layouts.loading-overlay')
 <div class="p-4">
-    <div class="bg-mainbg px-2">
-        <div class="text-customIT text-2xl flex justify-between items-center mb-4">
-            <h1 class="font-bold">Request Management</h1>
-                @include('components.UserTab')
+    <div class="bg-mainbg px-4 min-h-screen">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
+            <!-- Left side -->
+            <div class="text-customIT flex flex-col">
+                <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Request Management</h2>
+                <p class="text-sm text-gray-600">insert text here.</p>
+            </div>
+            
+            <!-- Right side -->
+            @include('components.UserTab')
         </div>
 
         <div class="grid grid-cols-12 gap-1 md:gap-2" x-data="{ selectedUser: null, activeTab: 'All-Request' }" >
-            <!-- quick stats -->
-            <div class="col-span-12 lg:col-span-9 h-64 bg-white rounded-md shadow">
-                <p class="font-bold text-center mt-20">LINE CHART</p>
-            </div>
+            <!-- 1ST CHARTS -->
+            @include('charts.request-management')
+
             <div class="col-span-12 lg:col-span-3 lg:col-start-10 bg-white rounded-md shadow py-3 px-5">
                 <h2 class="text-customIT text-md font-bold">Request Status Overview</h2>
                 <div class="my-2">
@@ -82,8 +88,8 @@
                 </div>
                 <div class="overflow-auto h-[80vh]">
                     <table class="table table-hover min-w-full border-spacing-y-1">
-                        <thead class="bg-snbg border-gray-300">
-                            <tr class="text-customIT text-left text-xs font-semibold ">
+                        <thead class="bg-snbg border-black-800 sticky top-0 z-10">
+                            <tr class="text-customIT text-left text-xs font-semibold">
                                 <th class="px-4 py-3 rounded-tl-md">REQUEST ID</th>
                                 <th class="px-4 py-3">MEMBER</th>
                                 <th class="px-4 py-3">REQUESTED ITEM</th>

@@ -2,6 +2,7 @@
 @extends('layouts.app')
 
 @section('content')
+@include('layouts.loading-overlay')
 <div class="bg-mainbg  min-h-screen flex -m-2">
 
         <!-- LEFT SIDEBAR (Messages list) -->
