@@ -4,10 +4,11 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=0.8">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <link rel="icon" href="{{ asset('images/swisa.png') }}" type="image/png" sizes="192x192">
+        <link rel="icon" href="{{ asset('images/swisa-logov1.png') }}" type="png">
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -29,6 +30,8 @@
 
             <!-- Page Content -->
             <div class="main-content flex-1 bg-mainbg">
+
+
                 <!-- Page Heading -->
                 @isset($header)
                     <header class="bg-white shadow">
@@ -54,4 +57,3 @@
         document.body.style.zoom = "80%";
     });
 </script>
-

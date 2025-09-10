@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+@include('layouts.loading-overlay')
 
 <div class="p-4">
     <div class="bg-mainbg px-4 min-h-screen mr-0 w-full">

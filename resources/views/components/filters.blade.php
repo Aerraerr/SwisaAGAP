@@ -26,10 +26,20 @@
                 List
                 </button>
             </div>
-            <button onclick="toggleModal('upload-modal')" class="flex items-center col-start-5 col-span-1 bg-btncolor h-9 text-xs text-white border rounded-[4px] p-1"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4 mx-1">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>Add New
+            <!-- ADD NEW BUTTON-->
+            <button onclick="toggleModal('upload-modal')" 
+                class="col-start-5 col-span-1 flex items-center justify-center gap-2 bg-btncolor hover:bg-btncolor/90 transition-colors h-9 px-4 text-xs font-medium text-white rounded-md shadow">
+                <!-- Circle + Icon -->
+                <span class="flex items-center justify-center w-5 h-5 rounded-full bg-white text-btncolor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                </span>
+
+                Add New
             </button>
+
+
             <div class="col-span-2 relative">
                 <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor rounded-[4px]">
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>

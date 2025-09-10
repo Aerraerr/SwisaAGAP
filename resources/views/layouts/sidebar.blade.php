@@ -12,17 +12,11 @@
         <div class="managesec"><span class="text-sm ml-5">MAIN MENU</span></div>
 
         <!-- Dashboard -->
-        <div class="menu-item dropdown-toggle {{ request()->routeIs('dashboard*') ? 'active open' : '' }}"
-             onclick="toggleSidebarDropdown(this)">
-            <i class="material-icons">dashboard</i>
-            <span class="menu-text">Dashboard</span>
-            <i class="material-icons dropdown-icon">expand_more</i>
-        </div>
-        <div class="submenu {{ request()->routeIs('dashboard*') ? 'show' : '' }}">
-            <a class="submenu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
-               href="{{ route('dashboard') }}">Overview</a>
-            <a class="submenu-item" href="#">Reports</a>
-        </div>
+        <a class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
+           href="{{ route('dashboard') }}">
+           <i class="material-icons">dashboard</i>
+           <span class="menu-text">Dashboard</span>
+        </a>
 
         <!-- Members -->
         <div class="menu-item dropdown-toggle {{ request()->routeIs('members*') ? 'active open' : '' }}"
@@ -68,22 +62,41 @@
             <span class="text-sm ml-5">MANAGEMENT SECTION</span>
         </div>
 
-        <a class="menu-item {{ request()->routeIs('grant-request') ? 'active' : '' }}" href="{{ route('grant-request') }}"><i class="material-icons">folder</i><span class="menu-text">Requests</span></a>
-        <a class="menu-item {{ request()->routeIs('member-application') ? 'active' : '' }}" href="{{ route('member-application') }}"><i class="material-icons">app_registration</i><span class="menu-text">Applications</span></a>
-        <a class="menu-item {{ request()->routeIs('messages') ? 'active' : '' }}" href="{{ route('messages')}}">
-            <i class="material-icons">email</i>
-            <span class="menu-text">Messages</span>
-            <span class="material-icons ml-[-10px]" style="color:red; font-size: 14px;">fiber_manual_record</span>
+        <a class="menu-item {{ request()->routeIs('grant-request') ? 'active' : '' }}" 
+           href="{{ route('grant-request') }}">
+           <i class="material-icons">folder</i>
+           <span class="menu-text">Requests</span>
         </a>
+
+        <a class="menu-item {{ request()->routeIs('member-application') ? 'active' : '' }}" 
+           href="{{ route('member-application') }}">
+           <i class="material-icons">app_registration</i>
+           <span class="menu-text">Applications</span>
+        </a>
+
         <a class="menu-item {{ request()->routeIs('logs') ? 'active' : '' }}" 
-        href="{{ route('logs') }}">
-            <i class="material-icons ">history</i>
-            <span class="menu-text">Activity Logs</span>
+           href="{{ route('logs') }}">
+           <i class="material-icons">history</i>
+           <span class="menu-text">Activity Logs</span>
         </a>
 
+        <a class="menu-item {{ request()->routeIs('reports') ? 'active' : '' }}" 
+           href="{{ route('reports') }}">
+           <i class="material-icons">bar_chart</i>
+           <span class="menu-text">Reports</span>
+        </a>
 
+        <a class="menu-item {{ request()->routeIs('messages') ? 'active' : '' }}" 
+           href="{{ route('messages')}}">
+           <i class="material-icons">email</i>
+           <span class="menu-text">Messages</span>
+           <span class="material-icons ml-[-10px]" style="color:red; font-size: 14px;">fiber_manual_record</span>
+        </a>
+        
         <a class="menu-item {{ request()->routeIs('settings') ? 'active' : '' }}"
-        href="{{ route('settings') }}"><i class="material-icons">settings</i><span class="menu-text">Settings</span>
+           href="{{ route('settings') }}">
+           <i class="material-icons">settings</i>
+           <span class="menu-text">Settings</span>
         </a>
     </div>
 
@@ -97,16 +110,6 @@
     </div>
 </div>
 
-
-<script>
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.remove('hidden');
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
-    }
-</script>
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById("sidebar");
@@ -116,10 +119,14 @@
         toggleButton.innerText = isCollapsed ? "☰" : "‹";
         toggleButton.classList.toggle("active-bg", isCollapsed);
 
+        // Close dropdowns if collapsed
         if (isCollapsed) {
             document.querySelectorAll('.submenu').forEach(menu => menu.style.display = 'none');
             document.querySelectorAll('.dropdown-toggle').forEach(toggle => toggle.classList.remove('open'));
         }
+
+        // ✅ Save state to localStorage
+        localStorage.setItem("sidebarCollapsed", isCollapsed ? "true" : "false");
     }
 
     function toggleSidebarDropdown(element) {
@@ -137,4 +144,33 @@
             element.classList.add('open');
         }
     }
+
+    // ✅ Restore sidebar state on page load
+    document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById("sidebar");
+        const toggleButton = document.getElementById("toggleButton");
+        const isCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
+
+        if (isCollapsed) {
+            sidebar.classList.add("collapsed");
+            toggleButton.innerText = "☰";
+            toggleButton.classList.add("active-bg");
+        } else {
+            sidebar.classList.remove("collapsed");
+            toggleButton.innerText = "‹";
+            toggleButton.classList.remove("active-bg");
+        }
+    });
+
+    // ✅ Optional: PJAX navigation (keeps sidebar persistent)
+    if (window.$ && $.pjax) {
+        $(document).pjax('.sidebar a', '#pjax-container');
+
+        // Keep active highlight when clicked
+        $(document).on('pjax:click', function(event) {
+            $('.menu-item, .submenu-item').removeClass('active');
+            $(event.target).closest('a').addClass('active');
+        });
+    }
 </script>
+
