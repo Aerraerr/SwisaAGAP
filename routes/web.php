@@ -87,6 +87,15 @@ Route::get('/assisted-creation', function () {
     return view('swisa-support_staff.assisted-creation');
 })->middleware(['auth', 'verified'])->name('assisted-creation');
 
+//views in support staff
+Route::get('/view-report', function () {
+    return view('swisa-support_staff.view-report');
+})->middleware(['auth', 'verified'])->name('view-report');
+
+Route::get('/view-giveback', function () {
+    return view('swisa-support_staff.view-giveback');
+})->middleware(['auth', 'verified'])->name('view-giveback');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

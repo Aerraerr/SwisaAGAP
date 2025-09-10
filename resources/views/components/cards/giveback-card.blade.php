@@ -29,9 +29,9 @@
     </div>
     <!-- Buttons -->
     <div class="grid grid-cols-2 sm:flex-row justify-between gap-2">
-        <button onclick="openModal('viewApplicationModal')"
+        <a href="{{route('view-giveback')}}"
            class="col-start-2 p-2 text-xs sm:text-sm text-center font-medium text-white bg-btncolor rounded-[3px] hover:bg-customIT transition">
             View Giveback
-        </button>
+        </a>
     </div>
 </div>

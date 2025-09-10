@@ -11,7 +11,9 @@
 
     <div class="grid grid-cols-12 gap-2">
         <div class="col-span-9 flex bg-white shadow-lg rounded-md h-[30vh] p-3">
-            <div class="bg-gray-200 h-[25vh] w-1/5"></div>
+            <div class="bg-gray-200 h-[25vh] w-1/5">
+                <p class="text-white text-center py-16">Image</p>
+            </div>
             <div class="w-4/5 p-4">
                 <p class="text-md text-bsctxt font-medium">“The Assisted Registration feature allows Support Staff to create member accounts on behalf of individuals who do not have access to devices, ensuring that every farmer can participate in the system.”</p>
             </div>
@@ -20,7 +22,7 @@
             <div class="p-4 mb-2">
                 <p class="text-md text-bsctxt font-medium">“Assist those who don't have any device”</p>
             </div>
-            <button class="bg-white border border-btncolor rounded-md shadow hover:bg-btncolor hover:text-white py-1 px-8">Create</button>
+            <button onclick="openModal('assistRegisterModal')" class="bg-white border border-btncolor rounded-md shadow hover:bg-btncolor hover:text-white py-1 px-8">Create</button>
             <hr class="font-light my-2">
             <p class="text-xs text-bsctxt font-light">Got any questions? <a href="#" class="hover:text-customIT">click here</a></p>
         </div>
@@ -86,7 +88,7 @@
                                                     <a href="#" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Grant Request</a>
                                                 </li>
                                                 <li>
-                                                    <a href="#" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Membership Application</a>
+                                                    <a onclick="openModal('assistMembershipModal')" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Membership Application</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -101,7 +103,8 @@
         </div>
         @include('components.pagination')
     </div>
-
+    @include('components.modals.assist-register')
+    @include('components.modals.assist-membership')
 </div>
 </div>
 @endsection
