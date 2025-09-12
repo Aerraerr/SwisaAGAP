@@ -41,7 +41,7 @@
 
 
             <div class="col-span-2 relative">
-                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor rounded-[4px]">
+                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor rounded-[4px] focus:border-btncolor focus:ring focus:ring-btncolor focus:ring-opacity-30">
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="col-span-2 relative">
-                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor rounded-[4px]">
+                <select id="#" class="h-9 pl-3 w-full text-xs text-white bg-btncolor rounded-[4px] focus:border-btncolor focus:ring focus:ring-btncolor focus:ring-opacity-30">
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Category</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Category</option>
                     <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Category</option>
@@ -65,7 +65,7 @@
                 </div>
             </div>
             <div class="col-span-3 flex items-center shadow-lg rounded-lg">
-                <input type="text" placeholder="Search here" class="w-full h-9 bg-white text-xs text-gray-700 px-4 border-1.5 rounded-l-[4px] focus:outline-none">
+                <input type="text" placeholder="Search here" class="w-full h-9 bg-white text-xs text-gray-700 px-4 border-1.5 rounded-l-[4px] focus:border-btncolor focus:ring focus:ring-btncolor focus:ring-opacity-30">
                 <button class="bg-btncolor text-white p-2 rounded-r-lg hover:bg-customIT transition duration-300 ease-in-out h-9 w-9">
                 <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                     <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.35-1.42 1.42-5.35-5.35zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z" />

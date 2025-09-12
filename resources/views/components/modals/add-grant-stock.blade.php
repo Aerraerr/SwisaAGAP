@@ -1,5 +1,5 @@
 <div id="addStockModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-20 h-full w-full flex items-center justify-center">
-    <div class="relative w-1/2 max-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
+    <div class="relative w-auto max-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
         <!-- Modal Header -->
         <div class="flex items-center justify-between pb-2">
             <h3 class="text-2xl font-bold text-customIT">Add New Stock</h3>
@@ -13,9 +13,9 @@
         </div>
 
         <!-- Modal Body: Activity Log Entries -->
-        <div class="mt-4 overflow-y-auto mr-2" style="max-height: 70vh;">
+        <div class="mt-4 overflow-y-auto mr-2 max-h-[80vh]">
             <!-- Log Group 1 -->
-            <div class="grid grid-cols-3 gap-4 relative">
+            <div class="grid grid-cols-3 gap-4 p-4 relative">
                 <div class="col-span-1">
                     <div class="bg-gray-200 rounded-md h-44 flex items-center justify-center border-b border-gray-300">
                         <span class="text-white text-md">IMAGE</span>
@@ -106,7 +106,7 @@
         </div>
         <!-- modal footer -->
         <div class="text-right px-4 py-3">
-            <button onclick="closeModal('addStockModal')" class="w-1/3 px-4 py-2 bg-white text-btncolor rounded-md border border-btncolor hover:bg-btncolor hover:text-white">
+            <button onclick="closeModal('addStockModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
                 Cancel
             </button>
             <button class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">

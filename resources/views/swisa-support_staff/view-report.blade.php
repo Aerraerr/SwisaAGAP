@@ -21,7 +21,7 @@
                         <p class="text-sm text-bsctxt">ID: 123456789</p>
                     </div>
                     <div>
-                        <button class="border border-btncolor text-sm text-btncolor rounded-[4px] py-1 px-3 hover:bg-btncolor hover:text-white transition-colors">Update</button>
+                        <button onclick="openModal('updateStatusModal')" class="border border-btncolor text-sm text-btncolor rounded-[4px] py-1 px-3 hover:bg-btncolor hover:text-white transition-colors">Update</button>
                     </div>
                 </div>
             </div>
@@ -108,5 +108,6 @@
             </div>
         </div>
     </div>
+    @include('components.modals.update-status')
 </div>
 @endsection

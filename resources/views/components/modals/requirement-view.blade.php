@@ -55,7 +55,7 @@
         </div>
         <!-- modal footer -->
         <div class="text-right pt-6">
-            <button onclick="closeModal('requirementModal')" class="w-1/3 px-4 py-2 bg-white border border-btncolor text-btncolor rounded-md hover:bg-btncolor hover:text-white">
+            <button onclick="closeModal('requirementModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
                 Cancel
             </button>
             <button class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md"
@@ -67,12 +67,3 @@
     </div>
 </div>
 
-<script>
-    function openModal(id) {
-        document.getElementById(id).classList.remove('hidden');
-    }
-
-    function closeModal(id) {
-        document.getElementById(id).classList.add('hidden');
-    }
-</script>

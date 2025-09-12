@@ -16,7 +16,7 @@
         </div>
 
 
-        <!-- Dashboard Top Widgets + Member Demographics + Another Chart -->
+        {{--<!-- Dashboard Top Widgets + Member Demographics + Another Chart -->
         <div class="w-full grid grid-cols-1 lg:grid-cols-5 gap-2 mb-6">
             
             <!-- Column 1: Stats Widgets -->
@@ -74,7 +74,7 @@
     </div>
     @include('charts.member-demographics')
     @include('charts.member-registrations')
-    </div>
+    </div>--}}
 
 
         <div x-data="{ activeTab: 'grid' }" class="mt-4">

@@ -15,7 +15,7 @@
         </div>
 
 
-        <!-- Top Stats + Charts -->
+        {{--<!-- Top Stats + Charts -->
         <div class="grid grid-cols-1 lg:grid-cols-5 md:grid-cols-5 gap-2 mb-3">
             <!-- Stats Cards -->
         <div class="flex flex-col gap-2 lg:col-span-1">
@@ -156,7 +156,7 @@
             </div>
         </div>
 
-    </div>
+    </div>--}}
 
     <div x-data="{ activeTab: 'grid' }" class="mt-4">
         @include('components.filters')

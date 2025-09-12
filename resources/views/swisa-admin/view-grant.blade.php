@@ -2,12 +2,12 @@
 
 @section('content')
 @include('layouts.loading-overlay')
-    <body class="bg-mainbg px-2">
+    <div class="bg-mainbg px-2">
         <div class="text-customIT text-2xl flex flex-col md:flex-row justify-between md:items-center mb-4">
             <h1 class="font-bold">Available Grants & Equipments</h1>
             @include('components.UserTab')
         </div>
-        <div class="grid grid-cols-12 gap-2 py-2" x-data="{ selectedUser: null }">
+        <div class="grid grid-cols-12 gap-2 py-2" x-data="{ selectedUser: null, activeTab: 'request-table' }">
             <div class="col-span-12">
                 <div class="bg-white shadow-lg p-4 h-auto rounded-md">
                     <div class="lg:flex h-full">
@@ -89,11 +89,11 @@
                 </div>
             </div>
             <!-- table -->
-            <div class="col-start-1 col-span-12 lg:col-span-8 bg-white shadow-lg px-4 rounded-md mt-2 overflow-auto">
+            <div x-show="activeTab === 'request-table'" class="col-start-1 col-span-12 lg:col-span-8 bg-white shadow-lg px-4 rounded-md mt-2">
                 <div class="text-customIT text-lg flex justify-between gap-2 my-4">
                     <h1 class="font-bold mr-40">Request Summary Table</h1>
                 </div>
-                <div class="overflow-auto h-[80vh]">
+                <div class="overflow-auto h-auto">
                     <table class="min-w-full overflow-auto border-spacing-y-1">
                     <thead class="bg-snbg border border-gray-100">
                         <tr class="text-customIT text-left ">
@@ -196,7 +196,7 @@
                                 </div>
                             </td>
                         </tr>
-                        @for($i = 1; $i < 5; $i++)
+                        @for($i = 1; $i < 9; $i++)
                             <tr class="border border-gray-300 hover:bg-gray-100 cursor-pointer"
                                 @click="selectedUser = { 
                                 name: 'Aeron Jead Marquez', 
@@ -249,7 +249,7 @@
                 @include('components.pagination')
             </div>
             <!-- right side pane -->
-            <div class="col-span-12 lg:col-start-9 lg:col-span-4 ">
+            <div x-show="activeTab === 'request-table'" class="col-span-12 lg:col-start-9 lg:col-span-4 ">
                 <!-- thi is where the data of the clicked row should appear-->
                 <div class="flex flex-col bg-white shadow-lg p-10 h-auto rounded-md mt-2 text-center overflow-auto">
                     <!-- Show default message if no user selected -->
@@ -297,7 +297,7 @@
                     </template>
                 </div>
                 
-                <div class="bg-white shadow-lg p-8 h-auto rounded-md mt-2 overflow-auto">
+                <div  x-show="activeTab === 'request-table' || activeTab === 'feedback'" class="bg-white shadow-lg p-8 h-auto rounded-md mt-2 overflow-auto">
                     <p class="text-xl text-customIT font-semibold">Feedback Insghts</p>
                     <div class="grid grid-cols-2 mb-6">
                         <div class="col-span-1 mb-2">
@@ -329,8 +329,80 @@
                     </div>
                     <div class="px-5 py-2">
                         <p class="text-bsctxt font-medium mb-2">View all feedback for this Grant / Equipment?</p>
-                        <button onclick="window.location.href = '{{ route('view-feedback') }}'" class="w-full px-4 py-3 bg-btncolor text-white rounded-md hover:bg-opacity-80">
+                        <button @click="activeTab = 'feedback'" class="w-full px-4 py-3 bg-btncolor text-white rounded-md hover:bg-opacity-80">
                             View All Feedback
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- feedback section -->
+            <div x-show="activeTab === 'feedback'" class="col-start-1 col-span-12 lg:col-span-8 bg-white shadow-lg px-6 rounded-md mt-2 relative">
+                <div class="text-customIT text-lg flex justify-between gap-2 my-4">
+                    <h1 class="font-bold mr-40">Member Feedback</h1>
+                </div>
+                <div class="bg-white h-auto rounded-md mt-2 overflow-auto" style="max-height: 85vh;">
+                <!-- member feedback section-->
+                @for($i = 0; $i < 5; $i++)
+                    <div class="bg-white p-4 rounded-[4px] shadow-sm border-b border-gray-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
+                                class="w-10 h-10 rounded-full shadow-md object-cover mb-4" />
+                                <p class="text-sm pb-4 px-2 text-bsctxt font-semibold">Aeron Jead Marquez</p>
+                            </div>
+                            <div class="text-md font-medium text-approved">Positive</div>
+                        </div>
+                        <div class="border border-gray-200 rounded-[4px] py-4 px-10">
+                            <p class="text-bsctxt text-sm">This is a placeholder for the actual feedback content. The layout is designed to show how individual feedback items will appear.</p>
+                        </div>
+                    </div>
+                @endfor
+                </div>
+                <div>
+                    @include('components.pagination')
+                </div>
+            </div>
+            <!-- right side pane -->
+            <div x-show="activeTab === 'feedback'" class="col-span-12 lg:col-start-9 lg:col-span-4 ">
+
+                <div class="bg-white shadow-lg p-8 h-auto rounded-md mt-2">
+                    <p class="text-xl text-customIT font-semibold">Feedback Insghts</p>
+                    <div class="grid grid-cols-2 mb-6">
+                        <div class="col-span-1 mb-2">
+                            <div class="my-6">
+                                <p class="text-md text-customIT font-semibold">4.5/5<span class="text-md text-bsctxt ml-2 font-medium ">Assessed</span></p>
+                                <p class="text-md text-customIT font-semibold">12<span class="text-md text-bsctxt ml-2 font-medium">Reviews</span></p>
+                            </div>
+                            <div class="flex text-btncolor items-center gap-2 md:gap-1">
+                                <p class="w-6 h-6 md:w-4 md:h-4 rounded-full bg-approved shadow-lg"></p> 
+                                <p class="font-medium">Positive</p>
+                            </div>
+                            <div class="flex text-iconsClr items-center gap-2 md:gap-1">
+                                <p class="w-6 h-6 md:w-4 md:h-4 rounded-full bg-neutral shadow-lg"></p>
+                                <p class="font-medium">Neutral</p>
+                            </div>
+                            <div class="flex text-iconsClr items-center gap-2 md:gap-1">
+                                <p class="w-6 h-6 md:w-4 md:h-4 rounded-full bg-rejected shadow-lg"></p>
+                                <p class="font-medium">Negative</p>
+                            </div>
+                        </div>
+
+                        <div class="cols-start-2">
+                           <!-- Chart container on the right -->
+                            <div class="flex justify-center items-center h-44">
+                                <!-- Canvas element where the chart will be drawn -->
+                                <canvas id="feedbackChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white shadow-lg p-3 h-auto rounded-md mt-2 overflow-auto">
+                    <p class="text-lg text-gray-400 font-medium text-center">View All list for this Grant?</p>
+                    <div class="px-10 py-2">
+                        <button @click="activeTab = 'request-table'" class="w-full px-4 py-3 bg-btncolor text-white rounded-md hover:bg-opacity-80">
+                            View All Request
                         </button>
                     </div>
                 </div>
@@ -383,5 +455,5 @@
                 options: options
             });
         </script>
-    </body>
+    </div>
 @endsection

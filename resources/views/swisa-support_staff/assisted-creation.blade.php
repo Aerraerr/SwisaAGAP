@@ -85,10 +85,10 @@
                                         <div class="border-t border-gray-200 py-2">
                                             <ul class="space-y-2">
                                                 <li>
-                                                    <a href="#" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Grant Request</a>
+                                                    <button onclick="openModal('assistGrantRequestModal')"class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Grant Request</button>
                                                 </li>
                                                 <li>
-                                                    <a onclick="openModal('assistMembershipModal')" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Membership Application</a>
+                                                    <button onclick="openModal('assistMembershipModal')" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Membership Application</button>
                                                 </li>
                                             </ul>
                                         </div>
@@ -105,6 +105,7 @@
     </div>
     @include('components.modals.assist-register')
     @include('components.modals.assist-membership')
+    @include('components.modals.assist-grant-request')
 </div>
 </div>
 @endsection

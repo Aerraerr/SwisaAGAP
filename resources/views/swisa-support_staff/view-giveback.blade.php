@@ -21,7 +21,7 @@
                         <p class="text-sm text-bsctxt">ID: 123456789</p>
                     </div>
                     <div>
-                        <button class="border border-btncolor text-sm text-btncolor rounded-[4px] py-1 px-3 hover:bg-btncolor hover:text-white transition-colors">Received?</button>
+                        <button onclick="openModal('receivedModal')" class="border border-btncolor text-sm text-btncolor rounded-[4px] py-1 px-3 hover:bg-btncolor hover:text-white transition-colors">Received?</button>
                     </div>
                 </div>
             </div>
@@ -109,5 +109,6 @@
             </div>
         </div>
     </div>
+    @include('components.modals.received-modal')
 </div>
 @endsection

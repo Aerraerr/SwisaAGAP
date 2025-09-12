@@ -14,7 +14,7 @@
         </div>
 
 
-        <!-- Top Stats + Charts -->
+        {{--<!-- Top Stats + Charts -->
         <div class="grid grid-cols-12 gap-2 mb-3">
             <!-- Stats Cards -->
             <div class="flex flex-col gap-2 col-span-3">
@@ -105,7 +105,7 @@
                     pie chart
                 </div>
             </div>
-        </div>
+        </div>--}}
 
         <div x-data="{ activeTab: 'grid' }" class="mt-4">
 
