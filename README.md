@@ -40,7 +40,7 @@
 #### 1. Clone the repository: First, clone the project from your Git repository
 ```sh
     https://github.com/Aerraerr/SwisaAGAP.git
-    cd ARTieh
+    cd swisaagap
 ```
 
 #### 2. Install PHP Dependencies: Use Composer to install the required PHP dependencies for Laravel
