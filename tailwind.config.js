@@ -29,6 +29,7 @@ export default {
                 tbr: '#F8F8F8',
                 neutral: '#B2D6D3',
                 mainbg: "#F2F5F3",
+                cancel: "#D9D9D9",
             },
             borderColor: {
                 Gborder: '#2C6E49',

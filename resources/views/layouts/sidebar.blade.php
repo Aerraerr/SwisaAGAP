@@ -97,7 +97,15 @@
         <div class="admin-role menu-text text-xs text-gray-500">Admin Acc</div>
     </div>
 </div>
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
 
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+</script>
 <script>
     function toggleSidebar() {
         const sidebar = document.getElementById("sidebar");

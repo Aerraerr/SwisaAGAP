@@ -40,7 +40,7 @@
         </div>
     </div>
 
-    <div class="mt-2 mb-3">
+    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
             @include('charts.request-management')
     </div>
     <!-- Requests Table -->

@@ -16,13 +16,11 @@
 
         <!-- Modal Body: Activity Log Entries -->
         <div class="mt-4 m-8">
-            <div class="items-center">
-                <p class="text-md">Reports</p>
-            </div>
+            reports
         </div>
         <!-- modal footer -->
         <div class="text-right px-4 py-3">
-            <button onclick="closeModal('geneReportModal')" class="w-1/3 px-4 py-2 bg-white text-btncolor rounded-md border border-btncolor hover:bg-btncolor hover:text-white">
+            <button onclick="closeModal('geneReportModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
                 Cancel
             </button>
             <button class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">

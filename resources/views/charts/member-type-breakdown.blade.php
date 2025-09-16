@@ -1,14 +1,14 @@
 <!-- Add this in your <head> if not already -->
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-<div class="lg:col-span-3 bg-white p-7 rounded-xl shadow">
+<div class="lg:col-span-2 bg-white p-5 rounded-xl shadow">
     <p class="font-semibold mb-2 primary-color dashheader flex items-center">
         <span class="material-icons mr-2 text-custom">bar_chart</span>
         Member Type Breakdown
     </p>
     
-    <!-- Fixed height wrapper -->
-    <div style="height: 250px;">
+    <!-- Responsive chart wrapper -->
+    <div class="relative h-64 sm:h-70 md:h-70 lg:h-70">
         <canvas id="memberTypeChart"></canvas>
     </div>
 
@@ -16,7 +16,6 @@
         <a href="#" class="text-xs text-custom">View &rarr;</a>
     </div>
 </div>
-
 
 @push('scripts')
 <script>
@@ -29,8 +28,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Create a horizontal gradient (left → right)
     const gradient = ctxMember.createLinearGradient(0, 0, ctxMember.canvas.width, 0);
-    gradient.addColorStop(0, '#2C6E49');  // Left (original green)
-    gradient.addColorStop(1, '#68b2abad');  // Right (lighter green)
+    gradient.addColorStop(0, '#2C6E49');
+    gradient.addColorStop(1, '#68b2abad');
 
     window.memberTypeChartInstance = new Chart(ctxMember, {
         type: 'bar',
@@ -40,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 label: 'Members',
                 data: [95, 65, 45, 92, 15],
                 backgroundColor: gradient,
-                borderRadius: 2
+                borderRadius: 4
             }]
         },
         options: {
@@ -53,15 +52,16 @@ document.addEventListener("DOMContentLoaded", function () {
             scales: {
                 x: {
                     beginAtZero: true,
-                    title: { display: true, text: 'COUNT' }
+                    title: { display: true, text: 'COUNT' },
+                    ticks: { font: { size: 10 } }
                 },
                 y: {
-                    title: { display: true, text: 'MEMBER TYPE' }
+                    title: { display: true, text: 'MEMBER TYPE' },
+                    ticks: { font: { size: 10 } }
                 }
             }
         }
     });
 });
 </script>
-
 @endpush

@@ -72,16 +72,13 @@ Route::get('/view-training', function () {
     return view('swisa-admin.view-training');
 })->middleware(['auth', 'verified'])->name('view-training');
 
-Route::get('/view-feedback', function () {
-    return view('swisa-admin.view-feedback');
-})->middleware(['auth', 'verified'])->name('view-feedback');
 
 
-// SWISA ADMIN: Main pages
+// SWISA STAFF: Main pages
 
-Route::get('/reports', function () {
+Route::get('/report', function () {
     return view('swisa-support_staff.reports');
-})->middleware(['auth', 'verified'])->name('reports');
+})->middleware(['auth', 'verified'])->name('report');
 
 Route::get('/giveback', function () {
     return view('swisa-support_staff.giveback');
@@ -90,6 +87,15 @@ Route::get('/giveback', function () {
 Route::get('/assisted-creation', function () {
     return view('swisa-support_staff.assisted-creation');
 })->middleware(['auth', 'verified'])->name('assisted-creation');
+
+//views in support staff
+Route::get('/view-report', function () {
+    return view('swisa-support_staff.view-report');
+})->middleware(['auth', 'verified'])->name('view-report');
+
+Route::get('/view-giveback', function () {
+    return view('swisa-support_staff.view-giveback');
+})->middleware(['auth', 'verified'])->name('view-giveback');
 
 
 Route::middleware('auth')->group(function () {

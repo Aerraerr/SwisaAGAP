@@ -1,5 +1,5 @@
-<div id="activityLogsModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 z-20 overflow-y-auto h-full w-full flex items-center justify-center">
-    <div class="relative w-1/2 max-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
+<div id="activityLogsModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 z-20 h-full w-full flex items-center justify-center">
+    <div class="relative w-1/2 max-w-3xl max-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
         <!-- Modal Header -->
         <div class="flex items-center justify-between pb-2">
             <h3 class="text-2xl font-bold text-customIT">Activity Logs</h3>
@@ -12,7 +12,7 @@
             </div>
         </div>
         <div class="text-right relative border-b border-gray-200 pb-4">
-            <select id="#" class="h-9 pl-3 w-40 text-xs text-white bg-btncolor border rounded-[3px]">
+            <select id="#" class="h-9 pl-3 w-40 text-xs text-white bg-btncolor rounded-[3px]">
                 <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
                 <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
                 <option class="bg-white text-gray-800 hover:bg-gray-200" value="">Sort</option>
@@ -25,7 +25,7 @@
         </div>
 
         <!-- Modal Body: Activity Log Entries -->
-        <div class="mt-4 overflow-y-auto" style="max-height: 60vh;">
+        <div class="mt-4 max-h-[80vh] overflow-auto ">
             <!-- Log Group 1 -->
             <div class="mb-4">
                 <p class="text-sm font-bold text-gray-500 mb-2">July 12, 2023</p>
@@ -132,7 +132,7 @@
         </div>
         <!-- modal footer -->
         <div class="text-right px-4 py-3">
-            <button onclick="closeModal('activityLogsModal')" class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-opacity-80">
+            <button onclick="closeModal('activityLogsModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
                 Close
             </button>
         </div>

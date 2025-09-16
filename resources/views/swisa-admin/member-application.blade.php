@@ -16,7 +16,7 @@
         
 
         <div class="grid grid-cols-12 gap-1 md:gap-2" x-data="{ selectedUser: null, activeTab: 'All-Request' }" >
-            <!-- quick stats
+            <!-- quick stats -->
             <div class="col-span-12 md:col-span-9 h-64 bg-white rounded-md shadow">
                 <p class="font-bold text-center mt-20">LINE CHART</p>
             </div>
@@ -39,7 +39,7 @@
                     <a href="{{route('logs')}}">View All Application Logs</a>
                 </div>
             </div>
-             -->
+             
 
             <!-- tab -->
             <div class="col-span-12 col-start-1 h-auto bg-white rounded-md shadow">

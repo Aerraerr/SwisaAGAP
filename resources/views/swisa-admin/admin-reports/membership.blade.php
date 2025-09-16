@@ -37,8 +37,10 @@
             <p class="text-xs text-gray-400 mt-1">Based on logins and activity</p>
         </div>
     </div>
-    <div class="mt-2 mb-3">
-            @include('charts.member-type-breakdown')
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+        @include('charts.member-type-breakdown')
+        @include('charts.member-demographics')
     </div>
     <!-- Members Table -->
     <div class="bg-white rounded-2xl shadow p-4">

@@ -1,8 +1,8 @@
-<div id="grantViewModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-50 h-full w-full flex items-center justify-center">
-    <div class="relative w-1/2 max-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
+<div id="grantViewModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-30 h-full w-full flex items-center justify-center">
+    <div class="relative w-auto max-auto max-w-3xl p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
         <!-- Modal Header -->
-        <div class="flex items-center justify-between pb-2">
-            <h3 class="text-2xl font-bold text-customIT">Overview</h3>
+        <div class="flex items-center justify-between mb-4 ">
+            <h3 class="text-2xl font-bold text-customIT">Request Overview</h3>
             <div>
                 <button onclick="closeModal('grantViewModal')" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -13,7 +13,7 @@
         </div>
 
         <!-- Modal Body: Activity Log Entries -->
-        <div class="mt-4 overflow-y-auto mr-2" style="max-height: 70vh;">
+        <div class="overflow-y-auto mr-2 space-y-4 max-h-[80vh]">
             <!-- Log Group 1 -->
             <div class="grid grid-cols-2 gap-4 relative">
                 <div class="col-span-1">

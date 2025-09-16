@@ -38,7 +38,7 @@
     </div>
     <!-- View Button Section -->
     <div class="grid grid-cols-2 text-right mb-2">
-        <a href="#" class="col-start-2 bg-btncolor text-white text-sm text-center py-1.5 rounded-[3px] hover:bg-customIT transition duration-300">
+        <a href="{{ route('view-report')}}" class="col-start-2 bg-btncolor text-white text-sm text-center py-1.5 rounded-[3px] hover:bg-customIT transition duration-300">
             View
         </a>
     </div>

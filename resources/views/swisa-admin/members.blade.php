@@ -36,7 +36,7 @@
 
 
         <div class="bg-white p-5 rounded-xl shadow-xl">
-                    <!--Sample Data-->
+                <!--Sample Data-->
                 <div x-data="{ activeTab: 'grid' }" class="mt-4">
                     @include('components.filters')
 

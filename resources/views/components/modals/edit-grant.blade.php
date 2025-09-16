@@ -13,7 +13,7 @@
         </div>
 
         <!-- Modal Body: Activity Log Entries -->
-        <div class="mt-4 overflow-y-auto mr-2" style="max-height: 70vh;">
+        <div class="mt-4 overflow-y-auto mr-2 max-h-[80vh]">
             <!-- Log Group 1 -->
             <div class="grid grid-cols-3 gap-4 relative">
                 <div class="col-span-1">
@@ -132,7 +132,7 @@
         </div>
         <!-- modal footer -->
         <div class="text-right px-4 py-3">
-            <button onclick="closeModal('editGrantModal')" class="w-1/3 px-4 py-2 bg-white text-btncolor rounded-md border border-btncolor hover:bg-btncolor hover:text-white">
+            <button onclick="closeModal('editGrantModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
                 Cancel
             </button>
             <button class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">

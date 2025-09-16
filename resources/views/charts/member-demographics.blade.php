@@ -1,4 +1,4 @@
-<div class="lg:col-span-2  bg-white rounded-lg shadow-md p-6">
+<div class="lg:col-span-2 bg-white rounded-xl shadow p-6">
     <h3 class="text-lg font-bold text-customIT mb-4">Member Demographics</h3>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -36,52 +36,56 @@
                 <div class="flex items-center mb-2">
                     <span class="text-xs w-12">26–30</span>
                     <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 70%"></div>
+                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 45%"></div>
                     </div>
-                    <span class="text-xs text-yellow-600 font-medium">70%</span>
+                    <span class="text-xs text-yellow-600 font-medium">45%</span>
                 </div>
                 <div class="flex items-center">
                     <span class="text-xs w-12">30+</span>
                     <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 70%"></div>
+                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 30%"></div>
                     </div>
-                    <span class="text-xs text-yellow-600 font-medium">70%</span>
+                    <span class="text-xs text-yellow-600 font-medium">30%</span>
                 </div>
             </div>
         </div>
 
         <!-- Right Section: Gender Pie Chart -->
         <div class="flex items-center justify-center">
-            <canvas id="genderChart" class="w-40 h-40"></canvas>
+            <canvas id="genderChart" class="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64"></canvas>
         </div>
     </div>
 </div>
-<!-- Chart.js Script -->
+
+@push('scripts')
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const ctx = document.getElementById('genderChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Male', 'Female'],
-                datasets: [{
-                    data: [78, 22],
-                    backgroundColor: ['#3b82f6', '#6b21a8'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                cutout: '70%',
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            font: { size: 12 },
-                            color: '#374151'
-                        }
+document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById('genderChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Male', 'Female'],
+            datasets: [{
+                data: [78, 22],
+                backgroundColor: ['#3b82f6', '#6b21a8'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12 },
+                        color: '#374151'
                     }
                 }
             }
-        });
+        }
     });
+});
 </script>
+@endpush
