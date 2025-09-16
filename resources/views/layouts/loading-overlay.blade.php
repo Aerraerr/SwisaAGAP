@@ -1,5 +1,5 @@
 <!-- Loading Overlay -->
-<div id="loadingOverlay" class="fixed inset-0 bg-white bg-opacity-80 z-[9999] flex items-center justify-center">
+<div id="loadingOverlay" class="fixed inset-0 bg-white bg-opacity-100 z-[9999] flex items-center justify-center">
     <div class="flex flex-col items-center">
         <svg class="animate-spin h-10 w-10 text-[#2C6E49]" xmlns="http://www.w3.org/2000/svg" fill="none"
             viewBox="0 0 24 24">
@@ -30,6 +30,6 @@
     window.addEventListener("load", function () {
         setTimeout(function () {
             hideLoadingOverlay();
-        }, 300); // 3000ms = 3 seconds
+        }, 500); // 3000ms = 3 seconds
     });
 </script>

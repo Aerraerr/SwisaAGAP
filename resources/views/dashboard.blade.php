@@ -7,39 +7,39 @@
             </div>
 
 <!-- Page Wrapper -->
-<div class="p-4">
+<div class="p-4 -mt-2">
     <div class="bg-mainbg px-4 min-h-screen">
         
-<!-- Page Header -->
-        <div class="flex flex-col sm:flex-row justify-between items-center sm:items-center mb-3 gap-4 
-                    text-white px-6 py-6 rounded-xl shadow-lg relative overflow-hidden"
+        <!-- Page Header (Smaller Version) -->
+        <div class="flex flex-col sm:flex-row justify-between items-center sm:items-center mb-2 gap-3 
+                    text-white px-4 py-3 rounded-xl shadow-md relative overflow-hidden"
             style="background: linear-gradient(120deg, rgba(44, 110, 73, 1), rgba(89, 170, 114, 0.68));">
 
             <!-- Decorative subtle background circles -->
-            <div class="absolute top-0 right-0 w-40 h-40 bg-white opacity-10 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-10 rounded-full blur-2xl"></div>
+            <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-10 rounded-full blur-2xl"></div>
+            <div class="absolute bottom-0 left-0 w-20 h-20 bg-white opacity-10 rounded-full blur-xl"></div>
 
             <!-- Left Content -->
-            <div class="flex items-center gap-4 relative z-10">
+            <div class="flex items-center gap-3 relative z-10">
                 <!-- Admin Icon -->
-                <div class="flex items-center justify-center w-14 h-14 rounded-full bg-white bg-opacity-20 shadow-md">
-                    <span class="material-icons text-white text-3xl">admin_panel_settings</span>
+                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-white bg-opacity-20 shadow-md">
+                    <span class="material-icons text-white text-xl">admin_panel_settings</span>
                 </div>
 
                 <div class="flex flex-col">
-                    <h2 class="text-[22px] sm:text-[28px] font-bold drop-shadow-sm animate-fadeIn">
+                    <h2 class="text-[16px] sm:text-[20px] font-semibold drop-shadow-sm animate-fadeIn">
                         Welcome Back, Admin! 👋
                     </h2>
-                    <p class="text-sm sm:text-base opacity-90">
-                        Here’s a quick overview of your system today.
+                    <p class="text-xs sm:text-sm opacity-90">
+                        Here’s your quick overview today.
                     </p>
                 </div>
             </div>
 
-            <!-- Right Side (Optional Quick Status) -->
+            <!-- Right Side (Quick Status) -->
             <div class="hidden sm:flex flex-col text-right relative z-10">
-                <p class="text-sm opacity-80">Last Login: <span class="font-semibold">Today, 9:45 AM</span></p>
-                <p class="text-sm opacity-80">System Status: <span class="font-semibold text-hover-green">All Good ✅</span></p>
+                <p class="text-xs opacity-80">Last Login: <span class="font-medium">Today, 9:45 AM</span></p>
+                <p class="text-xs opacity-80">System Status: <span class="font-medium text-hover-green">All Good ✅</span></p>
             </div>
         </div>
 

@@ -15,9 +15,9 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/reports', function () {
+Route::get('/admin-reports', function () {
     return view('swisa-admin.reports');
-})->middleware(['auth', 'verified'])->name('reports');
+})->middleware(['auth', 'verified'])->name('admin-reports');
 
 Route::get('/members', function () {
     return view('swisa-admin.members');

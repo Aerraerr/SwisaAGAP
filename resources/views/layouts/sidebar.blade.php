@@ -1,8 +1,8 @@
 <!-- Hamburger -->
-<button class="hamburger sidebar-closebtn" id="toggleButton" onclick="toggleSidebar()">‹</button>
+<button class="hamburger sidebar-closebtn" id="toggleButton" onclick="toggleSidebar()">☰</button>
 
-<!-- Sidebar -->
-<div class="sidebar z-10" id="sidebar">
+<!-- Sidebar (default collapsed) -->
+<div class="sidebar z-10 collapsed" id="sidebar">
     <div class="sidebar-header mb-5">
         <img class="sidebar-logo" src="{{ asset('images/swisa-agap4.png') }}" alt="Swisa AGAP Logo">
     </div>
@@ -19,30 +19,18 @@
         </a>
 
         <!-- Members -->
-        <div class="menu-item dropdown-toggle {{ request()->routeIs('members*') ? 'active open' : '' }}"
-             onclick="toggleSidebarDropdown(this)">
-            <i class="material-icons">person</i>
-            <span class="menu-text">Members</span>
-            <i class="material-icons dropdown-icon">expand_more</i>
-        </div>
-        <div class="submenu {{ request()->routeIs('members*') ? 'show' : '' }}">
-            <a class="submenu-item {{ request()->routeIs('members') ? 'active' : '' }}" 
-               href="{{ route('members') }}">List of Members</a>
-            <a class="submenu-item" href="#">Add Member</a>
-        </div>
+        <a class="menu-item {{ request()->routeIs('members') ? 'active' : '' }}" 
+           href="{{ route('members') }}">
+           <i class="material-icons">person</i>
+           <span class="menu-text">Registered Members</span>
+        </a>
 
         <!-- Grant & Equipment -->
-        <div class="menu-item dropdown-toggle {{ request()->routeIs('grantsNequipment*') ? 'active open' : '' }}"
-             onclick="toggleSidebarDropdown(this)">
-            <i class="material-icons">inventory</i>
-            <span class="menu-text">Grant & Equipment</span>
-            <i class="material-icons dropdown-icon">expand_more</i>
-        </div>
-        <div class="submenu {{ request()->routeIs('grantsNequipment*') ? 'show' : '' }}">
-            <a class="submenu-item {{ request()->routeIs('grantsNequipment') ? 'active' : '' }}" 
-               href="{{ route('grantsNequipment') }}">View Grants</a>
-            <a class="submenu-item" href="#">Add Equipment</a>
-        </div>
+        <a class="menu-item {{ request()->routeIs('grantsNequipment') ? 'active' : '' }}" 
+           href="{{ route('grantsNequipment') }}">
+           <i class="material-icons">inventory</i>
+           <span class="menu-text">Grant & Equipment</span>
+        </a>
 
         <!-- Initiatives & Events -->
         <a class="menu-item {{ request()->routeIs('training-workshop') ? 'active' : '' }}" 
@@ -80,8 +68,8 @@
            <span class="menu-text">Activity Logs</span>
         </a>
 
-        <a class="menu-item {{ request()->routeIs('reports') ? 'active' : '' }}" 
-           href="{{ route('reports') }}">
+        <a class="menu-item {{ request()->routeIs('admin-reports') ? 'active' : '' }}" 
+           href="{{ route('admin-reports') }}">
            <i class="material-icons">bar_chart</i>
            <span class="menu-text">Reports</span>
         </a>
@@ -119,13 +107,11 @@
         toggleButton.innerText = isCollapsed ? "☰" : "‹";
         toggleButton.classList.toggle("active-bg", isCollapsed);
 
-        // Close dropdowns if collapsed
         if (isCollapsed) {
             document.querySelectorAll('.submenu').forEach(menu => menu.style.display = 'none');
             document.querySelectorAll('.dropdown-toggle').forEach(toggle => toggle.classList.remove('open'));
         }
 
-        // ✅ Save state to localStorage
         localStorage.setItem("sidebarCollapsed", isCollapsed ? "true" : "false");
     }
 
@@ -145,13 +131,18 @@
         }
     }
 
-    // ✅ Restore sidebar state on page load
     document.addEventListener("DOMContentLoaded", function () {
         const sidebar = document.getElementById("sidebar");
         const toggleButton = document.getElementById("toggleButton");
-        const isCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
 
-        if (isCollapsed) {
+        // ✅ Force default to collapsed if no preference is saved
+        let isCollapsed = localStorage.getItem("sidebarCollapsed");
+        if (isCollapsed === null) {
+            isCollapsed = "true"; 
+            localStorage.setItem("sidebarCollapsed", "true");
+        }
+
+        if (isCollapsed === "true") {
             sidebar.classList.add("collapsed");
             toggleButton.innerText = "☰";
             toggleButton.classList.add("active-bg");
@@ -162,15 +153,11 @@
         }
     });
 
-    // ✅ Optional: PJAX navigation (keeps sidebar persistent)
     if (window.$ && $.pjax) {
         $(document).pjax('.sidebar a', '#pjax-container');
-
-        // Keep active highlight when clicked
         $(document).on('pjax:click', function(event) {
             $('.menu-item, .submenu-item').removeClass('active');
             $(event.target).closest('a').addClass('active');
         });
     }
 </script>
-
