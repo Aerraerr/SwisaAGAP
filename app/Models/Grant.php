@@ -39,4 +39,10 @@ class Grant extends Model
     public function applications(){
         return $this->hasMany(Application::class);
     }
+
+    //for the documents/picture of grant
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
 }

@@ -37,7 +37,7 @@
             
                 <div x-data="{ activeTab: 'grid' }" class="mt-4">
 
-                    @include('components.filters')
+                    <x-filters modalId="addGrantModal" />
 
                     <!-- Example of using the reusable component -->
                     <div x-show="activeTab === 'grid'" class="pt-2 shadow-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -196,5 +196,6 @@
                 @include('components.pagination')
         </div>
     </div>
+    @include('components.modals.add-grant')
 </div>
 @endsection

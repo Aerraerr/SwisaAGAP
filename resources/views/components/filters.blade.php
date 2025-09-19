@@ -1,3 +1,5 @@
+@props(['modalId' => null])
+
 <div class="flex grid grid-cols-12 mb-4 gap-1">
             <div class="tab-buttons flex col-span-2 gap-1">
                 <button 
@@ -27,7 +29,7 @@
                 </button>
             </div>
             <!-- ADD NEW BUTTON-->
-            <button onclick="toggleModal('upload-modal')" 
+            <button onclick="openModal('{{ $modalId }}')" 
                 class="col-start-5 col-span-1 flex items-center justify-center gap-2 bg-btncolor hover:bg-btncolor/90 transition-colors h-9 px-4 text-xs font-medium text-white rounded-md shadow">
                 <!-- Circle + Icon -->
                 <span class="flex items-center justify-center w-5 h-5 rounded-full bg-white text-btncolor">
@@ -35,7 +37,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
                 </span>
-
                 Add New
             </button>
 

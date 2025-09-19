@@ -12,7 +12,7 @@ class GrantType extends Model
     use HasFactory;
 
     protected $fillable = [
-        'type_name',
+        'grant_type',
     ];
 
     //RELATIONSHIPS

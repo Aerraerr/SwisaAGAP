@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Web\GrantController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,9 +24,13 @@ Route::get('/members', function () {
     return view('swisa-admin.members');
 })->middleware(['auth', 'verified'])->name('members');
 
-Route::get('/grantsNequipment', function () {
-    return view('swisa-admin.grantsNequipment');
-})->middleware(['auth', 'verified'])->name('grantsNequipment');
+Route::get('/grantsNequipment', [GrantController::class, 'showGrantTypes'])
+->middleware(['auth', 'verified'])->name('grantsNequipment');
+
+//for grantcontroller/addgrant
+Route::post('/grantsNequipment', [GrantController::class, 'addGrant'])
+->middleware(['auth', 'verified'])->name('grantsNequipment.store');
+
 
 Route::get('/announcements', function () {
     return view('swisa-admin.announcements');

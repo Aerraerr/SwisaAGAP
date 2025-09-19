@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('grant_requirement_id')->nullable()->constrained('grant_requirements')->onDelete('cascade');
-            $table->foreignId('status_id')->constrained('statuses')->onDelete('cascade');
+            $table->foreignId('status_id')->nullable()->constrained('statuses')->onDelete('cascade');
             $table->string('file_path');
             $table->string('file_name')->nullable();
             $table->morphs('documentable');
