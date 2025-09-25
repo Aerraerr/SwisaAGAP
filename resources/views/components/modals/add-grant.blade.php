@@ -16,11 +16,11 @@
 
 
         <!-- Modal Body: Add grant -->
-         <!-- Add Form Fields -->
+
         <form action="{{ route('grantsNequipment.store')}}" method="POST" 
             enctype="multipart/form-data" class="space-y-4">
             @csrf
-            <div class="mt-4 m-8 space-y-2">
+            <div class="mt-4 m-8 space-y-2 max-h-[85vh] overflow-auto px-1">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Grant Name</label>
                     <input type="text" name="grant_name" 
@@ -46,6 +46,20 @@
                             <option value="{{ $type->id }}">{{ $type->grant_type }}</option>
                         @endforeach
                     </select>
+                </div>
+                
+                <!--Requirements -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Requirements</label>
+                    <div class="mt-2 space-y-2">
+                        @foreach($requirements as $requirement)
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="requirements[]" value="{{ $requirement->id }}" 
+                                    class="rounded text-btncolor focus:ring-btncolor">
+                                <span>{{ $requirement->requirement_name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
                 </div>
 
                 <!-- Description -->
@@ -89,10 +103,10 @@
 
             <!-- modal footer -->
             <div class="text-right px-4 py-3">
-                <button onclick="closeModal('addGrantModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
+                <button type="button" onclick="closeModal('addGrantModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
                     Cancel
                 </button>
-                <button class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
+                <button type="submit" class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
                     Add
                 </button>
             </div>

@@ -15,21 +15,22 @@
             @include('components.UserTab')
         </div>
         
+
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div class="bg-white rounded-2xl shadow p-4 border-t-4 border-green-600">
                 <h3 class="text-[#2C6E49] font-bold ">Total Members</h3>
-                <p class="text-3xl font-bold text-green-600 mt-2">785</p>
+                <p class="text-3xl font-bold text-green-600 mt-2">{{ $totalApplications}}</p>
                 <p class="text-xs text-gray-400 mt-1">All submitted requests</p>
             </div>
             <div class="bg-white rounded-2xl shadow p-4 border-t-4 border-blue-600">
-                <h3 class="text-[#2C6E49] font-bold ">Pending Applications</h3>
-                <p class="text-3xl font-bold text-blue-600 mt-2">510</p>
+                <h3 class="text-[#2C6E49] font-bold ">Approved Applications</h3>
+                <p class="text-3xl font-bold text-blue-600 mt-2">{{ $pendingApplications}}</p>
                 <p class="text-xs text-gray-400 mt-1">66% approval rate</p>
             </div>
             <div class="bg-white rounded-2xl shadow p-4 border-t-4 border-yellow-500">
-                <h3 class="text-[#2C6E49] font-bold ">Rejected Applicationds</h3>
-                <p class="text-3xl font-bold text-yellow-600 mt-2">120</p>
+                <h3 class="text-[#2C6E49] font-bold ">Pending Applicationds</h3>
+                <p class="text-3xl font-bold text-yellow-600 mt-2">{{ $rejectedApplications}}</p>
                 <p class="text-xs text-gray-400 mt-1">Awaiting review</p>
             </div>
         </div>
@@ -43,28 +44,16 @@
                                             <!-- Main Grid Layout -->
                         <div x-show="activeTab === 'grid'" class="grid gap-2 grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 w-full">
                             {{-- Active Members --}}
-                            @for ($i = 1; $i <= 3; $i++)
-                                <x-cards.member-card
+                            @foreach($members as $member)
+                                 <x-cards.member-card
                                     status="active"
-                                    name="Full Name"
-                                    role="General Producer"
-                                    memberId="123-456"
-                                    registered="1/01/2023"
-                                    meetings="Meetings: 10/10"
+                                    name="{{ $member->name}}"
+                                    role="{{ $member->user_info->sector ?? 'no sector initialize'}}"
+                                    memberId="{{ $member->id}}"
+                                    registered="{{ $member->created_at->format('F d Y') }}"
+                                    modalId="{{ $member->id}}"
                                 />
-                            @endfor
-                        
-                            {{-- Inactive Members --}}
-                            @for ($i =1; $i <= 3; $i++)
-                                <x-cards.member-card
-                                    status="inactive"
-                                    name="Full Name"
-                                    role="General Producer"
-                                    memberId="123-456"
-                                    registered="1/01/2023"
-                                    meetings="Meetings: 10/10"
-                                />
-                            @endfor
+                            @endforeach
                         </div>
 
                         <!-- for table/list front -->
@@ -73,11 +62,10 @@
                                 <table class="min-w-full bg-white border-spacing-y-1">
                                 <thead class="bg-snbg border border-gray-100 px-8">
                                     <tr class="text-customIT text-left text-sm font-semibold">
+                                        <th class="px-4 py-3">ID</th>
                                         <th class="px-4 py-3">NAME</th>
-                                        <th class="px-4 py-3">AGE</th>
                                         <th class="px-4 py-3">EMAIL</th>
-                                        <th class="px-4 py-3">CONTACT NO.</th>
-                                        <th class="px-4 py-3">ID NUMBER</th>
+                                        <th class="px-4 py-3">PHONE</th>
                                         <th class="px-4 py-3">TYPE</th>
                                         <th class="px-4 py-3">REGISTERED SINCE</th>
                                         <th class="px-4 py-3">STATUS</th>
@@ -85,21 +73,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php for ($i = 1; $i <= 12; $i++): ?>
-                                    <tr class="border border-gray-300 hover:bg-gray-100">
+                                    @foreach($members as $member)
+                                        <tr class="border border-gray-300 hover:bg-gray-100">
+                                        <td class="px-4 py-3 text-sm text-gray-700">MEM-{{ $member->id}}</td>
                                         <td class="flex px-4 py-3 text-sm text-gray-700">
-                                            <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
-                                            class="w-5 h-5 rounded-full shadow-md mr-2"/>
-                                            Aeron Jead Marquez</td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">21</td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">Aeron@gmail.com</td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">09090900909</td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">123456789</td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">Basic</td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">25 Aug 2025</td>
+                                            {{--<img src="{{ asset('images/profile-user.png') }}" alt="Profile"
+                                            class="w-5 h-5 rounded-full shadow-md mr-2"/>--}}
+                                            {{ $member->name}}
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->email}}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->user_info->contact_no ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->user_info->sector->sector_name ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->created_at->format('F d Y') }}</td>
                                         <td class="px-4 py-3 ">
                                             <div class="inline-block text-xs font-medium bg-approved text-white text-center px-3 py-1 rounded-full">
-                                                Approved
+                                                {{ $member->status ?? '-'}}
                                             </div>
                                         </td>
                                         <td class="pl-4 py-3 text-sm">
@@ -117,7 +105,7 @@
                                                     <div class="border-t border-gray-200 py-2">
                                                         <ul class="space-y-2">
                                                             <li>
-                                                                <a href="{{ route('view-profile') }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
+                                                                <a href="{{ route('view-profile', $member->id) }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
                                                             </li>
                                                             <li>
                                                                 <a onclick="openModal('viewApplicationModal')" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Application</a>
@@ -131,7 +119,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <?php endfor; ?>        
+                                    @endforeach
                                 </tbody>
                                 </table>
                             </div>

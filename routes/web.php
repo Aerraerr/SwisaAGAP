@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Web\AnnouncementController;
 use App\Http\Controllers\Web\GrantController;
+use App\Http\Controllers\Web\MemberController;
+use App\Http\Controllers\Web\TrainingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -16,46 +19,100 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+//-----------ADMIN-REPORTS ROUTES----------------
+
 Route::get('/admin-reports', function () {
     return view('swisa-admin.reports');
 })->middleware(['auth', 'verified'])->name('admin-reports');
 
-Route::get('/members', function () {
-    return view('swisa-admin.members');
-})->middleware(['auth', 'verified'])->name('members');
+//------------MEMBER ROUTES--------------
 
-Route::get('/grantsNequipment', [GrantController::class, 'showGrantTypes'])
+
+Route::get('/members', [MemberController::class, 'displayMember'])
+->middleware(['auth', 'verified'])->name('members');
+
+//for view profile 
+Route::get('/view-profile/{id}', [MemberController::class, 'viewProfile'])
+->middleware(['auth', 'verified'])->name('view-profile');
+
+//-----------GRANT ROUTES-------------
+
+//display grant
+Route::get('/grantsNequipment', [GrantController::class, 'displayGrants'])
 ->middleware(['auth', 'verified'])->name('grantsNequipment');
 
+//for view grant 
+Route::get('/view-grant/{id}', [GrantController::class, 'viewGrantDetails'])
+->middleware(['auth', 'verified'])->name('view-grant');
+
 //for grantcontroller/addgrant
-Route::post('/grantsNequipment', [GrantController::class, 'addGrant'])
+Route::post('/grantsNequipment/add-grant', [GrantController::class, 'addGrant'])
 ->middleware(['auth', 'verified'])->name('grantsNequipment.store');
 
+//add stock to a grant
+Route::patch('view-grant/{id}/add-stock', [GrantController::class, 'addGrantStock'])
+->middleware(['auth', 'verified'])->name('addGrantStock.update');
 
-Route::get('/announcements', function () {
-    return view('swisa-admin.announcements');
-})->middleware(['auth', 'verified'])->name('announcements');
+//edit grant
+Route::patch('view-grant/{id}/edit-grant', [GrantController::class, 'editGrantInfo'])
+->middleware(['auth', 'verified'])->name('editGrantInfo.update');
 
+//delete grant
+Route::delete('view-grant/{id}/delete-grant', [GrantController::class, 'deleteGrant'])
+->middleware(['auth', 'verified'])->name('deleteGrant.delete');
+
+//-------------ANNOUNCEMENT ROUTES------------
+
+Route::get('/announcements', [AnnouncementController::class, 'dispalyAnnouncement'])
+->middleware(['auth', 'verified'])->name('announcements');
+
+Route::post('/announcements', [AnnouncementController::class, 'addAnnouncement'])
+->middleware(['auth', 'verified'])->name('announcement.store');
+
+//edit training
+Route::patch('announcements/{id}/edit-announcement', [AnnouncementController::class, 'editAnnouncementInfo'])
+->middleware(['auth', 'verified'])->name('announcement.update');
+
+//delete announcement
+Route::delete('announcements/{id}/delete-announcement', [AnnouncementController::class, 'deleteAnnouncement'])
+->middleware(['auth', 'verified'])->name('announcement.delete');
+
+//---------TRAININGS ROUTES------------
 Route::get('/initandevents', function () {
     return view('swisa-admin.initandevents');
 })->middleware(['auth', 'verified'])->name('initandevents');
 
-Route::get('/training-workshop', function () {
-    return view('swisa-admin.training-workshop');
-})->middleware(['auth', 'verified'])->name('training-workshop');
+Route::get('/training-workshop', [TrainingController::class, 'displayTraining'])
+->middleware(['auth', 'verified'])->name('training-workshop');
+
+//for grantcontroller/addgrant
+Route::post('/trainings', [TrainingController::class, 'addTraining'])
+->middleware(['auth', 'verified'])->name('training.store');
+
+//for view training 
+Route::get('/view-training/{id}', [TrainingController::class, 'viewTrainingDetails'])
+->middleware(['auth', 'verified'])->name('view-training');
+
+//edit training
+Route::patch('view-training/{id}/edit-training', [TrainingController::class, 'editTrainingInfo'])
+->middleware(['auth', 'verified'])->name('training.update');
+
+//delete training
+Route::delete('view-training/{id}/delete-event', [TrainingController::class, 'deleteTraining'])
+->middleware(['auth', 'verified'])->name('deleteTraining.delete');
+
+//-----------REQUEST ROUTES----------------
 
 Route::get('/grant-request', function () {
     return view('swisa-admin.grant-request');
 })->middleware(['auth', 'verified'])->name('grant-request'); 
 
+//------------APPLICATION ROUTE------------------
+
 Route::get('/member-application', function () {
     return view('swisa-admin.member-application');
 })->middleware(['auth', 'verified'])->name('member-application');
 
-//view pages
-Route::get('/view-profile', function () {
-    return view('swisa-admin.view-profile');
-})->middleware(['auth', 'verified'])->name('view-profile');
 
 Route::get('/settings', function () {
     return view('swisa-admin.settings');
@@ -69,13 +126,6 @@ Route::get('/messages', function () {
     return view('swisa-admin.messages');
 })->middleware(['auth', 'verified'])->name('messages');
 
-Route::get('/view-grant', function () {
-    return view('swisa-admin.view-grant');
-})->middleware(['auth', 'verified'])->name('view-grant');
-
-Route::get('/view-training', function () {
-    return view('swisa-admin.view-training');
-})->middleware(['auth', 'verified'])->name('view-training');
 
 
 

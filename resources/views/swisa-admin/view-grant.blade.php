@@ -10,80 +10,62 @@
         <div class="grid grid-cols-12 gap-2 py-2" x-data="{ selectedUser: null, activeTab: 'request-table' }">
             <div class="col-span-12">
                 <div class="bg-white shadow-lg p-4 h-auto rounded-md">
-                    <div class="lg:flex h-full">
-                        <div class="bg-gray-200 rounded-md h-44 w-full  lg:h-[260px] lg:w-[300px] flex items-center justify-center border-b border-gray-300 flex-shrink-0">
-                            <span class="text-white text-md">IMAGE</span>
+                    <div class="lg:flex h-auto">
+                        <div class="rounded-md h-full w-full  lg:h-[260px] lg:w-1/3 flex justify-center flex-shrink-0">
+                            <img 
+                                src= "{{ $grant->documents->first() ? asset('storage/' . $grant->documents->first()->file_path) : asset('image/placeholder.png') }} "
+                                alt="Grant Image" 
+                                class="object-cover w-full h-full"
+                            >
                         </div>
                         <div class="lg:ml-4 sm:flex-1 p-2">
                             <div>
-                                <p class="text-xs md:text-lg font-semibold text-customIT">Pangkakgag ni Peter</p>
-                                <p class="text-[10px] lg:text-sm text-gray-500 mb-2">Machinery</p>
+                                <p class="text-xs md:text-2xl font-semibold text-customIT">{{ $grant->title}}</p>
+                                <p class="text-sm lg:text-md text-gray-500 mb-2">{{ $grant->grant_type->grant_type}}</p>
                             </div>
                             <div class="flex justify-between mb-4">
                                 <div class="flex-1">
                                     <p class="font-semibold text-xs lg:text-lg text-customIT flex items-center mb-1">
-                                        <svg class="h-4 w-4 mr-1 customIT" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 12a1 1 0 112 0 1 1 0 01-2 0zm1-5a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
                                         Stock Summary
                                     </p>
-                                    <p class="ml-5 text-[10px] text-gray-500 lg:text-sm">Available: <span class="font-medium text-gray-800">12 units</span></p>
-                                    <p class="ml-5 text-[10px] text-gray-500 lg:text-sm">Pending: <span class="font-medium text-gray-800">24</span></p>
-                                    <p class="ml-5 text-[10px] text-gray-500 lg:text-sm">Approved: <span class="font-medium text-gray-800">6</span></p>
+                                    <p class="ml-5 text-[10px] text-gray-500 lg:text-sm">Available: <span class="font-medium text-gray-800">{{ $grant->total_quantity}}</span></p>
+                                    <p class="ml-5 text-[10px] text-gray-500 lg:text-sm">Unit per Request: <span class="font-medium text-gray-800">{{ $grant->unit_per_request}}</span></p>
+                                    <p class="ml-5 text-[10px] text-gray-500 lg:text-sm">Pending: <span class="font-medium text-gray-800">none</span></p>
+                                    <p class="ml-5 text-[10px] text-gray-500 lg:text-sm">Approved: <span class="font-medium text-gray-800">none</span></p>
                                 </div>
                                 <div class="flex-1">
                                     <h4 class="font-semibold text-xs lg:text-lg text-customIT flex items-center mb-1">
-                                        <svg class="h-4 w-4 mr-1 text-customIT" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>
-                                            Last Restocked
+                                            Availability
                                     </h4>
-                                    <p class="ml-5 text-gray-500 text-[10px] lg:text-sm">Added On: <span class="font-medium text-gray-800">12</span></p>
-                                    <p class="ml-5 text-gray-500 text-[10px] lg:text-sm">Last Updated: <span class="font-medium text-gray-800">10</span></p>
+                                    <p class="ml-5 text-gray-500 text-[10px] lg:text-sm">Available Date: <span class="font-medium text-gray-800">{{ $grant->available_at->format('F d Y') }}</span></p>
+                                    <p class="ml-5 text-gray-500 text-[10px] lg:text-sm">End Date: <span class="font-medium text-gray-800">{{ $grant->end_at->format('F d Y') }}</span></p>
                                 </div>
-                            </div>
-                            <div class="flex justify-between items-start pb-4">
-                                <div class="flex-shrink-0">
-                                    <h4 class="font-semibold text-xs lg:text-lg text-sm text-customIT flex items-center mr-2">
-                                        <!-- Badge icon -->
-                                        <svg class="h-4 w-4 mr-1 text-customIT" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 10a1 1 0 012 0v5a1 1 0 11-2 0v-5zm1-3a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" /></svg>
-                                        Eligibility Info
-                                    </h4>
-                                    <p class="text-[10px] lg:text-sm text-gray-500 ml-5">
-                                    For: <span class="font-medium text-gray-800">Registered Member</span>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="w-full mx-94 flex items-center ml-auto">
-                                <div class="h-2 md:h-4 w-full bg-gray-200 rounded-full">
-                                    <div class="h-full bg-customIT rounded-full" style="width: 50%;"></div>
+                                <div class="flex justify-between items-start pb-4">
+                                    <div class="flex-1 flex-shrink-0">
+                                        <h4 class="font-semibold text-xs lg:text-lg text-sm text-customIT flex items-center mr-2">
+                                            <!-- Badge icon -->
+                                            Eligibility Info
+                                        </h4>
+                                        <p class="text-[10px] lg:text-sm text-gray-500 ml-5">
+                                        For: <span class="font-medium text-gray-800">Registered Member</span>
+                                        </p>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-xs lg:text-lg text-customIT flex items-center mb-1">Requirements</h4>
+                                        @forelse($grant->requirements as $requirement)
+                                            <p class="ml-5 text-[10px] lg:text-sm font-medium text-gray-800">-{{ $requirement->requirement_name }}</p>
+                                        @empty
+                                            <li class="text-gray-500">No requirements found.</li>
+                                        @endforelse
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="hidden xl:flex flex-col text-sm text-customIT font-medium m-14 gap-1">
+                        <div class="xl:flex flex-col text-sm text-customIT font-medium m-14 gap-1">
                             <button onclick="openModal('geneReportModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Generate Report</button>
                             <button onclick="openModal('addStockModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Add New Stock</button>
                             <button onclick="openModal('editGrantModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Edit Info</button>
                             <button onclick="openModal('deleteGrantModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Delete</button>
-                        </div>
-                        <div class="block xl:hidden flex justify-end" x-data="{ open: false }">
-                            <!-- Main trigger button -->
-                            <button 
-                                @click="open = !open"
-                                class="p-3 sm:top-[2px] sm:item-center border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white"
-                            >
-                                ☰
-                            </button>
-
-                            <!-- Dropdown menu -->
-                            <div 
-                                x-show="open" 
-                                @click.outside="open = false"
-                                class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
-                            >
-                                <ul class="flex flex-col text-sm text-customIT font-medium">
-                                    <li><button class="w-full text-left px-4 py-2 hover:bg-btncolor hover:text-white">Generate Report</button></li>
-                                    <li><button class="w-full text-left px-4 py-2 hover:bg-btncolor hover:text-white">Add New Stock</button></li>
-                                    <li><button class="w-full text-left px-4 py-2 hover:bg-btncolor hover:text-white">Edit Info</button></li>
-                                    <li><button class="w-full text-left px-4 py-2 hover:bg-btncolor hover:text-white">Delete</button></li>
-                                </ul>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -140,7 +122,7 @@
                                         <div class="border-t border-gray-200 py-2">
                                             <ul class="space-y-2">
                                                 <li>
-                                                    <a href="{{ route('view-profile') }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
+                                                    <a href="{{ route('view-profile', $grant->id) }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
                                                 </li>
                                                 <li>
                                                     <a href="{{ route('grant-request') }}" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View All Request</a>
@@ -185,7 +167,7 @@
                                         <div class="border-t border-gray-200 py-2">
                                             <ul class="space-y-2">
                                                 <li>
-                                                    <a href="{{ route('view-profile') }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
+                                                    <a href="{{ route('view-profile', $grant->id) }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
                                                 </li>
                                                 <li>
                                                     <a href="{{ route('grant-request') }}" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Request</a>
@@ -231,7 +213,7 @@
                                             <div class="border-t border-gray-200 py-2">
                                                 <ul class="space-y-2">
                                                     <li>
-                                                        <a href="{{ route('view-profile') }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
+                                                        <a href="{{ route('view-profile', $grant->id) }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
                                                     </li>
                                                     <li>
                                                         <a href="{{ route('grant-request') }}" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Request</a>
@@ -251,28 +233,17 @@
             <!-- right side pane -->
             <div x-show="activeTab === 'request-table'" class="col-span-12 lg:col-start-9 lg:col-span-4 ">
                 <!-- thi is where the data of the clicked row should appear-->
-                <div class="flex flex-col bg-white shadow-lg p-10 h-auto rounded-md mt-2 text-center overflow-auto">
+                <div class="flex flex-col bg-white shadow-lg rounded-md mt-2 overflow-auto">
                     <!-- Show default message if no user selected -->
                     <template x-if="!selectedUser">
-                        <div>
-                            <div class="flex flex-col items-center ">
-                                <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
-                                    class="w-36 h-36 rounded-full shadow-md object-cover mb-4" />
-                                <p class="text-2xl text-gray-300 font-semibold">Select User to View</p>
-                            </div>
-                            <div class="text-left m-6">
-                                <p class="text-md text-gray-300 font-semibold">ID NO: </p>
-                                <p class="text-md text-gray-300 font-semibold">MEMBER TPYE: </p>
-                                <p class="text-md text-gray-300 font-semibold">DOB: </p>
-                                <p class="text-md text-gray-300 font-semibold">CONTACT NO.</p>
-                                <p class="text-md text-gray-300 font-semibold">EMAIL</p>
-                            </div>
-                        </div>
+                        <div class="p-4">
+                            <h2 class="text-lg xl:text-2xl text-customIT font-semibold">Program Description</h2>
+                            <p class="text-left text-sm text-bsctxt p-6">{{ $grant->description }}</div>
                     </template>
 
                     <!-- Show selected user details -->
                     <template x-if="selectedUser">
-                        <div> 
+                        <div class="p-10 h-auto text-center"> 
                             <div class="flex flex-col items-center ">
                                 <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
                                     class="w-36 h-36 rounded-full shadow-md object-cover mb-4" />
@@ -298,35 +269,6 @@
                 </div>
                 
                 <div  x-show="activeTab === 'request-table' || activeTab === 'feedback'" class="bg-white shadow-lg p-8 h-auto rounded-md mt-2 overflow-auto">
-                    <p class="text-xl text-customIT font-semibold">Feedback Insghts</p>
-                    <div class="grid grid-cols-2 mb-6">
-                        <div class="col-span-1 mb-2">
-                            <div class="my-6">
-                                <p class="text-md text-customIT font-semibold">4.5/5<span class="text-md text-bsctxt ml-2 font-medium ">Assessed</span></p>
-                                <p class="text-md text-customIT font-semibold">12<span class="text-md text-bsctxt ml-2 font-medium">Reviews</span></p>
-                            </div>
-                            <div class="flex text-btncolor items-center gap-2 md:gap-1">
-                                <p class="w-6 h-6 md:w-4 md:h-4 rounded-full bg-approved shadow-lg"></p> 
-                                <p class="font-medium">Positive</p>
-                            </div>
-                            <div class="flex text-iconsClr items-center gap-2 md:gap-1">
-                                <p class="w-6 h-6 md:w-4 md:h-4 rounded-full bg-neutral shadow-lg"></p>
-                                <p class="font-medium">Neutral</p>
-                            </div>
-                            <div class="flex text-iconsClr items-center gap-2 md:gap-1">
-                                <p class="w-6 h-6 md:w-4 md:h-4 rounded-full bg-rejected shadow-lg"></p>
-                                <p class="font-medium">Negative</p>
-                            </div>
-                        </div>
-
-                        <div class="cols-start-2">
-                           <!-- Chart container on the right -->
-                            <div class="flex justify-center items-center h-44">
-                                <!-- Canvas element where the chart will be drawn -->
-                                <canvas id="feedbackChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
                     <div class="px-5 py-2">
                         <p class="text-bsctxt font-medium mb-2">View all feedback for this Grant / Equipment?</p>
                         <button @click="activeTab = 'feedback'" class="w-full px-4 py-3 bg-btncolor text-white rounded-md hover:bg-opacity-80">

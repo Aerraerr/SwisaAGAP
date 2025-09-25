@@ -2,47 +2,55 @@
 
 @section('content')
 @include('layouts.loading-overlay')
-    <body class="bg-mainbg px-2 space-y-2">
+    <body class="bg-mainbg px-10 space-y-2">
         <div class="text-customIT text-2xl flex flex-col md:flex-row justify-between md:items-center mb-4">
             <h1 class="font-bold">Program Details</h1>
-            <h1>Monday, 00 Month 2025</h1>
+             @include('components.UserTab')
         </div>
         <div class="grid grid-cols-12 gap-2 py-2"  x-data="{ activeTab: 'initiative' }">
             <!-- Initiative tab -->
             <div x-show="activeTab === 'initiative'" class="col-span-12">
                 <div class="bg-white shadow-lg p-4 h-auto rounded-md">
                     <div class="lg:flex h-full">
-                        <div class="bg-gray-200 rounded-md h-44 w-full  lg:h-[260px] lg:w-[300px] flex items-center justify-center border-b border-gray-300 flex-shrink-0">
-                            <span class="text-white text-md">IMAGE</span>
+                        <div class="bg-gray-200 rounded-md h-44 w-full  lg:h-[260px] lg:w-1/3 flex items-center justify-center border-b border-gray-300 flex-shrink-0">
+                            <img 
+                                src= "{{ $training->documents->first() ? asset('storage/' . $training->documents->first()->file_path) : asset('image/placeholder.png') }} "
+                                alt="Training Image" 
+                                class="object-cover w-full h-full"
+                            >
                         </div>
                         <div class="lg:ml-4 sm:flex-1 p-2">
                             <div>
-                                <p class="text-xs md:text-2xl font-semibold text-customIT">Crop Management</p>
-                                <p class="text-[10px] lg:text-sm text-gray-500 mb-2">Training Program</p>
+                                <p class="text-lg md:text-2xl font-semibold text-customIT">{{ $training->title}}</p>
+                                <p class="text-md lg:text-sm text-gray-500 mb-2">{{ $training->sector->sector_name}}</p>
                             </div>
                             <div class="mb-4 mt-10">
                                 <div class="flex items-center space-x-4 mb-1">
                                     <p class="font-semibold text-md text-gray-600 mb-1">Status: </p>
-                                    <span class="font-medium justify-end text-gray-800">Ongoing</span>
+                                    <span class="font-medium justify-end text-gray-800">{{$training->date < now() ? 'Completed' : 'Upcoming'}}</span>
                                 </div>
                                 <div class="flex items-center space-x-4 mb-1">
-                                    <p class="font-semibold text-md text-gray-600  mb-1">Start Date: </p>
-                                     <span class="font-medium text-gray-800">12 units</span>
+                                    <p class="font-semibold text-md text-gray-600  mb-1">Date: </p>
+                                     <span class="font-medium text-gray-800">{{ $training->date->format('F d Y') }}</span>
                                 </div>
                                 <div class="flex items-center space-x-4 mb-1">
-                                    <p class="font-semibold text-md text-gray-600 mb-1">End Date: </p>
-                                    <span class="font-medium text-gray-800">24</span>
+                                    <p class="font-semibold text-md text-gray-600 mb-1">Time: </p>
+                                    <span class="font-medium text-gray-800">{{ \Carbon\Carbon::createFromFormat('H:i:s', $training->time)->format('g:i A') }}</span>
+                                </div>
+                                <div class="flex items-center space-x-4 mb-1">
+                                    <p class="font-semibold text-md text-gray-600 mb-1">Venue: </p>
+                                    <span class="font-medium text-gray-800">{{ $training->venue}}</span>
                                 </div>
                                 <div class="flex items-center space-x-4 mb-1">
                                     <p class="font-semibold text-md text-gray-600 mb-1">Participants: </p>
-                                    <span class="font-medium text-gray-800">6</span>
+                                    <span class="font-medium text-gray-800">{{ $training->participants->count()}}</span>
                                 </div>
                             </div>
                         </div>
                         <div class="flex flex-col text-sm text-customIT font-medium m-14 gap-1">
                             <button onclick="openModal('programQrModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">QR Code</button>
                             <!-- temporary muna iyang modal sa edit, wara pa design para jan eh-->
-                            <button onclick="openModal('editGrantModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Edit Info</button>
+                            <button onclick="openModal('editTrainingModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Edit Info</button>
                             <button onclick="openModal('geneReportModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">Generate Report</button>
                             <button onclick="openModal('endProgramModal')" class="w-full py-1.5 px-3 border-[3px] border-btncolor bg-white rounded-md shadow hover:bg-btncolor hover:text-white">End Program</button>
                         </div>
@@ -91,7 +99,7 @@
                                             <div class="border-t border-gray-200 py-2">
                                                 <ul class="space-y-2">
                                                     <li>
-                                                        <a href="{{ route('view-profile') }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
+                                                        <a href="{{ route('view-profile', $training->id) }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
                                                     </li>
                                                     <li>
                                                         <a href="{{ route('grant-request') }}" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View All Joined Trainings</a>
@@ -134,30 +142,38 @@
             <div x-show="activeTab === 'participants'" class="col-span-12">
                 <div class="bg-white shadow-lg p-4 h-auto rounded-md">
                     <div class="lg:flex h-full">
-                        <div class="bg-gray-200 rounded-md h-44 w-full  lg:h-[260px] lg:w-[300px] flex items-center justify-center border-b border-gray-300 flex-shrink-0">
-                            <span class="text-white text-md">IMAGE</span>
+                        <div class="bg-gray-200 rounded-md h-44 w-full  lg:h-[260px] lg:w-1/3 flex items-center justify-center border-b border-gray-300 flex-shrink-0">
+                            <img 
+                                src= "{{ $training->documents->first() ? asset('storage/' . $training->documents->first()->file_path) : asset('image/placeholder.png') }} "
+                                alt="Training Image" 
+                                class="object-cover w-full h-full"
+                            >
                         </div>
                         <div class="lg:ml-4 sm:flex-1 p-2">
                             <div>
-                                <p class="text-xs md:text-2xl font-semibold text-customIT">Crop Management</p>
-                                <p class="text-[10px] lg:text-sm text-gray-500 mb-2">Training Program</p>
+                                <p class="text-xs md:text-2xl font-semibold text-customIT">{{ $training->title}}</p>
+                                <p class="text-[10px] lg:text-sm text-gray-500 mb-2">{{ $training->sector->sector_name}}</p>
                             </div>
                             <div class="mb-4 mt-10">
                                 <div class="flex items-center space-x-4 mb-1">
                                     <p class="font-semibold text-md text-gray-600 mb-1">Status: </p>
-                                    <span class="font-medium justify-end text-gray-800">Ongoing</span>
+                                    <span class="font-medium justify-end text-gray-800">{{$training->date < now() ? 'Completed' : 'Upcoming'}}</span>
                                 </div>
                                 <div class="flex items-center space-x-4 mb-1">
-                                    <p class="font-semibold text-md text-gray-600  mb-1">Start Date: </p>
-                                     <span class="font-medium text-gray-800">12 units</span>
+                                    <p class="font-semibold text-md text-gray-600  mb-1">Date: </p>
+                                     <span class="font-medium text-gray-800">{{ $training->date->format('F d Y') }}</span>
                                 </div>
                                 <div class="flex items-center space-x-4 mb-1">
-                                    <p class="font-semibold text-md text-gray-600 mb-1">End Date: </p>
-                                    <span class="font-medium text-gray-800">24</span>
+                                    <p class="font-semibold text-md text-gray-600 mb-1">Time: </p>
+                                    <span class="font-medium text-gray-800">{{ \Carbon\Carbon::createFromFormat('H:i:s', $training->time)->format('g:i A') }}</span>
+                                </div>
+                                <div class="flex items-center space-x-4 mb-1">
+                                    <p class="font-semibold text-md text-gray-600 mb-1">Venue: </p>
+                                    <span class="font-medium text-gray-800">{{ $training->venue}}</span>
                                 </div>
                                 <div class="flex items-center space-x-4 mb-1">
                                     <p class="font-semibold text-md text-gray-600 mb-1">Participants: </p>
-                                    <span class="font-medium text-gray-800">6</span>
+                                    <span class="font-medium text-gray-800">{{ $training->participants->count()}}</span>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +223,7 @@
                                             <div class="border-t border-gray-200 py-2">
                                                 <ul class="space-y-2">
                                                     <li>
-                                                        <a href="{{ route('view-profile') }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
+                                                        <a href="{{ route('view-profile', $training->id) }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
                                                     </li>
                                                     <li>
                                                         <a onclick="openModal('endProgramModal')" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">Delete</a>
@@ -247,7 +263,7 @@
                 </div>
             </div>
         </div>
-        @include('components.modals.edit-grant')
+        @include('components.modals.edit-training')
         @include('components.modals.end-program')
         @include('components.modals.program-qr')
         @include('components.modals.generate-report')

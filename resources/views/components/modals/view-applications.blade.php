@@ -2,7 +2,7 @@
     <div class="relative w-auto max-w-4xl mx-auto p-6 border w-3/7 shadow-lg rounded-md bg-white">
         <!-- Modal Header -->
         <div class="flex justify-between items-center pb-3">
-            <h3 class="text-lg font-bold text-customIT">Name's All Application</h3>
+            <h3 class="text-lg font-bold text-customIT">{{$member->name}}All Application</h3>
             <button onclick="closeModal('viewApplicationModal')" class="text-gray-400 hover:text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -31,56 +31,24 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr onclick="openModal('grantViewModal'); return false;" class="border-y border-gray-300 hover:bg-gray-100">
-                        <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">Aeron Jead Marquez</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">Fertilizer</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">Machinery</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                        <td class="px-4 py-3">
-                            <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
-                                Pending
-                            </div>
-                        </td>
-                    </tr>
-                    <tr onclick="openModal('grantViewModal'); return false;" class="border-y border-gray-300 hover:bg-gray-100">
-                        <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">Aeron Jead Marquez</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">Fertilizer</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">Machinery</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                        <td class="px-4 py-3">
-                            <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
-                                Pending
-                            </div>
-                        </td>
-                    </tr>
-                    <tr onclick="openModal('grantViewModal'); return false;" class="border-y border-gray-300 hover:bg-gray-100">
-                        <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">Aeron Jead Marquez</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">Fertilizer</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">Machinery</td>
-                        <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                        <td class="px-4 py-3">
-                            <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
-                                Pending
-                            </div>
-                        </td>
-                    </tr>
-                    @for($i = 0; $i < 8; $i++)
+                   @forelse($member->applications as $member)
                         <tr onclick="openModal('grantViewModal'); return false;" class="border-y border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                            <td class="px-4 py-3 text-xs text-gray-700">Aeron Jead Marquez</td>
-                            <td class="px-4 py-3 text-xs text-gray-700">Fertilizer</td>
-                            <td class="px-4 py-3 text-xs text-gray-700">Machinery</td>
-                            <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                            <td class="px-4 py-3 ">
-                                <div class="inline-block text-xs font-medium bg-approved text-white text-center px-3 py-1 rounded-full">
-                                    Approved
+                            <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM{{ $applications->id }}</td>
+                            <td class="px-4 py-3 text-xs text-gray-700">{{ $member->name}}</td>
+                            <td class="px-4 py-3 text-xs text-gray-700">{{ $applications->grant->grant_name}}</td>
+                            <td class="px-4 py-3 text-xs text-gray-700">{{ $applications->grant->grant_type}}</td>
+                            <td class="px-4 py-3 text-xs text-gray-700">{{ $applications->created_at->format('F d Y')}}</td>
+                            <td class="px-4 py-3">
+                                <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
+                                    {{ ucfirst($application->status ?? 'Pending') }}
                                 </div>
                             </td>
                         </tr>
-                    @endfor
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-4 py-3 text-md text-gray-500 text-center">No Applications</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

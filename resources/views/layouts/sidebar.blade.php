@@ -18,20 +18,37 @@
            <span class="menu-text">Dashboard</span>
         </a>
 
-        <!-- Members -->
-        <a class="menu-item {{ request()->routeIs('members') ? 'active' : '' }}" 
-           href="{{ route('members') }}">
-           <i class="material-icons">person</i>
-           <span class="menu-text">Registered Members</span>
-        </a>
+        @if(Auth::user()->role_id == 3)
+            <!-- Members -->
+            <a class="menu-item {{ request()->routeIs('members') ? 'active' : '' }}" 
+            href="{{ route('members') }}">
+            <i class="material-icons">person</i>
+            <span class="menu-text">Registered Members</span>
+            </a>
+        
+            <!-- Grant & Equipment -->
+            <a class="menu-item {{ request()->routeIs('grantsNequipment') ? 'active' : '' }}" 
+            href="{{ route('grantsNequipment') }}">
+            <i class="material-icons">inventory</i>
+            <span class="menu-text">Grant & Equipment</span>
+            </a>
+        @endif
 
-        <!-- Grant & Equipment -->
-        <a class="menu-item {{ request()->routeIs('grantsNequipment') ? 'active' : '' }}" 
-           href="{{ route('grantsNequipment') }}">
-           <i class="material-icons">inventory</i>
-           <span class="menu-text">Grant & Equipment</span>
-        </a>
+        @if(Auth::user()->role_id == 2)
+            <!-- Grant Report -->
+            <a class="menu-item {{ request()->routeIs('report') ? 'active' : '' }}" 
+            href="{{ route('report') }}">
+            <i class="material-icons">inventory</i>
+            <span class="menu-text">Grant Reports</span>
+            </a>
 
+            <!-- Giveback -->
+            <a class="menu-item {{ request()->routeIs('giveback') ? 'active' : '' }}" 
+            href="{{ route('giveback') }}">
+            <i class="material-icons">inventory</i>
+            <span class="menu-text">Giveback</span>
+            </a>
+        @endif
         <!-- Initiatives & Events -->
         <a class="menu-item {{ request()->routeIs('training-workshop') ? 'active' : '' }}" 
            href="{{ route('training-workshop') }}">
@@ -50,6 +67,13 @@
             <span class="text-sm ml-5">MANAGEMENT SECTION</span>
         </div>
 
+        @if(Auth::user()->role_id == 2)
+            <a class="menu-item {{ request()->routeIs('assisted-creation') ? 'active' : '' }}" 
+            href="{{ route('assisted-creation') }}">
+            <i class="material-icons">folder</i>
+            <span class="menu-text">Assisted Creation</span>
+            </a>
+        @endif
         <a class="menu-item {{ request()->routeIs('grant-request') ? 'active' : '' }}" 
            href="{{ route('grant-request') }}">
            <i class="material-icons">folder</i>
@@ -62,17 +86,19 @@
            <span class="menu-text">Applications</span>
         </a>
 
-        <a class="menu-item {{ request()->routeIs('logs') ? 'active' : '' }}" 
-           href="{{ route('logs') }}">
-           <i class="material-icons">history</i>
-           <span class="menu-text">Activity Logs</span>
-        </a>
+        @if(Auth::user()->role_id == 3)
+            <a class="menu-item {{ request()->routeIs('logs') ? 'active' : '' }}" 
+            href="{{ route('logs') }}">
+            <i class="material-icons">history</i>
+            <span class="menu-text">Activity Logs</span>
+            </a>
 
-        <a class="menu-item {{ request()->routeIs('admin-reports') ? 'active' : '' }}" 
-           href="{{ route('admin-reports') }}">
-           <i class="material-icons">bar_chart</i>
-           <span class="menu-text">Reports</span>
-        </a>
+            <a class="menu-item {{ request()->routeIs('admin-reports') ? 'active' : '' }}" 
+            href="{{ route('admin-reports') }}">
+            <i class="material-icons">bar_chart</i>
+            <span class="menu-text">Reports</span>
+            </a>
+        @endif
 
         <a class="menu-item {{ request()->routeIs('messages') ? 'active' : '' }}" 
            href="{{ route('messages')}}">

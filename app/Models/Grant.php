@@ -23,6 +23,12 @@ class Grant extends Model
         'end_at',
     ];
 
+    // this makes it a Carbon instance
+    protected $casts = [
+        'available_at' => 'date', 
+        'end_at' => 'date', 
+    ];
+
     //RELATIONSHIPS
 
     //a grant belongs to a user
@@ -31,8 +37,8 @@ class Grant extends Model
     }
 
     //a grant can have many requirements
-    public function grantRequirements(){
-        return $this->hasMany(GrantRequirement::class);
+    public function requirements(){
+        return $this->belongsToMany(Requirement::class, 'grant_requirements');
     }
 
     //a grant can have many application

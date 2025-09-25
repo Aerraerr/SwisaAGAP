@@ -30,7 +30,7 @@
 
     <!-- Buttons -->
     <div class="flex flex-col sm:flex-row justify-between gap-2">
-        <a href="{{ route('view-profile') }}" 
+        <a href="{{ route('view-profile', $memberId) }}" 
            class="flex-1 p-2 text-xs sm:text-sm text-center font-medium text-customIT bg-snbg rounded-[3px] hover:bg-opacity-80 transition">
             View Profile
         </a>

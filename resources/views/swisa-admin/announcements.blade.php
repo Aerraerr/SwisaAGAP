@@ -25,34 +25,36 @@
                     Create New Announcement
                 </h2>
                 
-                <form>
+                <form action="{{ route('announcement.store')}}" method="POST" 
+                enctype="multipart/form-data" class="space-y-4">
+                @csrf
                     <div class="mb-4">
-                        <label for="announcement-title" class="text-sm font-medium text-gray-700">Title</label>
-                        <input type="text" id="announcement-title" placeholder="e.g., General Meeting" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent">
+                        <label for="announcement_title" class="text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" name="announcement_title" id="announcement_title" placeholder="e.g., General Meeting" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent" required>
                     </div>
 
                     <div class="mb-4">
-                        <label for="announcement-content" class="text-sm font-medium text-gray-700">Content</label>
-                        <textarea id="announcement-content" rows="4" placeholder="Write your message here..." class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent"></textarea>
+                        <label for="announcement_content" class="text-sm font-medium text-gray-700">Content</label>
+                        <textarea name="announcement_content" id="announcement_content" rows="4" placeholder="Write your message here..." class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent" required></textarea>
                     </div>
 
                     <div class="mb-4">
-                        <label for="announcement-files" class="text-sm font-medium text-gray-700">Attach Files / Images</label>
-                        <input type="file" id="announcement-files" class="block w-full text-sm mt-1 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-customIT file:text-white hover:file:bg-customIT/90" />
+                        <label for="announcement_files" class="text-sm font-medium text-gray-700">Attach Files / Images</label>
+                        <input type="file" name="announcement_files" id="announcement_files" class="block w-full text-sm mt-1 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-customIT file:text-white hover:file:bg-customIT/90" />
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label for="announcement-audience" class="text-sm font-medium text-gray-700">Audience</label>
-                            <select id="announcement-audience" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent">
+                            <label for="announcement_audience" class="text-sm font-medium text-gray-700">Audience</label>
+                            <select name="announcement_audience" id="announcement_audience" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent">
                                 <option>All members</option>
                                 <option>Farmers</option>
                                 <option>Staff</option>
                             </select>
                         </div>
                         <div>
-                            <label for="announcement-status" class="text-sm font-medium text-gray-700">Status</label>
-                            <select id="announcement-status" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent">
+                            <label for="announcement_status" class="text-sm font-medium text-gray-700">Status</label>
+                            <select name="announcement_status" id="announcement_status" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent">
                                 <option>Draft</option>
                                 <option>Published</option>
                                 <option>Archived</option>
@@ -62,12 +64,12 @@
 
                     <div class="grid grid-cols-2 gap-4 mb-6">
                         <div>
-                            <label for="announcement-start" class="text-sm font-medium text-gray-700">Visible From</label>
-                            <input type="date" id="announcement-start" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent" />
+                            <label for="announcement_start" class="text-sm font-medium text-gray-700">Visible From</label>
+                            <input type="date" name="announcement_start" id="announcement_start" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent" required/>
                         </div>
                         <div>
-                            <label for="announcement-end" class="text-sm font-medium text-gray-700">Visible Until</label>
-                            <input type="date" id="announcement-end" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent" />
+                            <label for="announcement_end" class="text-sm font-medium text-gray-700">Visible Until</label>
+                            <input type="date" name="announcement_end" id="announcement_end" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent" />
                         </div>
                     </div>
 
@@ -131,21 +133,28 @@
                 </div>
 
                 <!-- Example Announcement Cards -->
-                <div class="space-y-4">
-                    <div class="bg-white shadow-sm rounded-md p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center relative">
-                        <div class="absolute top-4 right-4 text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700">Published</div>
-                        <div>
-                            <h3 class="font-semibold text-customIT">Upcoming Training on Modern Farming Techniques</h3>
-                            <p class="text-sm text-gray-600 mb-5">Join us for a hands-on training session on new farming technologies...</p>
-                            <p class="text-xs text-gray-500 mt-1">Audience: Farmers | Visible: Aug 25 - Sep 10</p>
-                        </div>
-                        <div class="flex gap-2 mt-5 sm:mt-10">
-                            <button class="bg-gray-100 text-gray-600 hover:bg-gray-200 p-2 rounded-md"><svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 00-1.41 0L18 8.34l3.75 3.75 1.29-1.29a1 1 0 000-1.41l-2.33-2.35z"/></svg></button>
-                            <button class="bg-gray-100 text-gray-600 hover:bg-gray-200 p-2 rounded-md"><svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
-                            <button class="bg-gray-100 text-gray-600 hover:bg-gray-200 p-2 rounded-md"><svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zm7-18l-5.5 5.5h4v6h3v-6h4L12 2z"/></svg></button>
+                @foreach($announcements as $announcement)
+                    <div class="space-y-4 my-2">
+                        <div class="bg-white shadow-sm rounded-md p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center relative">
+                            <div class="absolute top-4 right-4 text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-700">Published</div>
+                            @if($announcement->image)
+                                <img src="{{ asset('storage/'.$announcement->image) }}" alt="Announcement Image" class="w-40 h-30 object-cover">
+                            @endif
+                            <div>
+                                <h3 class="font-semibold text-customIT">{{ $announcement->title}}</h3>
+                                <p class="text-sm text-gray-600 mb-5">{{ $announcement->message}}</p>
+                                <p class="text-xs text-gray-500 mt-1">Audience: all | Visible:{{ $announcement->posted_at}} - none</p>
+                            </div>
+                            <div class="flex gap-2 mt-5 sm:mt-10">
+                                <button onclick="openModal('editAnnouncementModal-{{ $announcement->id }}')" class="bg-gray-100 text-gray-600 hover:bg-gray-200 p-2 rounded-md"><svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 00-1.41 0L18 8.34l3.75 3.75 1.29-1.29a1 1 0 000-1.41l-2.33-2.35z"/></svg></button>
+                                <button onclick="openModal('deleteAnnouncementModal-{{ $announcement->id }}')" class="bg-gray-100 text-gray-600 hover:bg-gray-200 p-2 rounded-md"><svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                                <button class="bg-gray-100 text-gray-600 hover:bg-gray-200 p-2 rounded-md"><svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zm7-18l-5.5 5.5h4v6h3v-6h4L12 2z"/></svg></button>
+                            </div>
+                            @include('components.modals.edit-announcement', ['announcement' => $announcement])
+                            @include('components.modals.delete-announcement', ['announcement' => $announcement])
                         </div>
                     </div>
-                </div>
+                @endforeach
             </div>
         </div>
     </div> 

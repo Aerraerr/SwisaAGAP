@@ -1,17 +1,23 @@
 @props([
+    'trainingId' => null,
+    'image' => '/images/placeholder.png',
     'title' => 'Title Placeholder',
     'category' => 'N/A',
     'date' => 'N/A',
     'time' => 'N/A',
     'venue' => 'N/A',
     'participants' => 0,
-    'status' => 'open',
+    'status' => 'N/A',
 ])
 
 <div class="bg-white pt-2 px-4 rounded-md shadow-lg overflow-hidden">
     <!-- Image Placeholder Section -->
     <div class="bg-gray-200 rounded-md h-48 flex items-center justify-center border-b border-gray-300">
-        <span class="text-white text-md">IMAGE</span>
+       <img 
+            src= {{ $image }} 
+            alt="Event image" 
+            class="object-cover w-full h-full"
+        >
     </div>
 
     <!-- Card Content Section -->
@@ -40,7 +46,7 @@
 
         <!-- View Button Section -->
         <div class="grid grid-cols-2 text-right my-2">
-            <a href="{{route('view-training')}}" class="col-start-2 bg-btncolor text-white text-center text-sm py-2 rounded-[3px] hover:bg-customIT transition duration-300">
+            <a href="{{route('view-training', $trainingId)}}" class="col-start-2 bg-btncolor text-white text-center text-sm py-2 rounded-[3px] hover:bg-customIT transition duration-300">
                 View
             </a>
         </div>

@@ -15,10 +15,10 @@
                     <div class="flex flex-col items-center m-2">
                         <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
                         class="w-30 h-30 md:w-28 md:h-28 lg:w-36 lg:h-36 xl:w-40 xl:h-40 rounded-full shadow-md object-cover mb-2" />
-                        <h3 class="text-lg xl:text-xl font-semibold text-customIT">Ron Peter Mortega </h3>
-                        <p class="border bg-snbg w-34 pl-6 pr-6 p-1 text-sm shadow rounded-3xl">Farmer</p>
+                        <h3 class="text-lg xl:text-xl font-semibold text-customIT">{{ $member->name}} </h3>
+                        <p class="border bg-snbg w-34 pl-6 pr-6 p-1 text-sm shadow rounded-3xl">{{ $member->sector->sector_name ?? '-'}}</p>
                         <div class="flex">
-                            <p class="text-xs text-gray-500 mt-2">Member ID: 123456789 </p>
+                            <p class="text-xs text-gray-500 mt-2">MEM-{{ $member->id}} </p>
                             <button><img src="{{ asset('images/copy-svg.svg') }}" alt="copy" class="w-8 h-8" /></button>
                         </div>
                     </div>
@@ -48,15 +48,15 @@
                     <div class="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center mb-2 text-[10px] md:text-sm lg:text-md">
                         <div class="col-start-1">
                             <p class="text-customIT font-semibold ">Full Name</p>
-                            <p class="text-gray-500 font-medium">Ron Peter Mortega</p>
+                            <p class="text-gray-500 font-medium">{{ $member->name}}</p>
                         </div>
                         <div class="col-start-2">
                             <p class="text-customIT font-semibold">Member Type</p>
-                            <p class="text-gray-500 font-medium">Farmer</p>
+                            <p class="text-gray-500 font-medium">{{ $member->sector->sector_name ?? '-'}}</p>
                         </div>
                         <div class="col-start-3 md:col-start-1 lg:col-start-3">
                             <p class="text-customIT font-semibold">Joined Since</p>
-                            <p class="text-gray-500 font-medium">January 2025</p>
+                            <p class="text-gray-500 font-medium">{{ $member->created_at->format('F d Y')}}</p>
                         </div>
                         <div class="justify-center col-start-4 md:col-start-2 lg:col-start-4 text-center">
                             <p class="text-customIT font-semibold">Membership Status</p>
@@ -68,39 +68,39 @@
                     <div class="text-customIT flex grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center text-[10px] md:text-xs lg:text-md mb-2">
                         <div class="col-start-1">
                             <p class="text-customIT font-semibold">Gender</p>
-                            <p class="text-gray-500 font-medium">Gae</p>
+                            <p class="text-gray-500 font-medium">{{ $member->user_info->gender ?? '-'}}</p>
                         </div>
                         <div class="col-start-2">
                             <p class="text-customIT font-semibold">Email</p>
                             <p class="text-gray-500 font-medium">
                                 <span x-show="!showDetails">*************</span>
-                                <span x-show="showDetails">ron.p.mortega@email.com</span>
+                                <span x-show="showDetails">{{ $member->email}}</span>
                             </p>
                         </div>
                     </div>
                     <div class="text-customIT grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center text-[10px] md:text-xs lg:text-md  mb-2">
                         <div class="col-start-1">
                             <p class="text-customIT font-semibold">Age</p>
-                            <p class="text-gray-500 font-medium">21 years old</p>
+                            <p class="text-gray-500 font-medium">{{ \Carbon\Carbon::parse($member->birthdate)->age ?? '-'}}</p>
                         </div>
                         <div class="col-start-2">
                             <p class="text-customIT font-semibold">Address</p>
                             <p class="text-gray-500 font-medium">
                                 <span x-show="!showDetails">*************</span>
-                                <span x-show="showDetails">Rawis, Albay</span>
+                                <span x-show="showDetails">{{ $member->user_info->address ?? '-'}}</span>
                             </p>
                         </div>
                     </div>
                     <div class="text-customIT grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center text-[10px] md:text-xs lg:text-md  mb-2">
                         <div class="col-start-1">
                             <p class="text-customIT font-semibold">Birthday</p>
-                            <p class="text-gray-500">December 11, 2003</p>
+                            <p class="text-gray-500">{{ $member->user_info->birthdate ?? '-'}}</p>
                         </div>
                         <div class="col-start-2">
                             <p class="text-customIT font-semibold">Contact Number</p>
                             <p class="text-gray-500 font-medium">
                                 <span x-show="!showDetails">Primary: **************</span>
-                                <span x-show="showDetails">Primary: 0912-345-6789</span>
+                                <span x-show="showDetails">{{ $member->user_info->contact_no ?? '-'}}</span>
                             </p>
                         </div>
                         <div class="col-start-2 mt-4">
@@ -127,51 +127,35 @@
                     </div>
                     <div class="overflow-auto">
                         <table class="min-w-full border-spacing-y-1">
-                        <thead class="bg-snbg border-y border-gray-300">
+                        <thead class="bg-snbg">
                             <tr class="text-customIT text-left text-sm font-semibold">
+                                <th class="px-4 py-2">ID</th>
                                 <th class="px-4 py-2">Requested Item</th>
                                 <th class="px-4 py-2">Item Type</th>
-                                <th class="px-4 py-2">Date Submitted</th>
                                 <th class="px-4 py-2">Reason</th>
+                                <th class="px-4 py-2">Date Submitted</th>
                                 <th class="px-4 py-2">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="border border-gray-300">
-                                <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
-                                <td class="px-4 py-2 text-sm text-gray-700">Tools</td>
-                                <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
-                                <td class="px-4 py-2 text-sm text-gray-700 font-medium"><button onclick="openModal('viewReasonModal')">Reason</button></td>
-                               <td class="px-4 py-3 ">
-                                <div class="inline-block text-xs font-medium bg-approved text-white text-center px-3 py-1 rounded-full">
-                                    Approved
-                                </div>
-                            </td>
-                            </tr>
-                            <tr class="border border-gray-300">
-                                <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
-                                <td class="px-4 py-2 text-sm text-gray-700">Tools</td>
-                                <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
-                                <td class="px-4 py-2 text-sm text-gray-700 font-medium"><button onclick="openModal('viewReasonModal')">Reason</button></td>
-                                <td class="px-4 py-3 ">
-                                <div class="inline-block text-xs font-medium bg-rejected text-white text-center px-3 py-1 rounded-full">
-                                    Rejected
-                                </div>
-                            </td>
-                            </tr>
-                            @for($i = 1; $i < 5; $i++)
+                            @forelse($member->applications as $member)
                                 <tr class="border border-gray-300">
-                                    <td class="px-4 py-2 text-sm text-gray-700">Pampalo kay Ron</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">Tools</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">Jan 24, 2025</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700 font-medium"><button onclick="openModal('viewReasonModal')">Reason</button></td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">REQ-ITEM{{ $applications->id }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $applications->grant->grant_name}}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $applications->grant->grant_type}}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700 font-medium"><button onclick="openModal('viewReasonModal')">{{ $applications->purpose}}</button></td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $applications->created_at}}</td>
                                     <td class="px-4 py-3 ">
                                         <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
-                                            Pending
+                                            {{ $applications->status->status_name}}
                                         </div>
                                     </td>
                                 </tr>
-                            @endfor
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="px-4 py-3 text-md text-gray-500 text-center">No Applications</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                         </table>
                     </div>
@@ -203,40 +187,27 @@
                         <h2 class="text-ms md:text-lg font-semibold text-customIT mb-4 border-b pb-2 shrink-0">Attached Documents</h2>
                         <div class="overflow-auto flex-1 pr-2">
                             <ul class="space-y-1 text-sm">
-                            <li class="flex justify-between items-center">
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Government ID">Government ID</p>
-                                    <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
-                                </div>
-                                <div class="flex gap-4 text-xs text-customIT font-medium">
-                                    <button onclick="openModal('viewDocumentModal')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 20" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776" />
-                                        </svg>
-                                    </button>
-                                    <button><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </li>
-                            @for($i = 0; $i < 10; $i++)
+                            @forelse($member->documents as $document)
                                 <li class="flex justify-between items-center">
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="Proof of Ownership">Proof of Ownership</p>
-                                        <p class="text-[9px] text-gray-700">date uploaded: Jan 14, 2025</p>
+                                        <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="{{ $document->file_name ?? 'Document' }}">{{ $document->file_name ?? 'Document'}}</p>
+                                        <p class="text-[9px] text-gray-700">date uploaded:{{ $document->created_at->format(' F d Y')}}</p>
                                     </div>
                                     <div class="flex gap-4 text-xs text-customIT font-medium">
-                                        <button onclick="openModal('viewDocumentModal')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 20" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <button onclick="openModal('viewDocumentModal', {{ $document->id}})"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 20" stroke-width="1.5" stroke="currentColor" class="size-6">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776" />
                                             </svg>
                                         </button>
-                                        <button><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <a href="{{ asset('storage/'.$document->file_path) }}" download><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                                             </svg>
-                                        </button>
+                                        </a>
                                     </div>
                                 </li>
-                            @endfor
+                                @include('components.modals.view-documents')
+                            @empty
+                                <li class="py-2 text-sm text-gray-500 text-center">No documents uploaded</li>
+                            @endforelse
                             </ul>
                         </div>
                 </div>
@@ -246,7 +217,7 @@
         @include('components.modals.view-applications')
         @include('components.modals.view-logs')
         @include('components.modals.view-reason')
-        @include('components.modals.view-documents')
+       
     </div>
     <script>
         const ctx = document.getElementById('programChart');
