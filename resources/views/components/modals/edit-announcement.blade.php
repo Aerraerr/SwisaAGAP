@@ -50,17 +50,20 @@
                         <div>
                             <label for="announcement_audience" class="text-sm font-medium text-gray-700">Audience</label>
                             <select name="announcement_audience" id="announcement_audience" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent">
-                                <option>All members</option>
-                                <option>Farmers</option>
-                                <option>Staff</option>
+                                @foreach(\App\Models\Announcement::AUDIENCE as $audience)
+                                    <option value="{{ $audience }}">{{ $audience }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div>
                             <label for="announcement_status" class="text-sm font-medium text-gray-700">Status</label>
                             <select name="announcement_status" id="announcement_status" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent">
-                                <option>Draft</option>
-                                <option>Published</option>
-                                <option>Archived</option>
+                                @foreach($statuses as $status)
+                                    <option value="{{ $status->id }}"
+                                        {{ $announcement->status_id == $status->id ? 'selected' : '' }}>
+                                        {{ $status->status_name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                     </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
+use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,14 +12,15 @@ class AnnouncementController extends Controller
 {
     //show member with documents (if any)
     public function showAnnouncements(){
-        return Announcement::with('role', 'documents')->get();
+        return Announcement::with('role', 'documents', 'status')->get();
     }
 
     //pass the 'members' variable to the members page for data display
     public function dispalyAnnouncement(){
         $announcements = $this->showAnnouncements();
+        $statuses = Status::whereIn('status_name', ['draft', 'published', 'archived'])->get();
 
-        return view('swisa-admin.announcements', compact('announcements'));
+        return view('swisa-admin.announcements', compact('announcements', 'statuses'));
     }
 
     //function to add an announcement
@@ -30,15 +32,18 @@ class AnnouncementController extends Controller
             'announcement_files' => 'nullable|image|mimes:jpeg,png,jpg,pdf,docx|max:10485760',
             'announcement_start' => 'required|date',
             'announcement_end' => 'nullable|date|after_or_equal:announcement_start',
+            'announcement_status' => 'required|exists:statuses,id',
         ]);
 
         
-        //store to table 'grants'
+        //store to table 'announcements'
         $announcement = Announcement::create([
             'role_id' => Auth::user()->role_id,
+            'status_id' => $request->announcement_status,
             'title' => $request->announcement_title,
             'message' => $request->announcement_content,
             'posted_at' => $request->announcement_start,
+            'end_at' => $request->announcement_end,
         ]);
 
         //handle the file upload
@@ -61,6 +66,7 @@ class AnnouncementController extends Controller
             'announcement_title' => 'required|string|max:255',
             'announcement_content' => 'required|string',
             'announcement_files' => 'nullable|image|mimes:jpeg,png,jpg,pdf,docx|max:10485760',
+            'announcement_audience' => 'equired',
             'announcement_start' => 'required|date',
             'announcement_end' => 'nullable|date|after_or_equal:announcement_start',
         ]);
@@ -71,8 +77,10 @@ class AnnouncementController extends Controller
         $announcement->update([
             'role_id' => Auth::user()->role_id,
             'title' => $request->announcement_title,
+            'audience' => $request->announcement_audience,
             'message' => $request->announcement_content,
             'posted_at' => $request->announcement_start,
+            'end_at' => $request->announcement_end,
         ]);
 
         //handle the file upload

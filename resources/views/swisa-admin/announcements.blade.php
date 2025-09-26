@@ -47,17 +47,21 @@
                         <div>
                             <label for="announcement_audience" class="text-sm font-medium text-gray-700">Audience</label>
                             <select name="announcement_audience" id="announcement_audience" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent">
-                                <option>All members</option>
-                                <option>Farmers</option>
-                                <option>Staff</option>
+                                <option value="">Select Audience</option>
+                                @foreach(\App\Models\Announcement::AUDIENCE as $audience)
+                                    <option value="{{ $audience }}">{{ $audience }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div>
                             <label for="announcement_status" class="text-sm font-medium text-gray-700">Status</label>
                             <select name="announcement_status" id="announcement_status" class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent">
-                                <option>Draft</option>
-                                <option>Published</option>
-                                <option>Archived</option>
+                                @foreach($statuses as $status)
+                                    <option value="{{ $status->id }}"
+                                        {{ old('announcement_status') == $status->id ? 'selected' : '' }}>
+                                        {{ $status->status_name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -143,7 +147,7 @@
                             <div>
                                 <h3 class="font-semibold text-customIT">{{ $announcement->title}}</h3>
                                 <p class="text-sm text-gray-600 mb-5">{{ $announcement->message}}</p>
-                                <p class="text-xs text-gray-500 mt-1">Audience: all | Visible:{{ $announcement->posted_at}} - none</p>
+                                <p class="text-sm text-gray-500 mt-1">Audience: <span class="font-medium text-gray-700">{{ $announcement->audience}}</span> | Visible: <span class="font-medium text-gray-700">{{ $announcement->posted_at->format('F d Y')}} - {{ $announcement->end_at->format('F d Y')}}</span></p>
                             </div>
                             <div class="flex gap-2 mt-5 sm:mt-10">
                                 <button onclick="openModal('editAnnouncementModal-{{ $announcement->id }}')" class="bg-gray-100 text-gray-600 hover:bg-gray-200 p-2 rounded-md"><svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 00-1.41 0L18 8.34l3.75 3.75 1.29-1.29a1 1 0 000-1.41l-2.33-2.35z"/></svg></button>

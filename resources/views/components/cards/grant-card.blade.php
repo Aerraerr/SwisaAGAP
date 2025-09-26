@@ -36,7 +36,6 @@
             <div>
                 <h4 class="font-semibold text-customIT flex items-center mb-1">
                     <!-- Box icon -->
-                    <svg class="h-4 w-4 mr-1 customIT" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 12a1 1 0 112 0 1 1 0 01-2 0zm1-5a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
                     Stock Remaining
                 </h4>
                 <p class="font-medium ml-5 text-sm">Available: <span class="text-gray-600 ml-1">{{ $stockAvailable }} units</span></p>
@@ -46,7 +45,6 @@
             <div>
                 <h4 class="font-semibold text-green-700 flex items-center mb-1">
                     <!-- Calendar icon -->
-                    <svg class="h-4 w-4 mr-1 text-customIT" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" /></svg>
                     Availability
                 </h4>
                 <p class="font-medium ml-5 text-sm">Available Until: <span class="text-gray-600 ml-1">{{ $end_date }}</span></p>

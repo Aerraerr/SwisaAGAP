@@ -13,15 +13,21 @@ class Announcement extends Model
 
     protected $fillable = [
         'role_id',
+        'status_id',
         'title',
         'message',
+        'audience',
         'image',
         'posted_at',
+        'end_at',
     ];
+
+    const AUDIENCE = ['All', 'Members', 'Support Staff', 'Admin'];
 
     // this makes it a Carbon instance
     protected $casts = [
         'posted_at' => 'date', 
+        'end_at' => 'date',
     ];
 
     //announcement belongs to a role
@@ -33,5 +39,10 @@ class Announcement extends Model
     public function documents()
     {
         return $this->morphMany(Document::class, 'documentable');
+    }
+
+    //announcement has a status
+    public function status(){
+        return $this->belongsTo(Status::class);
     }
 }
