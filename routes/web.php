@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Web\TrainingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,9 +36,26 @@ Route::get('/initandevents', function () {
     return view('swisa-admin.initandevents');
 })->middleware(['auth', 'verified'])->name('initandevents');
 
-Route::get('/training-workshop', function () {
-    return view('swisa-admin.training-workshop');
-})->middleware(['auth', 'verified'])->name('training-workshop');
+
+
+// TRAINING 
+
+Route::get('/training-workshop', [TrainingController::class, 'displayTraining'])
+    ->middleware(['auth', 'verified'])->name('training-workshop');
+
+// for grantcontroller/addgrant
+Route::post('/trainings', [TrainingController::class, 'addTraining'])
+    ->middleware(['auth', 'verified'])->name('training.store');
+
+// for view training
+Route::get('/view-training/{id}', [TrainingController::class, 'viewTrainingDetails'])
+    ->middleware(['auth', 'verified'])->name('view-training');
+
+
+
+
+
+
 
 Route::get('/grant-request', function () {
     return view('swisa-admin.grant-request');
@@ -68,9 +86,7 @@ Route::get('/view-grant', function () {
     return view('swisa-admin.view-grant');
 })->middleware(['auth', 'verified'])->name('view-grant');
 
-Route::get('/view-training', function () {
-    return view('swisa-admin.view-training');
-})->middleware(['auth', 'verified'])->name('view-training');
+
 
 
 

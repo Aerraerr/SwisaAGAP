@@ -39,7 +39,7 @@
     </div>
     <!-- Charts Row -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-        @include('charts.member-type-breakdown')
+        @include('charts.member-type-breakdown2')
         @include('charts.member-demographics')
     </div>
     <!-- Members Table -->

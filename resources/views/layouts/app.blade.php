@@ -21,6 +21,10 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+        <!-- QR Scanner Library -->
+        <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+        <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
     </head>
     
     <body class="font-poppins bg-gray-100">
@@ -57,3 +61,4 @@
         document.body.style.zoom = "90%";
     });
 </script>
+

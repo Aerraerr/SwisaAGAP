@@ -45,4 +45,3 @@
         
         </div>
             @include('charts.member-demographics')
-        @include('charts.member-registrations')

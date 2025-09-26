@@ -16,7 +16,7 @@
             <!-- Settings Content -->
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 text-medium">
                 <!-- Sidebar -->
-                <aside class="bg-white rounded-xl shadow p-4">
+                <aside class="bg-white rounded-xl shadow p-4 h-[300px]">
                     <h3 class="font-semibold text-custom mb-3V text-[#2C6E49]">Navigation</h3>
                     <ul class="space-y-1">
                         <li>
@@ -99,48 +99,9 @@
                         </form>
                     </div>
 
-                    <!-- User Management -->
-                    <div id="users-section" class="settings-section hidden">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-semibold text-custom text-[#2C6E49]">User Management</h3>
-                            <button class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-primary-green transition">
-                                + Add User
-                            </button>
-                        </div>
 
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full border rounded-lg">
-                                <thead class="bg-gray-100 text-gray-700">
-                                    <tr>
-                                        <th class="px-4 py-2 text-left text-sm font-semibold">Name</th>
-                                        <th class="px-4 py-2 text-left text-sm font-semibold">Email</th>
-                                        <th class="px-4 py-2 text-left text-sm font-semibold">Role</th>
-                                        <th class="px-4 py-2 text-left text-sm font-semibold">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="border-t">
-                                        <td class="px-4 py-2">John Doe</td>
-                                        <td class="px-4 py-2">john@example.com</td>
-                                        <td class="px-4 py-2">Admin</td>
-                                        <td class="px-4 py-2">
-                                            <button class="text-blue-500 hover:underline">Edit</button> |
-                                            <button class="text-red-500 hover:underline">Delete</button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-t">
-                                        <td class="px-4 py-2">Jane Smith</td>
-                                        <td class="px-4 py-2">jane@example.com</td>
-                                        <td class="px-4 py-2">User</td>
-                                        <td class="px-4 py-2">
-                                            <button class="text-blue-500 hover:underline">Edit</button> |
-                                            <button class="text-red-500 hover:underline">Delete</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <!-- USER MANAGEMENT -->
+                    @include('swisa-admin.settings.user-management')
 
                     <!-- Notifications -->
                     <div id="notifications-section" class="settings-section hidden">

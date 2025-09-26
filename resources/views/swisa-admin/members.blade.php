@@ -12,9 +12,14 @@
                     Manage, track, and update records of active and inactive SWISA members.
                 </p>
             </div>
+            
             @include('components.UserTab')
         </div>
-        
+@include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
+
+
+
+
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div class="bg-white rounded-2xl shadow p-4 border-t-4 border-green-600">

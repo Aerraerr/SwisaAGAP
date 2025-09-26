@@ -1,9 +1,10 @@
 <!-- User Widget -->
-<div class="flex justify-between items-center w-[380px] h-16 hover:w-[500px] px-5 py-3 bg-white shadow-lg rounded-lg font-poppins relative transition-all duration-300 ease-in-out"
-     id="user-widget">
-    
-    <!-- Live Clock Display -->
-    <div class="text-[#2C6E49] text-sm font-bold tracking-wide text-custom whitespace-nowrap overflow-hidden">
+<div id="user-widget" 
+     class="flex justify-between items-center w-[380px] h-16 hover:w-[500px] px-5 py-3 bg-white shadow-lg rounded-lg font-poppins relative transition-all duration-300 ease-in-out">
+
+    <!-- Live Clock Display (hidden on mobile) -->
+    <div id="user-live-time" 
+         class="text-[#2C6E49] text-sm font-bold tracking-wide text-custom whitespace-nowrap overflow-hidden hidden md:block">
         {{ \Carbon\Carbon::now()->format('F d, Y - h:i:s A') }}
     </div>
 
@@ -48,11 +49,9 @@
                     </form>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
-
 
 <!-- Notification Panel -->
 <div id="notif-panel" 
@@ -74,6 +73,31 @@
     </div>
 </div>
 
+<!-- Styles for Responsive Behavior -->
+<style>
+/* 📱 Mobile: Make widget small, top-right, no bg/date */
+@media (max-width: 768px) {
+  #user-widget {
+    position: absolute;   /* fixed inside layout, not sticky */
+    top: 30px;
+    right: 10px;
+    width: auto;
+    height: auto;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  #user-widget:hover {
+    width: auto; /* disable hover expansion */
+  }
+
+  #user-live-time {
+    display: none !important;
+  }
+}
+</style>
+
 <!-- Scoped Script -->
 <script>
 (function () {
@@ -82,7 +106,7 @@
 
     const toggleBtn = widget.querySelector('#user-toggle');
     const dropdown = widget.querySelector('#user-dropdown-menu');
-    const liveTime = widget.querySelector('#user-live-time');
+    const liveTime = document.getElementById('user-live-time');
 
     // Toggle dropdown
     toggleBtn.addEventListener('click', () => {
@@ -97,19 +121,22 @@
     });
 
     // Live Time Update every second
-    function updateLiveTime() {
-        const now = new Date();
-        const options = { month: 'long', day: '2-digit', year: 'numeric' };
-        const formattedDate = now.toLocaleDateString('en-US', options);
-        let hours = now.getHours();
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12 || 12;
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
+    if (liveTime) {
+        function updateLiveTime() {
+            const now = new Date();
+            const options = { month: 'long', day: '2-digit', year: 'numeric' };
+            const formattedDate = now.toLocaleDateString('en-US', options);
+            let hours = now.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
 
-        liveTime.textContent = `${formattedDate} - ${hours}:${minutes}:${seconds} ${ampm}`;
+            liveTime.textContent = `${formattedDate} - ${hours}:${minutes}:${seconds} ${ampm}`;
+        }
+        setInterval(updateLiveTime, 1000);
+        updateLiveTime();
     }
-    setInterval(updateLiveTime, 1000);
 
     // ✅ Notification Panel Behavior
     const notifBtn = document.getElementById('notif-btn');

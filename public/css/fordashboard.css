@@ -105,3 +105,43 @@ body {
 }
 
 
+  /* DASHBOARD ANIMATION*/
+  .animate-gradient {
+      background: linear-gradient(120deg, #2C6E49, #59AA72, #2C6E49);
+      background-size: 200% 200%;
+      animation: gradientShift 20s ease infinite;
+  }
+
+  @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+  }
+
+  /* Subtle circle movement */
+  @keyframes moveCircle1 {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-8px, 8px); }
+  }
+  @keyframes moveCircle2 {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(10px, -10px); }
+  }
+  .animate-moveCircle1 {
+      animation: moveCircle1 18s ease-in-out infinite;
+  }
+  .animate-moveCircle2 {
+      animation: moveCircle2 22s ease-in-out infinite;
+  }
+
+  /* Gentle fade-in for text */
+  @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fadeIn {
+      animation: fadeIn 1.2s ease forwards;
+  }
+  .delay-200 { animation-delay: 0.2s; }
+  .delay-500 { animation-delay: 0.5s; }
+  .delay-700 { animation-delay: 0.7s; }

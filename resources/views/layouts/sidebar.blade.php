@@ -2,7 +2,7 @@
 <button class="hamburger sidebar-closebtn" id="toggleButton" onclick="toggleSidebar()">☰</button>
 
 <!-- Sidebar (default collapsed) -->
-<div class="sidebar z-10 collapsed" id="sidebar">
+<div class="sidebar z-500 collapsed" id="sidebar">
     <div class="sidebar-header mb-5">
         <img class="sidebar-logo" src="{{ asset('images/swisa-agap4.png') }}" alt="Swisa AGAP Logo">
     </div>
@@ -107,49 +107,40 @@
     }
 </script>
 <script>
-    function toggleSidebar() {
-        const sidebar = document.getElementById("sidebar");
-        const toggleButton = document.getElementById("toggleButton");
-        const isCollapsed = sidebar.classList.toggle("collapsed");
+// FOR SIDEBAR BEHAV
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const toggleButton = document.getElementById("toggleButton");
 
+    if (window.innerWidth <= 768) {
+        // 📱 Mobile: slide in/out full sidebar
+        sidebar.classList.toggle("show");
+        const isShown = sidebar.classList.contains("show");
+        toggleButton.innerText = isShown ? "‹" : "☰";
+
+        localStorage.setItem("mobileSidebarShown", isShown ? "true" : "false");
+    } else {
+        // 💻 Desktop: collapse/expand
+        const isCollapsed = sidebar.classList.toggle("collapsed");
         toggleButton.innerText = isCollapsed ? "☰" : "‹";
         toggleButton.classList.toggle("active-bg", isCollapsed);
 
-        if (isCollapsed) {
-            document.querySelectorAll('.submenu').forEach(menu => menu.style.display = 'none');
-            document.querySelectorAll('.dropdown-toggle').forEach(toggle => toggle.classList.remove('open'));
-        }
-
         localStorage.setItem("sidebarCollapsed", isCollapsed ? "true" : "false");
     }
+}
 
-    function toggleSidebarDropdown(element) {
-        const sidebar = document.getElementById("sidebar");
-        if (sidebar.classList.contains("collapsed")) return;
+function restoreSidebarState() {
+    const sidebar = document.getElementById("sidebar");
+    const toggleButton = document.getElementById("toggleButton");
 
-        const submenu = element.nextElementSibling;
-        const isOpen = submenu.classList.contains("show");
-
-        document.querySelectorAll('.submenu').forEach(menu => menu.classList.remove('show'));
-        document.querySelectorAll('.dropdown-toggle').forEach(toggle => toggle.classList.remove('open'));
-
-        if (!isOpen) {
-            submenu.classList.add("show");
-            element.classList.add('open');
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const sidebar = document.getElementById("sidebar");
-        const toggleButton = document.getElementById("toggleButton");
-
-        // ✅ Force default to collapsed if no preference is saved
+    if (window.innerWidth <= 768) {
+        // 📱 Mobile: always default to HAMBURGER (hidden)
+        sidebar.classList.remove("show");
+        toggleButton.innerText = "☰";
+        localStorage.setItem("mobileSidebarShown", "false");
+    } else {
+        // 💻 Desktop: restore last state
         let isCollapsed = localStorage.getItem("sidebarCollapsed");
-        if (isCollapsed === null) {
-            isCollapsed = "true"; 
-            localStorage.setItem("sidebarCollapsed", "true");
-        }
-
         if (isCollapsed === "true") {
             sidebar.classList.add("collapsed");
             toggleButton.innerText = "☰";
@@ -159,13 +150,57 @@
             toggleButton.innerText = "‹";
             toggleButton.classList.remove("active-bg");
         }
-    });
-
-    if (window.$ && $.pjax) {
-        $(document).pjax('.sidebar a', '#pjax-container');
-        $(document).on('pjax:click', function(event) {
-            $('.menu-item, .submenu-item').removeClass('active');
-            $(event.target).closest('a').addClass('active');
-        });
     }
+}
+
+document.addEventListener("DOMContentLoaded", restoreSidebarState);
+window.addEventListener("resize", restoreSidebarState);
+
+
+// FOR TOGGLE
+function toggleSidebarDropdown(element) {
+    const sidebar = document.getElementById("sidebar");
+    if (sidebar.classList.contains("collapsed")) return;
+
+    const submenu = element.nextElementSibling;
+    const isOpen = submenu.classList.contains("show");
+
+    document.querySelectorAll('.submenu').forEach(menu => menu.classList.remove('show'));
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => toggle.classList.remove('open'));
+
+    if (!isOpen) {
+        submenu.classList.add("show");
+        element.classList.add('open');
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById("sidebar");
+    const toggleButton = document.getElementById("toggleButton");
+
+    // ✅ Force default to collapsed if no preference is saved
+    let isCollapsed = localStorage.getItem("sidebarCollapsed");
+    if (isCollapsed === null) {
+        isCollapsed = "true"; 
+        localStorage.setItem("sidebarCollapsed", "true");
+    }
+
+    if (isCollapsed === "true") {
+        sidebar.classList.add("collapsed");
+        toggleButton.innerText = "☰";
+        toggleButton.classList.add("active-bg");
+    } else {
+        sidebar.classList.remove("collapsed");
+        toggleButton.innerText = "‹";
+        toggleButton.classList.remove("active-bg");
+    }
+});
+
+if (window.$ && $.pjax) {
+    $(document).pjax('.sidebar a', '#pjax-container');
+    $(document).on('pjax:click', function(event) {
+        $('.menu-item, .submenu-item').removeClass('active');
+        $(event.target).closest('a').addClass('active');
+    });
+}
 </script>

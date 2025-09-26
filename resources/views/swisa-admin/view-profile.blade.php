@@ -2,12 +2,26 @@
 
 @section('content')
 @include('layouts.loading-overlay')
-    <div class="bg-mainbg">
-        <div class="text-customIT text-2xl flex flex-col md:flex-row justify-between md:items-center mb-4">
-            <h1 class="font-bold">View Profile</h1>
-            @include('components.usertab')
-        </div>
+<div class="p-4">
+    <div class="bg-mainbg px-2">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
+            <div class="text-customIT flex flex-col">
+                <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">View Profile</h2>
+                <p class="text-sm text-gray-600">See detailed information about the selected member’s profile.</p>
 
+            </div>
+
+            @include('components.UserTab')
+        </div>
+    </div>
+@include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
+
+
+
+
+    
+    
         <div class="grid grid-cols-1 md:grid-cols-8 xl:grid-cols-12 gap-2 xl:gap-3">
             <!-- left part-->
             <div class="col-span-12 md:col-span-3">
@@ -248,6 +262,7 @@
         @include('components.modals.view-reason')
         @include('components.modals.view-documents')
     </div>
+</div>
     <script>
         const ctx = document.getElementById('programChart');
         new Chart(ctx, {

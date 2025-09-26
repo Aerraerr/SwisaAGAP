@@ -1,53 +1,123 @@
 @extends('layouts.app')
 
 @section('content')
+
 @include('layouts.loading-overlay')
+<!-- Animations -->
+<style>
+    /* Smooth gradient animation */
+    .animate-gradient {
+        background: linear-gradient(120deg, #2C6E49, #61b67bff, #2C6E49);
+        background-size: 200% 200%;
+        animation: gradientShift 20s ease infinite;
+    }
+
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Subtle circle movement */
+    @keyframes moveCircle1 {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(-8px, 8px); }
+    }
+    @keyframes moveCircle2 {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(10px, -10px); }
+    }
+    .animate-moveCircle1 {
+        animation: moveCircle1 18s ease-in-out infinite;
+    }
+    .animate-moveCircle2 {
+        animation: moveCircle2 22s ease-in-out infinite;
+    }
+
+    /* Gentle fade-in for text */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+        animation: fadeIn 1.2s ease forwards;
+    }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-500 { animation-delay: 0.5s; }
+    .delay-700 { animation-delay: 0.7s; }
+</style>
+
+
             <div class="flex justify-end mr-8 pt-1">
                 @include('components.UserTab')
             </div>
 
-<!-- Page Wrapper -->
-<div class="p-4 -mt-2">
-    <div class="bg-mainbg px-4 min-h-screen">
-        
-        <!-- Page Header (Smaller Version) -->
-        <div class="flex flex-col sm:flex-row justify-between items-center sm:items-center mb-2 gap-3 
-                    text-white px-4 py-3 rounded-xl shadow-md relative overflow-hidden"
-            style="background: linear-gradient(120deg, rgba(44, 110, 73, 1), rgba(89, 170, 114, 0.68));">
+        <!-- Page Wrapper -->
+        <div class="p-4 -mt-2">
+            <div class="bg-mainbg px-4 min-h-screen">
+                
+        <!-- Header + Search Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-3 mb-3">
 
-            <!-- Decorative subtle background circles -->
-            <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-10 rounded-full blur-2xl"></div>
-            <div class="absolute bottom-0 left-0 w-20 h-20 bg-white opacity-10 rounded-full blur-xl"></div>
+        <!-- Page Header (Container 1 - spans 3 cols) -->
+        <div class="lg:col-span-4 flex flex-col sm:flex-row justify-between items-center sm:items-center 
+                    text-white px-4 py-5 rounded-xl shadow-md relative overflow-hidden animate-gradient">
+
+            <!-- Decorative subtle background circles with motion -->
+            <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-5 rounded-full blur-2xl animate-moveCircle1"></div>
+            <div class="absolute bottom-0 left-0 w-20 h-20 bg-white opacity-5 rounded-full blur-xl animate-moveCircle2"></div>
 
             <!-- Left Content -->
-            <div class="flex items-center gap-3 relative z-10">
-                <!-- Admin Icon -->
-                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-white bg-opacity-20 shadow-md">
-                    <span class="material-icons text-white text-xl">admin_panel_settings</span>
+            <div class="flex items-center gap-3 relative z-10 h-15">
+                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-white bg-opacity-20 shadow-md">
+                    <span class="material-icons text-white text-2xl animate-bounce">admin_panel_settings</span>
                 </div>
-
                 <div class="flex flex-col">
-                    <h2 class="text-[16px] sm:text-[20px] font-semibold drop-shadow-sm animate-fadeIn">
+                    <h2 class="text-[20px] sm:text-[24px] font-semibold drop-shadow-sm animate-fadeIn">
                         Welcome Back, Admin! 👋
                     </h2>
-                    <p class="text-xs sm:text-sm opacity-90">
+                    <p class="text-xs sm:text-sm opacity-90 animate-fadeIn delay-200">
                         Here’s your quick overview today.
                     </p>
                 </div>
             </div>
+            
 
             <!-- Right Side (Quick Status) -->
             <div class="hidden sm:flex flex-col text-right relative z-10">
-                <p class="text-xs opacity-80">Last Login: <span class="font-medium">Today, 9:45 AM</span></p>
-                <p class="text-xs opacity-80">System Status: <span class="font-medium text-hover-green">All Good ✅</span></p>
+                <p class="text-xs opacity-80 animate-fadeIn delay-500">
+                    Last Login: <span class="font-medium">Today, 9:45 AM</span>
+                </p>
+                <p class="text-xs opacity-80 animate-fadeIn delay-700">
+                    System Status: <span class="font-medium text-hover-green">All Good ✅</span>
+                </p>
             </div>
         </div>
+
+
+            <!-- Search Bar (Container 2 - spans 1 col)
+            <div class="lg:col-span-1 bg-white p-4 rounded-xl shadow-md flex items-center gap-2">
+                <span class="material-icons text-gray-500">search</span>
+                <input 
+                    type="text" 
+                    placeholder="Search members, requests, or equipment..." 
+                    class="w-full p-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+            </div>
+             -->
+        </div>
+        <div class="mb-4 text-sm text-gray-600">
+</div>
+
+
+
+
 
 
 
 
         <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-3">
             
             <!-- Total Registered Members -->
             <div class="lg:col-span-2 text-white p-6 rounded-xl shadow-lg font-product" style="background: linear-gradient(120deg, rgba(44, 110, 73, 0.9), rgba(47, 143, 78, 0.85));">
@@ -84,14 +154,74 @@
                     <a href="#" class="text-xs text-custom hover:underline">All messages &rarr;</a>
                 </div>
             </div>
+<!-- Charts Section -->
+@include('charts.monthly-requests')
+@include('charts.request-status-overview')
+@include('charts.member-type-breakdown')
+@include('charts.top-requested')
+@include('charts.recent-activity')
+@include('charts.shortcuts-quicklinks')
 
-            <!-- Charts Section -->
-            @include('charts.monthly-requests')
-            @include('charts.request-status-overview')
-            @include('charts.member-type-breakdown')
-            @include('charts.top-requested')
-            @include('charts.recent-activity')
-            @include('charts.shortcuts-quicklinks')
+<!-- New: Member Demographics -->
+<div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-lg">
+    <p class="font-semibold mb-4 text-[#2C6E49] flex items-center">
+        <span class="material-icons mr-2 text-custom">groups</span>
+        Member Demographics
+    </p>
+
+    <!-- Gender Distribution -->
+    <div class="mb-4">
+        <p class="text-sm font-semibold text-gray-600 mb-2">Gender</p>
+        <div class="flex items-center mb-3">
+            <span class="material-icons text-blue-600 mr-2">male</span>
+            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                <div class="bg-blue-500 h-2 rounded-full" style="width: 78%"></div>
+            </div>
+            <span class="text-xs font-medium text-blue-600">78% Male</span>
+        </div>
+        <div class="flex items-center">
+            <span class="material-icons text-purple-600 mr-2">female</span>
+            <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                <div class="bg-purple-600 h-2 rounded-full" style="width: 22%"></div>
+            </div>
+            <span class="text-xs font-medium text-purple-600">22% Female</span>
+        </div>
+    </div>
+
+    <!-- Age Distribution -->
+    <div>
+        <p class="text-sm font-semibold text-gray-600 mb-2">Age Distribution</p>
+        <ul class="text-xs text-gray-600 space-y-1">
+            <li>18–25: <span class="font-medium">35%</span></li>
+            <li>26–40: <span class="font-medium">40%</span></li>
+            <li>41–60: <span class="font-medium">20%</span></li>
+            <li>60+: <span class="font-medium">5%</span></li>
+        </ul>
+    </div>
+</div>
+
+<!-- New: Announcements / Notices -->
+<div class="lg:col-span-4 bg-white p-6 rounded-xl shadow-lg">
+    <p class="font-semibold mb-4 text-[#2C6E49] flex items-center">
+        <span class="material-icons mr-2 text-custom">campaign</span>
+        Announcements
+    </p>
+    <div class="space-y-3 text-sm">
+        <div class="p-3 bg-green-50 rounded-lg border-l-4 border-green-600">
+            <p class="font-medium text-green-800">📢 Training Session on Modern Farming</p>
+            <p class="text-gray-600">Scheduled on September 25, 2025 at Barangay Hall.</p>
+        </div>
+        <div class="p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
+            <p class="font-medium text-yellow-800">⚠️ Deadline for Grant Applications</p>
+            <p class="text-gray-600">All requests must be submitted before October 5, 2025.</p>
+        </div>
+        <div class="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+            <p class="font-medium text-blue-800">ℹ️ System Maintenance</p>
+            <p class="text-gray-600">The system will be down on Sept 30, 10 PM – 2 AM.</p>
+        </div>
+    </div>
+</div>
+
 
         </div>
     </div>

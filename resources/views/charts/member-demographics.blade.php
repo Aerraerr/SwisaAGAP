@@ -1,51 +1,57 @@
 <div class="lg:col-span-2 bg-white rounded-xl shadow p-6">
-    <h3 class="text-lg font-bold text-customIT mb-4">Member Demographics</h3>
+    <p class="font-semibold mb-2 primary-color dashheader flex items-center">
+        <span class="material-icons mr-2 text-custom">groups</span>
+        Member Demographics
+    </p>
+
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Section: Gender & Age -->
         <div class="space-y-6">
             <!-- Gender -->
             <div>
-                <p class="text-sm font-semibold text-gray-600 mb-2">Gender</p>
+                <p class="text-base font-semibold text-gray-600 mb-2">Gender</p>
+
                 <div class="flex items-center mb-3">
-                    <span class="w-6 h-6 text-blue-600">👨</span>
+                    <span class="material-icons text-blue-600 w-6 h-6">male</span>
                     <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
                         <div class="bg-blue-500 h-2 rounded-full" style="width: 78%"></div>
                     </div>
-                    <span class="text-xs font-medium text-blue-600">78% Male</span>
+                    <span class="text-sm font-medium text-blue-600">78% Male</span>
                 </div>
+
                 <div class="flex items-center">
-                    <span class="w-6 h-6 text-purple-600">👩</span>
+                    <span class="material-icons text-purple-600 w-6 h-6">female</span>
                     <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
                         <div class="bg-purple-700 h-2 rounded-full" style="width: 22%"></div>
                     </div>
-                    <span class="text-xs font-medium text-purple-700">22% Female</span>
+                    <span class="text-sm font-medium text-purple-700">22% Female</span>
                 </div>
             </div>
 
             <!-- Age -->
             <div>
-                <p class="text-sm font-semibold text-gray-600 mb-2">Age</p>
+                <p class="text-base font-semibold text-gray-600 mb-2">Age</p>
                 <div class="flex items-center mb-2">
-                    <span class="text-xs w-12">18–25</span>
+                    <span class="text-sm w-14">18–25</span>
                     <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
                         <div class="bg-yellow-400 h-2 rounded-full" style="width: 70%"></div>
                     </div>
-                    <span class="text-xs text-yellow-600 font-medium">70%</span>
+                    <span class="text-sm text-yellow-600 font-medium">70%</span>
                 </div>
                 <div class="flex items-center mb-2">
-                    <span class="text-xs w-12">26–30</span>
+                    <span class="text-sm w-14">26–30</span>
                     <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
                         <div class="bg-yellow-400 h-2 rounded-full" style="width: 45%"></div>
                     </div>
-                    <span class="text-xs text-yellow-600 font-medium">45%</span>
+                    <span class="text-sm text-yellow-600 font-medium">45%</span>
                 </div>
                 <div class="flex items-center">
-                    <span class="text-xs w-12">30+</span>
+                    <span class="text-sm w-14">30+</span>
                     <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
                         <div class="bg-yellow-400 h-2 rounded-full" style="width: 30%"></div>
                     </div>
-                    <span class="text-xs text-yellow-600 font-medium">30%</span>
+                    <span class="text-sm text-yellow-600 font-medium">30%</span>
                 </div>
             </div>
         </div>
@@ -55,6 +61,7 @@
             <canvas id="genderChart" class="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64"></canvas>
         </div>
     </div>
+
 </div>
 
 @push('scripts')

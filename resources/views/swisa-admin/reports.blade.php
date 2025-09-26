@@ -36,7 +36,7 @@
                     <input type="date" class="border rounded-lg px-3 py-2 text-sm">
                     <input type="date" class="border rounded-lg px-3 py-2 text-sm">
                 </div>
-                <select class="w-60 border rounded-lg px-2 py-2 text-sm">
+                <select class="w-[200px] border rounded-lg px-2 py-2 text-sm">
                     <option>All Categories</option>
                     <option>Farming</option>
                     <option>Fishing</option>

@@ -7,6 +7,9 @@
             <h1 class="font-bold">Available Grants & Equipments</h1>
             @include('components.UserTab')
         </div>
+@include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
+
+
         <div class="grid grid-cols-12 gap-2 py-2" x-data="{ selectedUser: null, activeTab: 'request-table' }">
             <div class="col-span-12">
                 <div class="bg-white shadow-lg p-4 h-auto rounded-md">

@@ -67,7 +67,7 @@
                 </div>
                 <div class="overflow-auto h-[80vh]">
                     <table class="table table-hover min-w-full border-spacing-y-1">
-                        <thead class="bg-snbg border-black-800 sticky top-0 z-10">
+                        <thead class="bg-snbg border-black-800 sticky top-0 ">
                             <tr class="text-customIT text-left text-xs font-semibold">
                                 <th class="px-4 py-3 rounded-tl-md">REQUEST ID</th>
                                 <th class="px-4 py-3">MEMBER</th>

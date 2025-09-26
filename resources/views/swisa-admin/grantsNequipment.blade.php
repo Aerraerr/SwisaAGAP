@@ -12,6 +12,8 @@
             </div>
             @include('components.UserTab')
         </div>
+@include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
+
 
         
         <!-- Stats Cards -->

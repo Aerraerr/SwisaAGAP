@@ -101,7 +101,6 @@ body {
   bottom: 0;
   transition: width 0.5s ease;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
   color: var(--primary-green);
   overflow: hidden;
   padding-left: 10px;
@@ -296,3 +295,56 @@ body {
   display: flex;
   align-items: center;
 }
+/* 📱 Mobile view: Sidebar is full when opened */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 250px; /* full width drawer */
+    transition: transform 0.3s ease;
+    z-index: 500; 
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  /* Disable collapsed styles in mobile */
+  .sidebar.collapsed {
+    width: 250px;
+  }
+
+  .sidebar.collapsed .menu-text,
+  .sidebar.collapsed .managesec,
+  .sidebar.collapsed .sidebar-logo,
+  .sidebar.collapsed .user-section {
+    display: block !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+
+  .hamburger {
+    left: 5px !important;
+    z-index: 1001; /* 👈 keep hamburger always clickable above sidebar */
+  }
+  .menu-item.active {
+  background-color: var(--hover-green) !important;
+  border-right: 4px solid var(--primary-green);
+  color: var(--primary-green) !important;
+  font-weight: bold;
+  border-radius: 5px;
+
+  /* Fix shifting */
+  margin: 0;
+  padding-left: 20px;
+  box-sizing: border-box;
+  }
+  .sidebar.collapsed .menu-item.active{
+  width: 100%;
+  }
+
+
+}
+
+
