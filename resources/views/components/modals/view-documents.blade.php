@@ -1,4 +1,4 @@
-<div id="viewDocumentModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50  z-20 overflow-y-auto h-full w-full flex items-center justify-center">
+<div id="viewDocumentModal{{ $document->id}}" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50  z-20 overflow-y-auto h-full w-full flex items-center justify-center">
     <div class="relative w-1/3 max-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
         <!-- Modal Header -->
         <div class="flex items-center justify-between pb-2">
@@ -12,30 +12,29 @@
             </div>
         </div>
 
-        <!-- Modal Body: Activity Log Entries -->
+        <!-- Modal Body: View Document -->
         <div class="mt-4 max-h-[80vh]">
-            <!-- Log Group 1 -->
+            
             <div class="flex justify-between">
                 <div class="flex text-md">
                     <p class="font-medium text-gray-700 mr-4">Document Name:</p>
-                    <p class="text-gray-500">Document Name</p>
+                    <p class="text-gray-500">{{ $document->file_name}}</p>
                 </div>
                 <div class="flex bg-white px-4 border border-btncolor rounded-md">
-                    <button class="text-xs text-btncolor">Download</button>
+                    <a href="{{ asset('storage/'.$document->file_path) }}" download class="text-xs text-btncolor">Download</a>
                 </div>
             </div>
             <div class="flex mb-8">
                 <p class="font-medium text-gray-700 mr-4">Date Submitted:</p>
-                <p class="text-gray-500">25 August 2025</p>
+                <p class="text-gray-500">{{ $document->created_at->format(' F d Y')}}</p>
             </div>
             <div class="">
                 <p class="font-medium text-gray-700 mr-4">Document Image:</p>
                 <div class="flex grid grid-cols-2 gap-2 justify-center">
                     <div class="col-start-1 px-4 py-6 h-auto bg-gray-200 rounded-md">
-                        <p class="text-gray-500 p-24">Image</p>
-                    </div>
-                    <div class="col-start-2 px-4 py-6 h-auto bg-gray-200 rounded-md">
-                        <p class="text-gray-500 p-24">Image</p>
+                        <img src="{{ asset('storage/'.$document->file_path) }}" 
+                                 alt="{{ $document->file_name }}" 
+                                 class="w-full h-auto object-contain">
                     </div>
                 </div>
             </div>

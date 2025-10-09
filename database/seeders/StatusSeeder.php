@@ -31,6 +31,10 @@ class StatusSeeder extends Seeder
             //trainings status
             ['status_name' => 'open', 'created_at' => now(), 'updated_at' => now()],
             ['status_name' => 'end', 'created_at' => now(), 'updated_at' => now()],
+            //announcements status
+            ['status_name' => 'draft', 'created_at' => now(), 'updated_at' => now()],
+            ['status_name' => 'published', 'created_at' => now(), 'updated_at' => now()],
+            ['status_name' => 'archived', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

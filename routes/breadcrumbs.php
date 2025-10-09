@@ -9,7 +9,6 @@ Breadcrumbs::for('dashboard', function (BreadcrumbTrail $trail) {
     $trail->push('Dashboard', route('dashboard'));
 });
 
-// FOR MEMBERS
 // Dashboard > Members
 Breadcrumbs::for('members', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard');
@@ -17,27 +16,33 @@ Breadcrumbs::for('members', function (BreadcrumbTrail $trail) {
 });
 
 // Dashboard > Members > View Profile
-Breadcrumbs::for('view-profile', function (BreadcrumbTrail $trail) {
+Breadcrumbs::for('view-profile', function (BreadcrumbTrail $trail, $member) {
     $trail->parent('members');
-    $trail->push('View Profile', route('view-profile'));
+    $trail->push('View Profile', route('view-profile', $member->id));
 });
 
-// FOR GRANTS AND EQUIPMENTS
-// Dashboard > Grants
+
+
+
+
+
+
+
+// Dashboard > Grants and Equipment
 Breadcrumbs::for('grantsNequipment', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard');
     $trail->push('Grants and Equipment', route('grantsNequipment'));
 });
 
-// Dashboard > Grants > View grant
-Breadcrumbs::for('view-grant', function (BreadcrumbTrail $trail) {
+// Dashboard > Grants and Equipment > View Grant
+Breadcrumbs::for('view-grant', function (BreadcrumbTrail $trail, $grant) {
     $trail->parent('grantsNequipment');
-    $trail->push('View Grant', route('view-grant'));
+    $trail->push('View Grant', route('view-grant', $grant->id));
+});
+// Dashboard > Grants and Equipment > View Grant > View Profile
+Breadcrumbs::for('grant-view-profile', function (BreadcrumbTrail $trail, $grant, $member) {
+    $trail->parent('view-grant', $grant); // pass grant here
+    $trail->push('View Profile', route('view-profile', [$grant->id, $member->id]));
 });
 
-// Dashboard > Grants > View grant > View Profile
-Breadcrumbs::for('grant-view-profile', function (BreadcrumbTrail $trail) {
-    $trail->parent('view-grant');
-    // 👇 important: use grant-view-profile route, not view-profile
-    $trail->push('View Profile', route('grant-view-profile'));
-});
+

@@ -7,7 +7,7 @@
 <style>
     /* Smooth gradient animation */
     .animate-gradient {
-        background: linear-gradient(120deg, #2C6E49, #61b67bff, #2C6E49);
+        background: linear-gradient(120deg, #2C6E49, #77cf91ff, #2C6E49);
         background-size: 200% 200%;
         animation: gradientShift 20s ease infinite;
     }
@@ -28,10 +28,10 @@
         50% { transform: translate(10px, -10px); }
     }
     .animate-moveCircle1 {
-        animation: moveCircle1 18s ease-in-out infinite;
+        animation: moveCircle1 10s ease-in-out infinite;
     }
     .animate-moveCircle2 {
-        animation: moveCircle2 22s ease-in-out infinite;
+        animation: moveCircle2 14s ease-in-out infinite;
     }
 
     /* Gentle fade-in for text */
@@ -48,9 +48,6 @@
 </style>
 
 
-            <div class="flex justify-end mr-8 pt-1">
-                @include('components.UserTab')
-            </div>
 
         <!-- Page Wrapper -->
         <div class="p-4 -mt-2">
@@ -89,7 +86,7 @@
                     Last Login: <span class="font-medium">Today, 9:45 AM</span>
                 </p>
                 <p class="text-xs opacity-80 animate-fadeIn delay-700">
-                    System Status: <span class="font-medium text-hover-green">All Good ✅</span>
+                    System Status: <span class="font-medium text-hover-green">All Good </span>
                 </p>
             </div>
         </div>
@@ -226,4 +223,8 @@
         </div>
     </div>
 </div>
+
+
+
+
 @endsection

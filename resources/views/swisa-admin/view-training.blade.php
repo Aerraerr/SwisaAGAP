@@ -35,37 +35,17 @@
                 @include('components.UserTab')
             </div>
         </div>
-                <div class="mb-4">
-            <nav class="flex items-center space-x-2 text-base text-gray-700" aria-label="Breadcrumb">
-                @foreach (Breadcrumbs::generate('members') as $crumb)
-                    @if ($crumb->url && !$loop->last)
-                        <a href="{{ $crumb->url }}" 
-                        class="flex items-center text-green-700 hover:text-green-900 transition">
-                            <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
-                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M3 7h18M3 7l3-3h12l3 3M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7" />
-                            </svg>
-                            <span class="text-[16px]">{{ $crumb->title }}</span>
-                        </a>
-                        <span class="text-gray-400 text-xl">›</span>
-                    @else
-                        <span class="flex items-center text-green-800 font-semibold">
-
-                            <span class="text-[16px]">{{ $crumb->title }}</span>
-                        </span>
-                    @endif
-                @endforeach
-            </nav>
-        </div>
-
-
         <div class="grid grid-cols-12 gap-2 py-2 "  x-data="{ activeTab: 'initiative' }">
             <!-- Initiative tab -->
             <div x-show="activeTab === 'initiative'" class="col-span-12">
                 <div class="bg-white shadow-lg p-4 h-auto rounded-md">
-                    <div class="lg:flex h-full p-2">
-                        <div class="bg-gray-200  h-44 w-full rounded-sm lg:h-[280px] lg:w-1/3 flex items-center justify-center border-b border-gray-300 flex-shrink-0">
-                            <img src= "{{ $training->documents->first() ? asset('storage/' . $training->documents->first()->file_path) : asset('image/placeholder.png') }} "alt="Training Image" class="rounded-md object-cover w-full h-full">
+                    <div class="lg:flex h-full">
+                        <div class="mt-3 bg-gray-200 rounded-md h-44 w-full  lg:h-[260px] lg:w-1/3 flex items-center justify-center border-b border-gray-300 flex-shrink-0">
+                            <img 
+                                src= "{{ $training->documents->first() ? asset('storage/' . $training->documents->first()->file_path) : asset('image/placeholder.png') }} "
+                                alt="Training Image" 
+                                class="object-cover w-full h-full"
+                            >
                         </div>
                         <div class="lg:ml-4 sm:flex-1 p-2">
                             <div>
@@ -123,7 +103,6 @@
                     </div>
                 </div>
             </div>
-
             <div x-show="activeTab === 'initiative'" class="col-start-1 col-span-12 xl:col-span-8 xl:col-start-1 bg-white shadow-lg p-5 rounded-md overflow-auto">
                 <div class="text-customIT flex justify-between gap-2 pb-2">
                     <h1 class="text-lg xl:text-2xl font-bold text-start pl-1 ">Program Attendees</h1>
@@ -164,16 +143,10 @@
                                             <div class="border-t border-gray-200 py-2">
                                                 <ul class="space-y-2">
                                                     <li>
-                                                        <a href="{{ route('view-profile') }}"  
-                                                        class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">
-                                                        View Profile
-                                                        </a>
+                                                        <a href="{{ route('view-profile', $training->id) }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
                                                     </li>
                                                     <li>
-                                                        <a href="{{ route('grant-request') }}" 
-                                                        class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">
-                                                        View All Joined Trainings
-                                                        </a>
+                                                        <a href="{{ route('grant-request') }}" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View All Joined Trainings</a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -227,17 +200,22 @@
 
             </div>
 
-            <!-- participants tab -->
+
+            <!-- participants tab start -->
             <div x-show="activeTab === 'participants'" class="col-span-12">
                 <div class="bg-white shadow-lg p-4 h-auto rounded-md">
-                    <div class="lg:flex h-full p-2">
-                        <div class="bg-gray-200  h-44 w-full rounded-sm lg:h-[280px] lg:w-1/3 flex items-center justify-center border-b border-gray-300 flex-shrink-0">
-                            <img src= "{{ $training->documents->first() ? asset('storage/' . $training->documents->first()->file_path) : asset('image/placeholder.png') }} "alt="Training Image" class="rounded-md object-cover w-full h-full">
+                    <div class="lg:flex h-full">
+                        <div class="mt-3 bg-gray-200 rounded-md h-44 w-full  lg:h-[260px] lg:w-1/3 flex items-center justify-center border-b border-gray-300 flex-shrink-0">
+                            <img 
+                                src= "{{ $training->documents->first() ? asset('storage/' . $training->documents->first()->file_path) : asset('image/placeholder.png') }} "
+                                alt="Training Image" 
+                                class="object-cover w-full h-full"
+                            >
                         </div>
                         <div class="lg:ml-4 sm:flex-1 p-2">
                             <div>
-                                <p class="text-lg md:text-2xl font-semibold text-customIT">{{ $training->title}}</p>
-                                <p class="text-md lg:text-sm text-gray-500 mb-2">{{ $training->sector->sector_name}}</p>
+                                <p class="text-xs md:text-2xl font-semibold text-customIT">{{ $training->title}}</p>
+                                <p class="text-[10px] lg:text-sm text-gray-500 mb-2">{{ $training->sector->sector_name}}</p>
                             </div>
                             <div class="mb-4 mt-10">
                                 <div class="flex items-center space-x-4 mb-1">
@@ -288,20 +266,18 @@
                     </div>
                 </div>
             </div>
-
-
-            <div x-show="activeTab === 'participants'" class="col-start-1 col-span-12 xl:col-span-8 xl:col-start-1 bg-white shadow-lg p-5 rounded-md overflow-auto">
+             <div x-show="activeTab === 'participants'" class="col-start-1 col-span-12 xl:col-span-8 xl:col-start-1 bg-white shadow-lg p-4 rounded-md overflow-auto">
                 <div class="text-customIT flex justify-between gap-2 pb-2">
-                    <h1 class="text-lg xl:text-2xl font-bold text-start pl-1 ">Program Attendees</h1>
+                    <h1 class="text-lg xl:text-2xl font-bold mr-40">Program Attendees</h1>
                 </div>
-                <div class="overflow-auto h-[60vh] custom-scroll">
+                <div class="overflow-auto h-[60vh]">
                     <table class="min-w-full border-spacing-y-1">
-                    <thead class="sticky top-0 z-10  bg-snbg border-b border-gray-100">
-                        <tr class="text-customIT text-left">
+                    <thead class="bg-snbg border border-gray-100">
+                        <tr class="text-customIT text-left ">
                             <th class="px-4 py-3 text-xs font-medium">NAME</th>
                             <th class="px-4 py-3 text-xs font-medium">ID NUMBER</th>
                             <th class="px-4 py-3 text-xs font-medium">MEMBER TYPE</th>
-                            <th class="px-4 py-3 text-xs font-medium">STATUS</th>
+                            <th class="px-4 py-3 text-xs font-medium">PRESENT</th>
                             <th class="px-4 py-3 text-xs font-medium">ACTION</th>
                         </tr>
                     </thead>
@@ -311,14 +287,12 @@
                                 <td class="px-4 py-2 text-sm text-gray-700">Aeron Jead Marquez</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">112233445566</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">Member Type</td>
-                                <div class="bg-gray-400 rounded-md">
-                                    <td class="px-4 py-2 text-sm font-medium text-approved flex items-center gap-1">
-                                        Active
-                                    </td>
-                                </div>
+                                <td class="px-4 py-2 pl-6 gap-1">
+                                    <input type="checkbox" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
+                                </td>
                                 <td class="pl-4 py-3 text-sm">
                                     <div class="relative" x-data="{ show: false }" @click.away="show = false">
-                                        <button @click="show = !show"  class="border border-gray-300 rounded-sm pl-2">
+                                        <button @click="show = !show"  class=" rounded-sm pl-2">
                                             <img src="{{ asset('images/dot-menu.svg') }}"
                                             class="w-5 h-5 rounded-sm mr-2"/>
                                         </button>
@@ -331,10 +305,10 @@
                                             <div class="border-t border-gray-200 py-2">
                                                 <ul class="space-y-2">
                                                     <li>
-                                                        <a href="{{ route('view-profile') }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
+                                                        <a href="{{ route('view-profile', $training->id) }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
                                                     </li>
                                                     <li>
-                                                        <a href="{{ route('grant-request') }}" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View All Joined Trainings</a>
+                                                        <a onclick="openModal('endProgramModal')" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">Delete</a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -360,23 +334,22 @@
                         Expand QR Code
                     </button>
                 </div>
-                <div class="bg-white shadow-lg pt-3 pb-3 pl-10 pr-10 h-auto rounded-md mt-2 overflow-auto">
+                                <div class="bg-white shadow-lg pt-3 pb-3 pl-10 pr-10 h-auto rounded-md mt-2 overflow-auto">
                         <button  onclick="openQrScanner()" class="w-full px-4 py-2 bg-btncolor text-white rounded-md hover:bg-opacity-80">
                             Manage Attendance
                         </button>
-                </div>               
-                <div class="bg-white shadow-lg pt-3 pb-3 pl-10 pr-10 h-auto rounded-md mt-2 overflow-auto">
-                    <button  
-                        @click="activeTab = 'initiative'; showLoadingOverlayBtn()" 
-                        class="w-full px-4 py-2 border border-2 border-btncolor text-btncolor bg-white rounded-md hover:bg-btncolor hover:text-white transition">
-                        Back to Initiative
-                    </button>
+                </div>     
+                <div class="bg-white shadow-lg p-4 h-auto rounded-md mt-2 overflow-auto">
+                    <p class="text-lg xl:text-xl text-upcoming font-semibold text-center">Back to Initiative</p>
+                    <div class="px-10 py-3">
+                        <button  @click="activeTab = 'initiative'" class="w-full px-4 py-2 bg-btncolor text-white rounded-md hover:bg-opacity-80">
+                            Initiative
+                        </button>
+                    </div>
                 </div>
-
-
             </div>
         </div>
-        @include('components.modals.edit-grant')
+        @include('components.modals.edit-training')
         @include('components.modals.end-program')
         @include('components.modals.program-qr')
         @include('components.modals.generate-report')

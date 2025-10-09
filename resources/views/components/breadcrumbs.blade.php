@@ -18,12 +18,25 @@
         'settings'            => 'settings',
     ];
 
-    $breadcrumbName = $breadcrumbName ?? Route::currentRouteName();
+    // Detect current route
     $currentRouteName = Route::currentRouteName();
+
+    // Make sure params is always an array
+    $params = $params ?? [];
+
+    // 🔑 Auto-switch between view-profile & grant-view-profile
+    if ($currentRouteName === 'grant-view-profile') {
+        $breadcrumbName = 'grant-view-profile';
+    } elseif ($currentRouteName === 'view-profile') {
+        $breadcrumbName = 'view-profile';
+    } else {
+        $breadcrumbName = $breadcrumbName ?? $currentRouteName;
+    }
 @endphp
 
 <nav class="mb-4 flex items-center space-x-2 text-base text-gray-700" aria-label="Breadcrumb">
-    @foreach (Breadcrumbs::generate($breadcrumbName) as $crumb)
+    {{-- 👇 Spread params so $grant/$member get passed correctly --}}
+    @foreach (Breadcrumbs::generate($breadcrumbName, ...$params) as $crumb)
         @php
             $crumbRouteName = null;
 

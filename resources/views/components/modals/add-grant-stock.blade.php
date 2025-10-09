@@ -1,5 +1,5 @@
 <div id="addStockModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-20 h-full w-full flex items-center justify-center">
-    <div class="relative w-auto max-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
+    <div class="relative w-full max-w-2xl mx-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
         <!-- Modal Header -->
         <div class="flex items-center justify-between pb-2">
             <h3 class="text-2xl font-bold text-customIT">Add New Stock</h3>
@@ -12,106 +12,73 @@
             </div>
         </div>
 
+    <form action="{{ route('addGrantStock.update', $grant->id)}}" method="POST" class="space-y-4">
+        @csrf
+        @method('PATCH')
         <!-- Modal Body: Activity Log Entries -->
         <div class="mt-4 overflow-y-auto mr-2 max-h-[80vh]">
             <!-- Log Group 1 -->
-            <div class="grid grid-cols-3 gap-4 p-4 relative">
-                <div class="col-span-1">
-                    <div class="bg-gray-200 rounded-md h-44 flex items-center justify-center border-b border-gray-300">
-                        <span class="text-white text-md">IMAGE</span>
-                    </div>
+            <div class="px-4">
+                <div class="bg-gray-200 rounded-md h-64 w-full flex items-center justify-center border-b border-gray-300">
+                    <img 
+                                src= "{{ $grant->documents->first() ? asset('storage/' . $grant->documents->first()->file_path) : asset('image/placeholder.png') }} "
+                                alt="Grant Image" 
+                                class="object-cover w-full h-full"
+                            >
                 </div>
-                <div class="col-start-2">
-                    <p class="text-2xl font-medium text-customIT mb-2">Grant Name</p>
-                    <p class="text-lg font-medium text-customIT mb-2">Basic Requirements</p>
-                    <div class="flex justify-between">
-                        <p class="text-sm font-light text-customIT mb-2">Requirement 1</p>
-                    </div>
-                    <div class="flex justify-between">
-                        <p class="text-sm font-light text-customIT mb-2">Requirement 2</p>
-                    </div>
-                </div>
-                <div class="col-start-3">
-                    <p class="text-lg font-medium text-customIT mt-10 mb-2">Additional Requirements</p>
-                    <div class="flex justify-between">
-                        <p class="text-sm font-light text-customIT mb-2">Requirement 1</p>
-                    </div>
-                    <div class="flex justify-between">
-                        <p class="text-sm font-light text-customIT mb-2">Requirement 1</p>
-                    </div>
+                <h2 class="text-2xl font-bold text-customIT my-4">{{ $grant->title}}</h2>
+                <div class="flex text-gray-700">
+                        {{--<div class="bg-customIT rounded-full h-5 w-5 mr-2"></div>--}}
+                        <p class="text-md font-medium mr-2">Current Stock:</p>
+                        <p class="text-md">{{ $grant->total_quantity}} unit/s</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-8 relative p-4">
-                <h2 class="text-lg font-medium text-customIT my-4">Item Summary</h2>
-                <div class="col-start-1">
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm font-medium text-customIT ">ITEM ID</p>
-                        <span class="text-sm font-extralight text-gray-700">112233445566</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm font-medium text-customIT ">Type</p>
-                        <span class="text-sm font-extralight text-gray-700">Type</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm font-medium text-customIT ">Category</p>
-                        <span class="text-sm font-extralight text-gray-700">Category</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm font-medium text-customIT ">Last Updated</p>
-                        <span class="text-sm font-extralight text-gray-700">Jan 25, 2025</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm font-medium text-customIT ">Program Source</p>
-                        <span class="text-sm font-extralight text-gray-700">CIF - Confidential Funds</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 relative p-4">
-                <div class="col-start-1">
-                    <h2 class="text-lg font-medium text-customIT my-4">Availability Period</h2>
-                    <div>
-                        <div class="flex justify-between items-center">
-                            <p class="text-sm font-medium text-customIT ">Start Date</p>
-                            <span class="text-sm font-extralight text-gray-700">Jan 25, 2025</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <p class="text-sm font-medium text-gray-700 ">End Date</p>
-                            <span class="text-sm font-extralight text-gray-700">July 25, 2025</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 relative gap-4 p-4">
-                <div class="col-start-1">
+            <div class="p-4">
+                <div >
                     <h2 class="text-lg font-medium text-customIT mt-4">Stock Quantity to Add</h2>
                     <div class="flex justify-between text-gray-700 gap-2">
-                        <button class="flex-grow border border-btncolor h-9 rounded-lg text-xs shadow-lg hover:bg-btncolor hover:text-white">+5</button>
-                        <button class="flex-grow border border-btncolor h-9 rounded-lg text-xs shadow-lg hover:bg-btncolor hover:text-white">+10</button>
-                        <button class="flex-grow border border-btncolor h-9 rounded-lg text-xs shadow-lg hover:bg-btncolor hover:text-white">+20</button>
+                        <!-- Checkbox 1 -->
+                        <div class="flex-1">
+                            <input type="checkbox" name="options[]" id="option1" class="peer hidden" value="5">
+                            <label for="option1" class="block w-full border border-btncolor py-3 rounded-lg text-md shadow-lg 
+                                flex items-center justify-center cursor-pointer select-none peer-checked:bg-btncolor peer-checked:text-white transition duration-300">
+                                +5
+                            </label>
+                        </div>
+
+                        <!-- Checkbox 2 -->
+                        <div class="flex-1">
+                             <input type="checkbox" name="options[]" id="option2" class="peer hidden" value="10">
+                            <label for="option2" class="block w-full border border-btncolor py-3 rounded-lg text-md shadow-lg 
+                                flex items-center justify-center cursor-pointer select-none peer-checked:bg-btncolor peer-checked:text-white transition duration-300">
+                                +10
+                            </label>
+                        </div>
+
+                        <!-- Checkbox 3 -->
+                        <div class="flex-1">
+                            <input type="checkbox" name="options[]" id="option3" class="peer hidden" value="20">
+                            <label for="option3" class="block w-full border border-btncolor py-3 rounded-lg text-md shadow-lg 
+                                flex items-center justify-center cursor-pointer select-none peer-checked:bg-btncolor peer-checked:text-white transition duration-300">
+                                +20
+                            </label>
+                        </div>
                     </div>
                     <h2 class="text-lg font-medium text-customIT mt-4">Enter Custom Amount</h2>
-                    <input class="text-xs w-full font-medium text-center rounded-lg p-2 border border-btncolor" placeholder="0">
-                </div>
-                <div class="col-start-2 flex mt-12">
-                        <div class="bg-customIT rounded-full h-5 w-5 mr-2"></div>
-                        <p class="text-sm font-medium text-customIT mr-2">Current Stock:</p>
-                        <p class="text-sm font-medium text-gray-700">12 unit/s</p>
+                    <input type="number" name="options[]" class="text-md w-full font-medium py-3 text-center rounded-lg p-2 border border-btncolor" placeholder="0">
                 </div>
             </div>
-            
         </div>
-        <!-- modal footer -->
-        <div class="text-right px-4 py-3">
-            <button onclick="closeModal('addStockModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
-                Cancel
-            </button>
-            <button class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
-                Add Stock
-            </button>
-        </div>
+            <!-- modal footer -->
+            <div class="text-right px-4 py-3">
+                <button type="button" onclick="closeModal('addStockModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
+                    Cancel
+                </button>
+                <button type="submit" class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
+                    Add Stock
+                </button>
+            </div>
+        </form>
     </div>
 </div>

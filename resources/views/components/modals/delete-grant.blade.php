@@ -19,18 +19,22 @@
         <!-- Modal Body: Activity Log Entries -->
         <div class="mt-4 m-8">
             <div class="items-center">
-                <p class="text-sm">This action will permanently remove the item  <span class="text-customIT text-md font-medium">Hand Tractor” (ITEM112412124)</span> from the system.  Members will no longer see or request this item.</p>
+                <p class="text-sm">This action will permanently remove the item  <span class="text-customIT text-md font-medium">{{ $grant->title }} ID-{{ $grant->id}}</span> from the system.  Members will no longer see or request this item.</p>
                 <p class="text-md">This cannot be undone.</p>
             </div>
         </div>
         <!-- modal footer -->
-        <div class="text-right px-4 py-3">
-            <button onclick="closeModal('deleteGrantModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
-                Cancel
-            </button>
-            <button class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
-                Delete
-            </button>
-        </div>
+        <form action="{{ route('deleteGrant.delete', $grant->id)}}" method="POST" >
+        @csrf
+        @method('DELETE')
+            <div class="text-right px-4 py-3">
+                <button type="button" onclick="closeModal('deleteGrantModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
+                    Cancel
+                </button>
+                <button type="submit" class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
+                    Delete
+                </button>
+            </div>
+        </form>
     </div>
 </div>

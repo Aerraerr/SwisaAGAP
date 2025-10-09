@@ -55,7 +55,7 @@
 
 <!-- Notification Panel -->
 <div id="notif-panel" 
-     class="fixed top-0 right-0 h-full w-[500px] max-w-[90%] bg-white shadow-2xl z-10 transform translate-x-full transition-transform duration-300 ease-in-out">
+     class="fixed top-12 m-1 right-0 h-full w-[500px] max-w-[90%] bg-white shadow-2xl z-10 transform translate-x-full transition-transform duration-300 ease-in-out">
     <div class="flex justify-between items-center px-4 py-3 border-b">
         <h2 class="font-bold text-lg text-gray-700">Notifications</h2>
         <button id="notif-close" class="text-gray-600 hover:text-black">

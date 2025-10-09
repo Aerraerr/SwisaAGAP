@@ -12,7 +12,6 @@
                 <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Reports</h2>
                 <p class="text-sm text-gray-600">Generate detailed insights and summaries of SWISA-AGAP activities.</p>
             </div>
-            @include('components.UserTab')
         </div>
 
         <!-- Tabs + Filters in One Row -->

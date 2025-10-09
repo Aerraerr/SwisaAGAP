@@ -19,18 +19,22 @@
         <!-- Modal Body: Activity Log Entries -->
         <div class="mt-4 m-8">
             <div class="items-center">
-                <p class="text-sm">This action will end the program  <span class="text-customIT text-md font-medium">Crop Management” (ITEM112412124)</span> from the system.  Members will no longer enter this program.</p>
+                <p class="text-sm">This action will end the program  <span class="text-customIT text-md font-medium">{{ $training->title}} ID-{{ $training->id}}</span> from the system.  Members will no longer enter this program.</p>
                 <p class="text-md">This cannot be undone.</p>
             </div>
         </div>
         <!-- modal footer -->
-        <div class="text-right px-4 py-3">
-            <button onclick="closeModal('endProgramModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
-                Cancel
-            </button>
-            <button class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
-                End
-            </button>
-        </div>
+        <form action="{{ route('deleteTraining.delete', $training->id)}}" method="POST" >
+        @csrf
+        @method('DELETE')
+            <div class="text-right px-4 py-3">
+                <button type="button" onclick="closeModal('endProgramModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
+                    Cancel
+                </button>
+                <button type="submit" class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
+                    End
+                </button>
+            </div>
+        </form>
     </div>
 </div>
