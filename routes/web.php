@@ -1,11 +1,35 @@
 <?php
 
+use App\Http\Controllers\Web\GrantRequestController;
+use App\Http\Controllers\Web\MembershipController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Web\AnnouncementController;
+use App\Http\Controllers\Web\AssistController;
+use App\Http\Controllers\Web\GivebackController;
 use App\Http\Controllers\Web\GrantController;
+use App\Http\Controllers\Web\GrantReportController;
 use App\Http\Controllers\Web\MemberController;
 use App\Http\Controllers\Web\TrainingController;
+use App\Models\GrantReport;
 use Illuminate\Support\Facades\Route;
+
+use App\Services\DocumentChecker;
+
+Route::get('/test-doc', function () {
+    $filePath = storage_path('app/testfiles/requestform.docx'); // change to your test file
+    $checker = new DocumentChecker();
+    $text = $checker->extractText($filePath);
+
+    return nl2br(e($text)); // show extracted text
+});
+
+Route::get('/test-img', function () {
+    $filePath = storage_path('app/testfiles/1758968894_Screenshot 2025-09-27 182621.png'); // your test file
+    $checker = new DocumentChecker();
+    $text = $checker->extractText($filePath);
+
+    return nl2br(e($text));
+});
 
 Route::get('/', function () {
     return view('auth.landing');
@@ -103,15 +127,13 @@ Route::delete('view-training/{id}/delete-event', [TrainingController::class, 'de
 
 //-----------REQUEST ROUTES----------------
 
-Route::get('/grant-request', function () {
-    return view('swisa-admin.grant-request');
-})->middleware(['auth', 'verified'])->name('grant-request'); 
+Route::get('/grant-request', [GrantRequestController::class, 'displayApplications'] )
+->middleware(['auth', 'verified'])->name('grant-request'); 
 
 //------------APPLICATION ROUTE------------------
 
-Route::get('/member-application', function () {
-    return view('swisa-admin.member-application');
-})->middleware(['auth', 'verified'])->name('member-application');
+Route::get('/member-application', [MembershipController::class, 'displayApplications'])
+->middleware(['auth', 'verified'])->name('member-application');
 
 
 Route::get('/settings', function () {
@@ -131,26 +153,41 @@ Route::get('/messages', function () {
 
 // SWISA STAFF: Main pages
 
-Route::get('/report', function () {
-    return view('swisa-support_staff.reports');
-})->middleware(['auth', 'verified'])->name('report');
+// ----- for giveback -------------
+Route::get('/giveback', [GivebackController::class, 'displayGivebacks'])
+->middleware(['auth', 'verified'])->name('giveback');
 
-Route::get('/giveback', function () {
-    return view('swisa-support_staff.giveback');
-})->middleware(['auth', 'verified'])->name('giveback');
+Route::get('/view-giveback/{id}', [GivebackController::class, 'viewGiveback'])
+->middleware(['auth', 'verified'])->name('view-giveback');
 
-Route::get('/assisted-creation', function () {
-    return view('swisa-support_staff.assisted-creation');
-})->middleware(['auth', 'verified'])->name('assisted-creation');
+Route::patch('/view-giveback/{id}/received', [GivebackController::class, 'updateStatus'])
+->middleware(['auth', 'verified'])->name('giveback.updateStatus');
+
+// -------- for assisting page ---------------
+Route::get('/assisted-creation', [AssistController::class, 'displayMembers'])
+->middleware(['auth', 'verified'])->name('assisted-creation');
+
+//assist register
+Route::post('/assisted-creation', [AssistController::class, 'assistRegisterAccount'])
+->name('assistRegister.store');
+
+//assist membership
+Route::post('/assisted-creation/{id}/membership', [AssistController::class, 'assistMembershipApplication'])
+->middleware(['auth', 'verified'])->name('assistMembershipApplication.store');
+
+//assist grant request
+Route::post('/assisted-creation/{id}/request_grant', [AssistController::class, 'assistGrantApplication'])
+->middleware(['auth', 'verified'])->name('assistGrantApplication.store');
+
+//  --------- for grant reports -------------
+
+Route::get('/report', [GrantReportController::class, 'displayGrantReports'])
+->middleware(['auth', 'verified'])->name('report');
 
 //views in support staff
-Route::get('/view-report', function () {
-    return view('swisa-support_staff.view-report');
-})->middleware(['auth', 'verified'])->name('view-report');
+Route::get('/view-report/{id}', [GrantReportController::class, 'viewGrantReport'])
+->middleware(['auth', 'verified'])->name('view-report');
 
-Route::get('/view-giveback', function () {
-    return view('swisa-support_staff.view-giveback');
-})->middleware(['auth', 'verified'])->name('view-giveback');
 
 
 Route::middleware('auth')->group(function () {

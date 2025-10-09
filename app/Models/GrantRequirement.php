@@ -31,7 +31,7 @@ class GrantRequirement extends Model
     }
 
     //grant requirement can have many documents
-    public function doucments(){
+    public function documents(){
         return $this->hasMany(Document::class);
     }
 }

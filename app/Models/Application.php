@@ -41,6 +41,6 @@ class Application extends Model
 
     //application has one or many documents
     public function documents(){
-        return $this->hasMany(Document::class);
+        return $this->morphMany(Document::class, 'documentable');
     }
 }

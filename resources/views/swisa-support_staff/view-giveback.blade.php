@@ -17,12 +17,18 @@
             <div class="bg-white shadow-lg rounded-md p-6">
                 <div class="flex justify-between items-center">
                     <div>
-                        <p class="text-2xl lg:text-3xl font-bold text-customIT">ITEM NAME</p>
-                        <p class="text-sm text-bsctxt">ID: 123456789</p>
+                        <p class="text-2xl lg:text-3xl font-bold text-customIT">{{  $giveback->application->grant->title ?? '-'}}</p>
+                        <p class="text-sm text-bsctxt">ID: {{ $giveback->id}}</p>
                     </div>
-                    <div>
-                        <button onclick="openModal('receivedModal')" class="border border-btncolor text-sm text-btncolor rounded-[4px] py-1 px-3 hover:bg-btncolor hover:text-white transition-colors">Received?</button>
-                    </div>
+                    @if($giveback->status->status_name === 'to_be_review')
+                        <div>
+                            <button onclick="openModal('receivedModal')" class="border border-btncolor text-sm text-btncolor rounded-full py-1.5 px-3 hover:bg-btncolor hover:text-white transition-colors">Received?</button>
+                        </div>
+                    @else
+                        <div>
+                            <p class="text-sm rounded-full py-1.5 px-3 bg-btncolor text-white">Received</p>
+                        </div>
+                    @endif
                 </div>
             </div>
             <!--  Buttom left part -->
@@ -30,35 +36,45 @@
                 <div class="">
                     <p class="text-xl font-bold text-customIT mb-2">Giveback Information</p>
                     <div class="ml-4 space-y-1 ">
-                        <p class="text-sm text-gray-600 font-medium">Contribution Type:<span class="text-sm ml-4 font-extralight text-bsctxt">Rice</span></span>
-                        <p class="text-sm text-gray-600 font-medium">Contribution Quantity:<span class="text-sm ml-4 font-extralight text-bsctxt">1 Sack</span></p>
-                        <p class="text-sm text-gray-600 font-medium">Contribution Source:<span class="text-sm ml-4 font-extralight text-bsctxt">Swisa Grant:</span></p>
-                        <p class="text-sm text-gray-600 font-medium">Contribution Date:<span class="text-sm ml-4 font-extralight text-bsctxt">25 Oct 2025</span></p>
+                        <p class="text-sm text-gray-600 font-medium">Contribution Type:<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->application->grant->grant_type->grant_type}}</span></span>
+                        <p class="text-sm text-gray-600 font-medium">Contribution Quantity:<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->quantity}}</span></p>
+                        <p class="text-sm text-gray-600 font-medium">Contribution Source:<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->application->application_type}}</span></p>
+                        <p class="text-sm text-gray-600 font-medium">Contribution Date:<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->created_at->format('M d, Y')}}</span></p>
                     </div>
                 </div>
                 <div>
                     <p class="font-medium text-gray-700 mb-1">User Notes:</p>
                     <div class="border shadow rounded-md px-3 py-4">
                         <p class="text-sm text-bsctxt mt-1">
-                            Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+                            {{ $giveback->notes}}
                         </p>
                     </div>
                 </div>
-                <div>
+               <div>
                     <p class="font-medium text-gray-700">Report Proof:</p>
-                    <div class="mt-2 bg-gray-200 h-72 rounded-md flex items-center justify-center text-gray-500">
-                        image
-                    </div>
+
+                    {{-- Main preview image (first proof) --}}
+                    @if($giveback->documents && $giveback->documents->count() > 0)
+                        <div class="mt-2 bg-gray-200 h-72 rounded-md flex items-center justify-center overflow-hidden">
+                            <img src="{{ asset('storage/' . $giveback->documents->first()->file_path) }}" 
+                                alt="Proof Image" 
+                                class="h-full w-full object-cover rounded-md">
+                        </div>
+                    @else
+                        <div class="mt-2 bg-gray-200 h-72 rounded-md flex items-center justify-center text-gray-500">
+                            No Image Available
+                        </div>
+                    @endif
+
+                    {{-- Thumbnail images --}}
                     <div class="flex space-x-2 mt-2 text-xs">
-                        <div class="bg-gray-200 h-16 w-16 flex items-center justify-center text-gray-500 rounded-md">
-                            image
-                        </div>
-                        <div class="bg-gray-200 h-16 w-16 flex items-center justify-center text-gray-500 rounded-md">
-                            image
-                        </div>
-                        <div class="bg-gray-200 h-16 w-16 flex items-center justify-center text-gray-500 rounded-md">
-                            image
-                        </div>
+                        @foreach($giveback->documents as $proof)
+                            <div class="bg-gray-200 h-16 w-16 flex items-center justify-center overflow-hidden rounded-md">
+                                <img src="{{ asset('storage/' . $proof->file_path) }}" 
+                                    alt="Proof Thumbnail" 
+                                    class="h-full w-full object-cover">
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -70,15 +86,15 @@
             <div class="flex flex-col items-center bg-white shadow-lg rounded-md py-6 ">
                 <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
                     class="w-30 h-30 md:w-28 md:h-28 lg:w-36 lg:h-36 xl:w-40 xl:h-40 rounded-full shadow-md mb-2" />   
-                <p class="text-2xl font-bold text-customIT">Aeron Jead Marquez</p>
+                <p class="text-2xl font-bold text-customIT">{{ $giveback->user->name ?? '-'}}</p>
                 <p class="text-sm text-bsctxt mb-4">REGISTERED MEMBER</p>
                 <div class="grid grid-cols-4">
                     <div class="col-start-1 col-span-3">
-                        <p class="text-md text-gray-600 font-semibold">ID NO :<span class="text-sm ml-4 font-extralight text-bsctxt">MEM-000001</span></span>
-                        <p class="text-md text-gray-600 font-semibold">MEMBER TYPE :<span class="text-sm ml-4 font-extralight text-bsctxt">Farmer</span></p>
-                        <p class="text-md text-gray-600 font-semibold">DOB :<span class="text-sm ml-4 font-extralight text-bsctxt">dd-mm-yyyy</span></p>
-                        <p class="text-md text-gray-600 font-semibold">PHONE :<span class="text-sm ml-4 font-extralight text-bsctxt">09090909090</span></p>
-                        <p class="text-md text-gray-600 font-semibold">EMAIL :<span class="text-sm ml-4 font-extralight text-bsctxt">ajm@gmail.com</span></p>
+                        <p class="text-md text-gray-600 font-semibold">ID NO :<span class="text-sm ml-4 font-extralight text-bsctxt">MEM-{{$giveback->user->id ?? '-'}}</span></span>
+                        <p class="text-md text-gray-600 font-semibold">MEMBER TYPE :<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->user->user_info->sector->sector_name ?? '-'}}</span></p>
+                        <p class="text-md text-gray-600 font-semibold">DOB :<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->user->user_info->birthdate ?? '-'}}</span></p>
+                        <p class="text-md text-gray-600 font-semibold">PHONE :<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->user->user_info->contact_no ?? '-'}}</span></p>
+                        <p class="text-md text-gray-600 font-semibold">EMAIL :<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->user->email ?? '-'}}</span></p>
                     </div>
                     
                 </div>
@@ -86,25 +102,28 @@
             <!-- buttom right part -->
             <div class="flex flex-col h-auto items-center bg-white shadow-lg rounded-md py-6 px-4">
                 <p class="text-xl font-bold text-customIT w-full">Giveback History</p>
-                <div class="space-y-4 w-full lg:overflow-y-auto lg:h-[54vh]">
+                <div class="space-y-4 w-full lg:overflow-y-auto">
                     <!-- Reports-->
-                    @for($i = 0; $i < 2; $i++)
+                    @forelse($givebackHistory as $history)
                         <div class="p-4 border-b">
                             <div class="flex justify-between items-center">
-                                <p class="font-semibold text-md text-customIT">Giveback #1: dd-mm-yyyy</p>
-                                <div class="text-xs px-3 py-1  px-3 py-1 bg-approved text-white rounded-full">Received</div>
+                                <p class="font-semibold text-md text-customIT">{{ $history->application->grant->title ?? 'Untitled Grant' }} : {{ $history->created_at->format('M d, Y') }}</p>
+                                <div class="text-xs px-3 py-1 {{ $history->status->status_name == 'received' ? 'bg-approved' : 'bg-gray-400' }} text-white rounded-full"> {{ $history->status->status_name ?? '-' }} </div>
                             </div>
+                            <p class="font-medium text-sm text-gray-700">Contribution Quantity: {{ $history->quantity ?? '-' }}</p>
                             <div class="mt-2">
                                 <p class="font-medium text-sm text-gray-700">User Notes:</p>
                                 <div class="items-right border border-gray-200 rounded-md shadow px-2 py-4 ">
                                     <p class="text-xs text-bsctxt mt-1">
-                                        Lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                                        {{ $history->notes ?? '-'}}
                                     </p>
                                 </div>
                                 <button class="text-xs text-bsctxt mr-2 hover:text-customIT hover:underline">Giveback proof</button>
                             </div>
                         </div>
-                    @endfor
+                    @empty
+                        No report history
+                    @endforelse
                 </div>
             </div>
         </div>

@@ -7,6 +7,7 @@
     'request_date',
     'last_report',
     'next_report',
+    'reportId' => NULL,
 ])
 
 <div class="bg-white py-2 px-4 rounded-md shadow-lg overflow-hidden">
@@ -38,7 +39,7 @@
     </div>
     <!-- View Button Section -->
     <div class="grid grid-cols-2 text-right mb-2">
-        <a href="{{ route('view-report')}}" class="col-start-2 bg-btncolor text-white text-sm text-center py-1.5 rounded-[3px] hover:bg-customIT transition duration-300">
+        <a href="{{ route('view-report', $reportId)}}" class="col-start-2 bg-btncolor text-white text-sm text-center py-1.5 rounded-[3px] hover:bg-customIT transition duration-300">
             View
         </a>
     </div>

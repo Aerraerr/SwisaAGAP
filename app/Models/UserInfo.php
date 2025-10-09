@@ -46,6 +46,10 @@ class UserInfo extends Model
         'relationship',
     ];
 
+    const Sexes = ['Male', 'Female'];
+    const Suffix = ['Jr', 'Sr', 'I', 'II', 'III', 'IV', 'V'];
+    const Relation = ['Parent', 'Sibling', 'Spouse', 'Child', 'Friend', 'Guardian', 'Relative'];
+
     //RELATIONSHIPS
 
     // user_info belongs to one user

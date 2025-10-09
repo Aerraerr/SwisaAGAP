@@ -1,4 +1,4 @@
-@props(['status', 'name', 'role', 'cont_type', 'cont_quantity', 'cont_source', 'cont_date'])
+@props(['status', 'name', 'role', 'cont_type', 'cont_quantity', 'cont_source', 'cont_date', 'givebackId'=> NULL])
 
 
 <div class="w-full bg-white p-4 sm:p-6 rounded-xl shadow-lg flex flex-col space-y-6">
@@ -29,7 +29,7 @@
     </div>
     <!-- Buttons -->
     <div class="grid grid-cols-2 sm:flex-row justify-between gap-2">
-        <a href="{{route('view-giveback')}}"
+        <a href="{{route('view-giveback', $givebackId)}}"
            class="col-start-2 p-2 text-xs sm:text-sm text-center font-medium text-white bg-btncolor rounded-[3px] hover:bg-customIT transition">
             View Giveback
         </a>

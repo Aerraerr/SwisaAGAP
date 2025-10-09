@@ -26,4 +26,8 @@ class Requirement extends Model
     public function grantRequirements(){
         return $this->hasMany(GrantRequirement::class);
     }
+
+    public function documents(){
+        return $this->morphMany(Document::class, 'documentable');
+    }
 }

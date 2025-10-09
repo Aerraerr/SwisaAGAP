@@ -19,15 +19,19 @@
             <div class="items-center">
                 <p class="text-sm">This action will change the status to <span class="text-customIT text-md font-medium">'Received' </span>and mark the giveback item as verified in your inventory. </p>
             </div>
-        </div>
+        </div> 
         <!-- modal footer -->
         <div class="text-right px-4 py-3">
-            <button onclick="closeModal('receivedModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
+            <button type="button" onclick="closeModal('receivedModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
                 Cancel
             </button>
-            <button class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
-                Delete
-            </button>
+            <form action="{{ route('giveback.updateStatus', $giveback->id) }}" method="POST" class="inline">
+            @csrf
+            @method('PATCH')
+                <button type="submit" class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
+                    Received
+                </button>
+            </form>
         </div>
     </div>
 </div>

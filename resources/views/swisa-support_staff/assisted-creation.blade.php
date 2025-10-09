@@ -9,7 +9,7 @@
         @include('components.UserTab')
     </div>
 
-    <div class="grid grid-cols-12 gap-2">
+    <div class="grid grid-cols-12 py-4 gap-2">
         <div class="col-span-9 flex bg-white shadow-lg rounded-md h-[30vh] p-3">
             <div class="bg-gray-200 h-[25vh] w-1/5">
                 <p class="text-white text-center py-16">Image</p>
@@ -28,7 +28,8 @@
         </div>
     </div>
     
-    <div x-data="{ activeTab: 'list' }" class="mt-4">
+    <div class="bg-white p-5 rounded-xl shadow-xl">
+        <div x-data="{ activeTab: 'list' }" class="mt-4">
 
         @include('components.filters')
 
@@ -53,22 +54,33 @@
                     <table class="min-w-full bg-white border-spacing-y-1">
                     <thead class="bg-snbg border border-gray-100 px-8">
                         <tr class="text-customIT text-left ">
+                            <th class="px-4 py-3 text-xs font-medium">ID</th>
                             <th class="px-4 py-3 text-xs font-medium">NAME</th>
                             <th class="px-4 py-3 text-xs font-medium">NUMBER</th>
                             <th class="px-4 py-3 text-xs font-medium">EMAIL</th>
                             <th class="px-4 py-3 text-xs font-medium">DATE CREATED</th>
-                            <th class="px-4 py-3 text-xs font-medium">MEMBER TYPE</th>
+                            <th class="px-4 py-3 text-xs font-medium">USER TYPE</th>
+                            <th class="px-4 py-3 text-xs font-medium">MEMBERSHIP STATUS</th>
                             <th class="px-4 py-3 text-xs font-medium">ACTION</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php for ($i = 0; $i <= 10; $i++): ?>
-                        <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">Ron Peter Mortega</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">0909090090090</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">rpm@gmail.com</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">25 Aug 2025</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">New: Basic</td>
+                       @foreach($members as $member)
+                         <tr class="border border-gray-300 hover:bg-gray-100">
+                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->id}}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->name}}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->user_info->phone ?? '-'}}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->email}}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->created_at->format('F d Y')}}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->created_at < now()->subMonths(3) ? 'Old User' : 'New User'}}</td>
+                            <td class="px-4 py-2 text-sm text-gray-700">
+                                @if($member->applications->where('application_type', 'membership')->count() > 0)
+                                    <span class="text-green-600 font-medium">Applied</span>
+                                @else
+                                    <span class="text-red-600 font-medium">Not Applied</span>
+                                @endif
+                            </td>
+
                             <td class="pl-4 py-2 text-sm">
                                 <div class="relative" x-data="{ show: false }" @click.away="show = false">
                                     <button @click="show = !show"  class="border border-gray-300 rounded-sm pl-2">
@@ -85,10 +97,19 @@
                                         <div class="border-t border-gray-200 py-2">
                                             <ul class="space-y-2">
                                                 <li>
-                                                    <button onclick="openModal('assistGrantRequestModal')"class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Grant Request</button>
+                                                    <button onclick="openModal('assistGrantRequestModal-{{ $member->id}}')"class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Grant Request</button>
                                                 </li>
                                                 <li>
-                                                    <button onclick="openModal('assistMembershipModal')" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Membership Application</button>
+                                                     @if($member->applications->where('application_type', 'membership')->count() > 0)
+                                                        <span class="block px-4 py-2 text-xs rounded-md text-green-600 font-medium">
+                                                            Already a Member
+                                                        </span>
+                                                    @else
+                                                        <button onclick="openModal('assistMembershipModal-{{ $member->id}}')" 
+                                                            class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">
+                                                            Assist Membership Application
+                                                        </button>
+                                                    @endif
                                                 </li>
                                             </ul>
                                         </div>
@@ -96,16 +117,18 @@
                                 </div>
                             </td>
                         </tr>
-                        <?php endfor; ?>
+                        @include('components.modals.assist-membership')
+                        @include('components.modals.assist-grant-request')
+                       @endforeach
                     </tbody>
                     </table>
                 </div>
         </div>
+
         @include('components.pagination')
+        </div>
     </div>
     @include('components.modals.assist-register')
-    @include('components.modals.assist-membership')
-    @include('components.modals.assist-grant-request')
 </div>
 </div>
 @endsection

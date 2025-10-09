@@ -7,6 +7,7 @@ use App\Models\Grant;
 use App\Models\GrantType;
 use App\Models\Requirement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Contracts\Service\Attribute\Required;
 
@@ -163,8 +164,15 @@ class GrantController extends Controller
     
     //delete grant
     public function deleteGrant($id){
-        $grant = Grant::findOrFail($id);
+        $grant = Grant::with('documents')->findOrFail($id);
 
+        // delete related documents (storage files + DB rows)
+        foreach ($grant->documents as $document) {
+            if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                Storage::disk('public')->delete($document->file_path);
+            }
+            $document->delete();
+        }
         $grant->delete();
 
         return redirect()->route('grantsNequipment')->with('success', 'Grant Deleted!');

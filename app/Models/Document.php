@@ -14,6 +14,7 @@ class Document extends Model
 
     protected $fillable = [
         'grant_requirement_id',
+        'user_id',
         'status_id',
         'file_path',
         'file_name',

@@ -13,33 +13,32 @@
             <!-- Right side -->
             @include('components.UserTab')
         </div>
-        
+
+        <!-- quick stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <!-- Total Initiatives -->
+                <div class="bg-white rounded-2xl shadow p-4 border-t-4 border-green-600">
+                    <h3 class="text-[#2C6E49] font-bold ">Total Application</h3>
+                    <p class="text-3xl font-bold text-green-600 mt-2">{{ $applications['all']->count() }}</p>
+                    <p class="text-xs text-gray-400 mt-1">Overall membership application</p>
+                </div>
+
+                <!-- Upcoming Events -->
+                <div class="bg-white rounded-2xl shadow p-4 border-t-4 border-blue-600">
+                    <h3 class="text-[#2C6E49] font-bold ">This Month</h3>
+                    <p class="text-3xl font-bold text-blue-600 mt-2">{{ $applications['all']->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->count() }}</p>
+                    <p class="text-xs text-gray-400 mt-1">Total membership application this month</p>
+                </div>
+
+                <!-- Completed Events -->
+                <div class="bg-white rounded-2xl shadow p-4 border-t-4 border-yellow-500">
+                    <h3 class="text-[#2C6E49] font-bold ">Today</h3>
+                    <p class="text-3xl font-bold text-yellow-600 mt-2">{{ $applications['all']->whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()])->count()}}</p>
+                    <p class="text-xs text-gray-400 mt-1">No membership application today</p>
+                </div>
+        </div>
 
         <div class="grid grid-cols-12 gap-1 md:gap-2" x-data="{ selectedUser: null, activeTab: 'All-Request' }" >
-            <!-- quick stats -->
-            <div class="col-span-12 md:col-span-9 h-64 bg-white rounded-md shadow">
-                <p class="font-bold text-center mt-20">LINE CHART</p>
-            </div>
-            <div class="col-span-12 md:col-span-3 md:col-start-10 bg-white rounded-md shadow py-3 px-5">
-                <h2 class="text-customIT text-md font-bold">Application Status Overview</h2>
-                <div class="my-2">
-                    <h2 class="font-semibold text-gray-600 text-xs">Cumulative Approved Application</h2>
-                    <p class="font-semibold text-btncolor text-xl">1,000</p>
-                </div>
-                <div class="my-2">
-                    <h2 class="font-semibold text-gray-600 text-xs">Cumulative Pending Application</h2>
-                    <p class="font-semibold text-btncolor text-xl">1,000</p>
-                </div>
-                <div class="my-2">
-                    <h2 class="font-semibold text-gray-600 text-xs">Cumulative Denied Application</h2>
-                    <p class="font-semibold text-btncolor text-xl">1,000</p>
-                </div>
-                <hr class="mx-2 my-3">
-                <div class="font-semibold text-btncolor text-xs text-center">
-                    <a href="{{route('logs')}}">View All Application Logs</a>
-                </div>
-            </div>
-             
 
             <!-- tab -->
             <div class="col-span-12 col-start-1 h-auto bg-white rounded-md shadow">
@@ -67,7 +66,7 @@
                             <p class="text-xs font-light">Approved</p>
                         </div>
                         <!-- Denied Tab -->
-                        <div @click="activeTab = 'Rejected-Request'" :class="activeTab === 'Denied-Request' 
+                        <div @click="activeTab = 'Rejected-Request'" :class="activeTab === 'Rejected-Request' 
                                 ? 'p-4 bg-btncolor text-white rounded-lg cursor-pointer transition-colors duration-200' 
                                 : 'p-4 bg-gray-200 text-gray-700 rounded-sm cursor-pointer transition-colors duration-200 hover:bg-btncolor hover:text-white hover:rounded-lg'">
                             <p class="text-xs font-light">Rejected</p>
@@ -79,24 +78,24 @@
             <!-- All Request Tab-content -->
             <div x-show="activeTab === 'All-Request'" class="col-span-12 lg:col-span-8 col-start-1 h-full bg-white px-6 py-4 rounded-md shadow">
                 <!-- Header -->
-                <div class="flex items-center gap-3 mb-3">
+                <div class="flex items-center">
                     <img src="{{ asset('images/file-svg-green.svg') }}" class="w-12 h-12" />
-                    <p class="text-customIT text-lg font-bold">Request List</p>
+                    <p class="text-customIT text-lg font-bold">Membership Application List</p>
                 </div>
 
                 <!-- Search -->
-                <div class="flex justify-end mb-3">
+                <div class="flex justify-end mb-2">
                     <input type="text" placeholder="Search here" 
                         class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border border-gray-300 rounded-md 
                                 focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] focus:border-[var(--accent-green)]">
                 </div>
 
                 <!-- Table -->
-                <div class="overflow-auto h-[80vh] rounded-md border border-gray-200">
+                <div class="overflow-auto h-[80vh]">
                     <table class="min-w-full border-collapse">
-                        <thead class="bg-[var(--submenu-bg)] sticky top-0 z-10">
+                        <thead class="bg-snbg sticky top-0 z-10">
                             <tr class="text-customIT text-left text-xs font-semibold">
-                                <th class="px-4 py-3">MEMBERSHIP ID</th>
+                                <th class="px-4 py-3">APPLICATION ID</th>
                                 <th class="px-4 py-3">NAME</th>
                                 <th class="px-4 py-3">NUMBER</th>
                                 <th class="px-4 py-3">EMAIL</th>
@@ -105,93 +104,44 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Example Row -->
-                            <tr 
-                                class="border-b border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
-                                :class="{ 
-                                    'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
-                                }"
-                                @click="selectedUser = { 
-                                    name: 'Ron Peter Mortega', 
-                                    id: 'REQ-ITEM00001', 
-                                    date: '15 Aug 2025', 
-                                    status: 'Approved',
-                                    number: '09090909090',
-                                    email: 'rpm@gmail.com' 
-                                }"
-                            >
-                                <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">Ron Peter Mortega</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">rpm@gmail.com</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-block text-xs font-medium bg-approved text-white px-3 py-1 rounded-full">
-                                        Approved
-                                    </span>
-                                </td>
-                            </tr>
-
-                            <!-- Another Row -->
-                            <tr 
-                                class="border-b border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
-                                :class="{ 
-                                    'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00002' 
-                                }"
-                                @click="selectedUser = { 
-                                    name: 'Aeron Jead Marquez', 
-                                    id: 'REQ-ITEM00002', 
-                                    date: '15 Aug 2025', 
-                                    status: 'Rejected',
-                                    phone: '09090909090',
-                                    email: 'ajm@gmail.com'
-                                }"
-                            >
-                                <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00002</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">Aeron Jead Marquez</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">ajm@gmail.com</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-block text-xs font-medium bg-rejected text-white text-center px-3 py-1 rounded-full">
-                                        Rejected
-                                    </span>
-                                </td>
-                            </tr>
-                            
-                            <!-- Sample Loop -->
-                            @for($i = 0; $i < 10; $i++)
-                            <tr 
-                                class="border-b border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
-                                :class="{ 
-                                    'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00000' 
-                                }"
-                                @click="selectedUser = {
-                                    name: 'Random People', 
-                                    id: 'REQ-ITEM00000', 
-                                    date: '15 Aug 2025', 
-                                    status: 'Pending',
-                                    phone: '09090909090',
-                                    email: 'rp@gmail.com' 
-                                }"
-                            >
-                                <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00000</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">Random People</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">rp@gmail.com</td>
-                                <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-block text-xs font-medium bg-pending text-white px-3 py-1 rounded-full">
-                                        Pending
-                                    </span>
-                                </td>
-                            </tr>
-                            @endfor
+                            @forelse($applications['all'] as $app)
+                                <tr 
+                                    class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
+                                    :class="{ 
+                                        'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
+                                    }"
+                                    @click="selectedUser = { 
+                                        name: '{{ $app->user->name ?? '-'}}', 
+                                        id: 'REQ-{{ $app->id ?? '-'}}', 
+                                        date: '{{ $app->created_at ?? '-'}}', 
+                                        status: '{{ $app->stats->status_name ?? '-'}}',
+                                        number: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                        email: '{{ $app->user->email ?? '-'}}' 
+                                    }"
+                                >
+                                    <td class="px-4 py-3 text-xs text-gray-700">APP-{{ $app->id ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
+                                    <td class="px-4 py-3">
+                                        <span class="inline-block text-xs font-medium text-white px-3 py-1 rounded-full 
+                                        {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
+                                        {{ $app->status->status_name === 'pending' ? 'bg-pending text-white' : '' }}
+                                        {{ $app->status->status_name === 'rejected' ? 'bg-rejected text-white' : '' }}
+                                        ">
+                                            {{ ucfirst($app->status->status_name) ?? '-'}}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-gray-500">No applications.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
-
-
                 @include('components.pagination')
             </div>
 
@@ -239,118 +189,36 @@
                                 <!-- Requirements Approval -->
                                 <h3 class="text-sm font-bold text-customIT">REQUIREMENTS APPROVAL</h3>
 
-                                <!-- Basic Requirements -->
+                                <!-- Requirements List -->
                                 <div class="border rounded-md p-4 space-y-2">
                                     <div class="flex justify-between items-center mb-2">
-                                        <p class="flex items-center font-semibold text-sm text-customIT"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 mr-2">
+                                        <p class="flex items-center font-semibold text-sm text-customIT">{{--<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 mr-2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                        </svg>Basic Requirements</p>
-                                        <span class="text-approved text-xs font-semibold">Approved</span>
+                                        </svg>--}}Uploaded Requirements</p>
+                                        <span class="text-customIT text-xs font-semibold">Status</span>
                                     </div>
                                     <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Registered Member
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Member ID
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Valid ID
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Request Form
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Proof of need
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
+                                        @forelse($uploadedReq as $docu)
+                                            <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
+                                                <span onclick="openModal('requirementModal')" class="flex">{{ $docu->requirement->requirement_name ?? '-'}}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
+                                                    <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
+                                                    </svg>
+                                                </span>
+                                                <span class="text-approved">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                                    </svg>
+                                                </span>
+                                            </li>
+                                        @empty
+                                            <li class="text-gray-400 italic">No uploaded requirements yet.</li>
+                                        @endforelse
                                     </ul>
                                     <div class="text-xs text-approved font-medium">
                                         <p>Checked by the system on 25 August 2025</p>
                                     </div>
                                 </div>
-
-                                <!-- Additional Requirements -->
-                                {{--<div class="border rounded-md p-4 space-y-2">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <p class="flex items-center font-semibold text-sm text-customIT">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 mr-2 text-pending">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                            </svg>
-                                        Basic Requirements</p>
-                                        <span class="text-pending text-xs font-semibold">In process</span>
-                                    </div>
-                                    <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Barangay Certificate
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Farm Profile
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5 text-pending">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                    </ul>
-                                </div> --}}
 
                                 <!-- Verification Note -->
                                 <div class="flex items-center">
@@ -376,7 +244,7 @@
                     <div class="flex items-center">
                         <img src="{{ asset('images/file-svg-green.svg') }}"
                             class="w-12 h-12" />
-                        <p class="text-customIT text-lg font-bold">Request List</p>
+                        <p class="text-customIT text-lg font-bold">Pending Membership List</p>
                     </div>
                     <div class="flex justify-end mb-2">
                         <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
@@ -386,76 +254,45 @@
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
                                     <th class="px-4 py-3 rounded-tl-md">APPLICATION ID</th>
-                                    <th class="px-4 py-3">MEMBER</th>
+                                    <th class="px-4 py-3">NAME</th>
                                     <th class="px-4 py-3">NUMBER</th>
                                     <th class="px-4 py-3">EMAIL</th>
-                                    <th class="px-4 py-3">Date Submitted</th>
-                                    <th class="px-4 py-3 rounded-tr-md">Status</th>
+                                    <th class="px-4 py-3">DATE SUBMITTED</th>
+                                    <th class="px-4 py-3 rounded-tr-md">STATUS</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="border border-gray-300 hover:bg-gray-100"
-                                    @click="selectedUser = {
-                                    name: 'Ron Peter Mortega', 
-                                    id: 'REQ-ITEM00001', 
-                                    date: '15 Aug 2025', 
-                                    status: 'Pending',
-                                    phone: '09090909090',
-                                    email: 'rpm@gmail.com' 
-                                    }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Ron Peter Mortega</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">rpm@gmail.com</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                    <td class="px-4 py-3">
-                                        <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
-                                            Pending
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="border border-gray-300 hover:bg-gray-100"
-                                    @click="selectedUser = { 
-                                    name: 'Aeron Jead Marquez', 
-                                    id: 'REQ-ITEM00002', 
-                                    date: '15 Aug 2025', 
-                                    status: 'Pending',
-                                    phone: '09090909090',
-                                    email: 'ajm@gmail.com'
-                                    }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Aeron Jead Marquez</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">ajm@gmail.com</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                    <td class="px-4 py-3">
-                                        <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
-                                            Pending
-                                        </div>
-                                    </td>
-                                </tr>
-                                @for($i = 0; $i < 10; $i++)
-                                    <tr class="border border-gray-300 hover:bg-gray-100"
-                                        @click="selectedUser = {
-                                        name: 'Random People', 
-                                        id: 'REQ-ITEM00000', 
-                                        date: '15 Aug 2025', 
-                                        status: 'Pending',
-                                        phone: '09090909090',
-                                        email: 'rp@gmail.com' 
-                                        }">
-                                        <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">Random People</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">rp@gmail.com</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
+                                @forelse($applications['pending'] as $app)
+                                    <tr 
+                                        class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
+                                        :class="{ 
+                                            'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
+                                        }"
+                                        @click="selectedUser = { 
+                                            name: '{{ $app->user->name ?? '-'}}', 
+                                            id: 'REQ-{{ $app->id ?? '-'}}', 
+                                            date: '{{ $app->created_at ?? '-'}}', 
+                                            status: '{{ $app->stats->status_name ?? '-'}}',
+                                            number: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                            email: '{{ $app->user->email ?? '-'}}' 
+                                        }"
+                                    >
+                                        <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
                                         <td class="px-4 py-3">
-                                            <div class="inline-block text-xs font-medium bg-pending text-white px-3 py-1 rounded-full">
-                                                Pending
-                                            </div>
+                                            <span class="inline-block text-xs font-medium bg-pending text-white px-3 py-1 rounded-full">
+                                                {{ ucfirst($app->status->status_name) ?? '-'}}
+                                            </span>
                                         </td>
                                     </tr>
-                                @endfor
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-gray-500">No pending applications.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -508,11 +345,8 @@
                                 <div class="border rounded-md p-4 space-y-2">
                                     <div class="flex justify-between items-center mb-2">
                                         <p class="flex items-center font-semibold text-sm text-customIT">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 text-pending mr-2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                            </svg>
-                                            Basic Requirements</p>
-                                        <span class="text-pending text-xs font-semibold">Pending</span>
+                                            Uploaded Requirements</p>
+                                        <span class="text-customIT text-xs font-semibold">Status</span>
                                     </div>
                                     <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
                                         <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
@@ -619,7 +453,7 @@
                     <div class="flex items-center">
                         <img src="{{ asset('images/file-svg-green.svg') }}"
                             class="w-12 h-12" />
-                        <p class="text-customIT text-lg font-bold">Request List</p>
+                        <p class="text-customIT text-lg font-bold">Approved Membership List</p>
                     </div>
                     <div class="flex justify-end mb-2">
                         <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
@@ -629,76 +463,45 @@
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
                                     <th class="px-4 py-3 rounded-tl-md">APPLICATION ID</th>
-                                    <th class="px-4 py-3">MEMBER</th>
+                                    <th class="px-4 py-3">NAME</th>
                                     <th class="px-4 py-3">NUMBER</th>
                                     <th class="px-4 py-3">EMAIL</th>
-                                    <th class="px-4 py-3">Date Submitted</th>
-                                    <th class="px-4 py-3 rounded-tr-md">Status</th>
+                                    <th class="px-4 py-3">DATE SUBMITTED</th>
+                                    <th class="px-4 py-3 rounded-tr-md">STATUS</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="border border-gray-300 hover:bg-gray-100"
-                                    @click="selectedUser = {
-                                    name: 'Ron Peter Mortega', 
-                                    id: 'REQ-ITEM00001', 
-                                    date: '15 Aug 2025', 
-                                    status: 'Approved',
-                                    phone: '09090909090',
-                                    email: 'rpm@gmail.com' 
-                                    }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Ron Peter Mortega</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">rpm@gmail.com</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                    <td class="px-4 py-3">
-                                        <div class="inline-block text-xs font-medium bg-approved text-white text-center px-3 py-1 rounded-full">
-                                            Approved
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="border border-gray-300 hover:bg-gray-100"
-                                    @click="selectedUser = { 
-                                    name: 'Aeron Jead Marquez', 
-                                    id: 'REQ-ITEM00002', 
-                                    date: '15 Aug 2025', 
-                                    status: 'Approved',
-                                    phone: '09090909090',
-                                    email: 'ajm@gmail.com'
-                                    }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Aeron Jead Marquez</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">ajm@gmail.com</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                    <td class="px-4 py-3">
-                                        <div class="inline-block text-xs font-medium bg-approved text-white text-center px-3 py-1 rounded-full">
-                                            Approved
-                                        </div>
-                                    </td>
-                                </tr>
-                                @for($i = 0; $i < 10; $i++)
-                                    <tr class="border border-gray-300 hover:bg-gray-100"
-                                        @click="selectedUser = {
-                                        name: 'Random People', 
-                                        id: 'REQ-ITEM00000', 
-                                        date: '15 Aug 2025', 
-                                        status: 'Approved',
-                                        phone: '09090909090',
-                                        email: 'rp@gmail.com' 
-                                        }">
-                                        <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">Random People</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">09090909090</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">rp@gmail.com</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
+                                @forelse($applications['approved'] as $app)
+                                    <tr 
+                                        class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
+                                        :class="{ 
+                                            'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
+                                        }"
+                                        @click="selectedUser = { 
+                                            name: '{{ $app->user->name ?? '-'}}', 
+                                            id: 'REQ-{{ $app->id ?? '-'}}', 
+                                            date: '{{ $app->created_at ?? '-'}}', 
+                                            status: '{{ $app->stats->status_name ?? '-'}}',
+                                            number: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                            email: '{{ $app->user->email ?? '-'}}' 
+                                        }"
+                                    >
+                                        <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
                                         <td class="px-4 py-3">
-                                            <div class="inline-block text-xs font-medium bg-approved text-white px-3 py-1 rounded-full">
-                                                Approved
-                                            </div>
+                                            <span class="inline-block text-xs font-medium bg-approved text-white px-3 py-1 rounded-full">
+                                                {{ ucfirst($app->status->status_name) ?? '-'}}
+                                            </span>
                                         </td>
                                     </tr>
-                                @endfor
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-gray-500">No approved applications.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -884,7 +687,7 @@
                     <div class="flex items-center">
                         <img src="{{ asset('images/file-svg-green.svg') }}"
                             class="w-12 h-12" />
-                        <p class="text-customIT text-lg font-bold">Request List</p>
+                        <p class="text-customIT text-lg font-bold">Rejected Membership List</p>
                     </div>
                     <div class="flex justify-end mb-2">
                         <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
@@ -894,80 +697,45 @@
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
                                     <th class="px-4 py-3 rounded-tl-md">APPLICATION ID</th>
-                                    <th class="px-4 py-3">MEMBER</th>
+                                    <th class="px-4 py-3">NAME</th>
                                     <th class="px-4 py-3">NUMBER</th>
                                     <th class="px-4 py-3">EMAIL</th>
-                                    <th class="px-4 py-3">Date Submitted</th>
-                                    <th class="px-4 py-3 rounded-tr-md">Status</th>
+                                    <th class="px-4 py-3">DATE SUBMITTED</th>
+                                    <th class="px-4 py-3 rounded-tr-md">STATUS</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="border border-gray-300 hover:bg-gray-100"
-                                    @click="selectedUser = {
-                                    name: 'Ron Peter Mortega', 
-                                    id: 'REQ-ITEM00001', ,
-                                    date: '15 Aug 2025', 
-                                    status: 'Rejected',
-                                    phone: '09090909090',
-                                    email: 'rpm@gmail.com' 
-                                    }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Ron Peter Mortega</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Organic Fertilizer</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Fertilizer</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                    <td class="px-4 py-3">
-                                        <div class="inline-block text-xs font-medium bg-rejected text-white text-center px-3 py-1 rounded-full">
-                                            Rejected
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="border border-gray-300 hover:bg-gray-100"
-                                    @click="selectedUser = { 
-                                    name: 'Aeron Jead Marquez', 
-                                    id: 'REQ-ITEM00002', 
-                                    item: 'Rolls-Royce',
-                                    type: 'Machinery',
-                                    date: '15 Aug 2025', 
-                                    status: 'Rejected',
-                                    phone: '09090909090',
-                                    email: 'ajm@gmail.com'
-                                    }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Aeron Jead Marquez</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Rolls-Royce</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">Machinery</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
-                                    <td class="px-4 py-3">
-                                        <div class="inline-block text-xs font-medium bg-rejected text-white text-center px-3 py-1 rounded-full">
-                                            Rejected
-                                        </div>
-                                    </td>
-                                </tr>
-                                @for($i = 0; $i < 10; $i++)
-                                    <tr class="border border-gray-300 hover:bg-gray-100"
-                                        @click="selectedUser = {
-                                        name: 'Random People', 
-                                        id: 'REQ-ITEM00000', 
-                                        item: 'Rice Seeds',
-                                        type: 'Seeds',
-                                        date: '15 Aug 2025', 
-                                        status: 'Rejected',
-                                        phone: '09090909090',
-                                        email: 'rp@gmail.com' 
-                                        }">
-                                        <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM00001</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">Random People</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">Rice Seeds</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">Seeds</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">15 August 2025</td>
+                                @forelse($applications['rejected'] as $app)
+                                    <tr 
+                                        class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
+                                        :class="{ 
+                                            'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
+                                        }"
+                                        @click="selectedUser = { 
+                                            name: '{{ $app->user->name ?? '-'}}', 
+                                            id: 'REQ-{{ $app->id ?? '-'}}', 
+                                            date: '{{ $app->created_at ?? '-'}}', 
+                                            status: '{{ $app->stats->status_name ?? '-'}}',
+                                            number: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                            email: '{{ $app->user->email ?? '-'}}' 
+                                        }"
+                                    >
+                                        <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
                                         <td class="px-4 py-3">
-                                            <div class="inline-block text-xs font-medium bg-rejected text-white px-3 py-1 rounded-full">
-                                                Rejected
-                                            </div>
+                                            <span class="inline-block text-xs font-medium bg-rejected text-white px-3 py-1 rounded-full">
+                                                {{ ucfirst($app->status->status_name) ?? '-'}}
+                                            </span>
                                         </td>
                                     </tr>
-                                @endfor
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-gray-500">No rejected applications.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
