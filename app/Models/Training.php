@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 use App\Models\Sector;
 use App\Models\User;
@@ -21,6 +22,10 @@ class Training extends Model
         'venue',
     ];
 
+    // this makes it a Carbon instance
+    protected $casts = ['date' => 'date:Y-m-d'];
+    
+
     //RELATIONSHIPS
 
     //a training belongs to a sector
@@ -28,6 +33,12 @@ class Training extends Model
         return $this->belongsTo(Sector::class);
     }
 
+    //for the documents/picture of grant
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
+    
     //
     public function participants(){
         return $this->belongsToMany(User::class, 'participants')

@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-
+//  REQUIRED FOR SANCTUM: Import HasApiTokens
+use Laravel\Sanctum\HasApiTokens; 
 
 use App\Models\Role;
 use App\Models\Application;
@@ -18,7 +17,8 @@ use App\Models\UserInfo;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    //  REQUIRED FOR SANCTUM: Add the HasApiTokens trait here
+    use HasFactory, Notifiable, HasApiTokens; 
 
     /**
      * The attributes that are mass assignable.
@@ -26,9 +26,19 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        // Add all fields used in your multi-step registration (Step 1)
+        'first_name',
+        'last_name',
+        'middle_name',
+        'suffix',
+        
         'email',
         'password',
+        
+        // Fields for future steps (must match DB migration)
+        'phone_number',
+        'mpin',
+        
         'role_id',
     ];
 
@@ -39,6 +49,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'mpin', // Hide MPIN for security
         'remember_token',
     ];
 
@@ -54,38 +65,29 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
-
-    //RELATIONSHIP TO USERS\
-
-    //for role: each user belongs to a role (1:1)
+    
+    // --- Existing Relationships ---
     public function role(){
         return $this->belongsTo(Role::class);
     }
 
-    //for user_info: each user has one profile information (1:1)
     public function user_info(){
         return $this->hasOne(UserInfo::class);
     }
 
-    //for applications: a user can submit many applications (1:M)
     public function applications(){
         return $this->hasMany(Application::class);
     }
 
-    //for documents: a user can upload many documents (polymorphic relation)
     public function documents(){
         return $this->morphMany(Document::class, 'documentable');
     }
 
-    //for trainings: a user can attend many trainings
     public function trainings(){
         return $this->hasMany(Training::class, 'participants');
     }
 
-    //for notifications: a user can have many notifications
     public function notifications(){
         return $this->hasMany(Notification::class);
     }
-
 }
