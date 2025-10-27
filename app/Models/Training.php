@@ -42,6 +42,7 @@ class Training extends Model
     //
     public function participants(){
         return $this->belongsToMany(User::class, 'participants')
+                    ->withPivot('qr_scanned')
                     ->withTimestamps();
     }
 }

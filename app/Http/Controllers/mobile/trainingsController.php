@@ -34,7 +34,8 @@ public function index(Request $request)
 
         //  Set image URL if there’s at least one related document
         $training->image_url = $training->documents->first()
-            ? asset('storage/' . $training->documents->first()->file_path)
+            ? asset('storage/' . str_replace(' ', '%20', $training->documents->first()->file_path))
+
             : null;
 
         // Set status
@@ -107,15 +108,22 @@ public function myEvents(Request $request)
 ->with('sector', 'documents')
 ->get()
 ->map(function ($training) use ($userId) {
+    $participant = $training->participants()->where('user_id', $userId)->first();
+    $attended = $participant ? (bool)$participant->pivot->qr_scanned : false;
     $eventDate = Carbon::parse($training->date)->startOfDay();
     $today = Carbon::today();
 
     // Set status
-    if ($eventDate->isBefore($today)) {
-        $training->status = 'Did not attend';
-    } elseif ($eventDate->isSameDay($today) || $eventDate->isAfter($today)) {
-        $training->status = 'Ongoing';
+    if ($attended) {
+    $training->status = 'Attended';
+    } else if ($eventDate->isBefore($today)) {
+    $training->status = 'Did not attend';
+    } else {
+    $training->status = 'Ongoing';
     }
+
+    $training->attended = $attended;
+    $training->qr_scanned = $attended;
 
     // Set is_attending
     $training->is_attending = $training->participants()
@@ -123,9 +131,10 @@ public function myEvents(Request $request)
         ->exists();
 
            // image_url if document exists
-        $training->image_url = $training->documents->first()
-            ? asset('storage/' . $training->documents->first()->file_path)
-            : null;
+       $training->image_url = $training->documents->first()
+    ? asset('storage/' . str_replace(' ', '%20', $training->documents->first()->file_path))
+    : null;
+
 
     return $training;
 });
@@ -159,7 +168,7 @@ public function show(Request $request, $trainingId)
 
         // Add image_url if document exists
     $training->image_url = $training->documents->first()
-        ? asset('storage/' . $training->documents->first()->file_path)
+        ? asset('storage/' . str_replace(' ', '%20', $training->documents->first()->file_path))
         : null;
 
     return response()->json($training);

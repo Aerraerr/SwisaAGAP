@@ -1,37 +1,84 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\mobile\AuthController; 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 
-// Public routes
-Route::prefix('mobile')->group(function (Router $router) { // Use Router $router for clarity
+// Controllers
+use App\Http\Controllers\mobile\AuthController; 
+use App\Http\Controllers\mobile\AnnouncementController;
+use App\Http\Controllers\mobile\TrainingsController;
+use App\Http\Controllers\mobile\MemberFaqsController;
+use App\Http\Controllers\mobile\NotificationController;
+use App\Http\Controllers\mobile\CreditScoreController; 
+use App\Http\Controllers\Api\DocumentController;
+use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\MembershipController;
+use App\Http\Controllers\Api\GrantController;
+use App\Http\Controllers\Api\GrantApplicationController;
 
+// Public routes
+Route::prefix('mobile')->group(function (Router $router) {
     // PUBLIC AUTH ROUTES
     $router->post('/register', [AuthController::class, 'register']);
     $router->post('/login', [AuthController::class, 'login']);
 
     // PROTECTED ROUTES (Requires Sanctum token)
     $router->middleware('auth:sanctum')->group(function () use ($router) {
-        
         // Test route to get the authenticated user
         $router->get('/user', function (Request $request) {
             return $request->user();
         });
         
         $router->post('/logout', [AuthController::class, 'logout']);
-
         $router->post('/change-password', [AuthController::class, 'changePassword']);
     });
-}
-);
+});
 
-use App\Http\Controllers\mobile\AnnouncementController;
-use App\Http\Controllers\mobile\TrainingsController;
+// Member FAQs (public)
+Route::get('/member/faqs', [MemberFaqsController::class, 'index']);
 
-Route::middleware('auth:sanctum')->get('/announcements', [AnnouncementController::class, 'index']);
+// Protected routes requiring authentication
+Route::middleware('auth:sanctum')->group(function() {
+    // Announcements
+    Route::get('/announcements', [AnnouncementController::class, 'index']);
+    // Credit Score
+      Route::get('/credit-score', [CreditScoreController::class, 'show']);
+    /*
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::post('/profile/picture', [ProfileController::class, 'updatePicture']);
 
+    // Membership
+    Route::post('/membership-application', [MembershipController::class, 'store']);
+   
+    // Grants
+    Route::get('/grants', [GrantController::class, 'index']);
+
+    // Grant Applications
+    Route::post('/grant-applications', [GrantApplicationController::class, 'store']);
+    Route::get('/grant-applications', [GrantApplicationController::class, 'index']);
+    Route::get('/grant-applications/{id}', [GrantApplicationController::class, 'show']);
+
+    // Document Management
+    Route::post('/documents/upload', [DocumentController::class, 'upload']);
+    Route::get('/applications/{applicationId}/documents', [DocumentController::class, 'index']);
+    Route::get('/documents/{id}', [DocumentController::class, 'show']);
+    Route::get('/documents/{id}/download', [DocumentController::class, 'download']);
+    Route::delete('/documents/{id}', [DocumentController::class, 'destroy']);
+    */
+
+    // Notifications
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::patch('/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::get('/unread', [NotificationController::class, 'hasUnread']);
+        Route::patch('/{id}/unread', [NotificationController::class, 'markAsUnread']);
+        Route::delete('/{id}', [NotificationController::class, 'destroy']);
+    });
+});
+
+// Trainings routes (protected)
 Route::prefix('mobile')->middleware('auth:sanctum')->group(function () {
     Route::get('/trainings', [TrainingsController::class, 'index']);
     Route::get('/myevents', [TrainingsController::class, 'myEvents']);
@@ -40,21 +87,14 @@ Route::prefix('mobile')->middleware('auth:sanctum')->group(function () {
     Route::delete('/trainings/{trainingId}/cancel', [TrainingsController::class, 'cancelAttendance']);
 });
 
-use App\Http\Controllers\mobile\MemberFaqsController;
-
-Route::get('/member/faqs', [MemberFaqsController::class, 'index']);
-
-use App\Http\Controllers\mobile\NotificationController;
-
-Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
-    Route::get('/', [NotificationController::class, 'index']);
-    Route::patch('/{id}/read', [NotificationController::class, 'markAsRead']);
-    Route::get('/unread', [NotificationController::class, 'hasUnread']);
-    Route::patch('/{id}/unread', [NotificationController::class, 'markAsUnread']);
-    Route::delete('/{id}', [NotificationController::class, 'destroy']);
+// Debug route
+Route::get('/check-php-config', function () {
+    $uploadMax = ini_get('upload_max_filesize');
+    $postMax = ini_get('post_max_size');
+    
+    return response()->json([
+        'upload_max_filesize' => $uploadMax,
+        'post_max_size' => $postMax,
+        'message' => 'These are the current settings your server is using.'
+    ]);
 });
-
-
-
-
-
