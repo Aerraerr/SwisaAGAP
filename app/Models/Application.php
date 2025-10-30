@@ -22,25 +22,25 @@ class Application extends Model
         'purpose',
     ];
 
-    //RELATIONSHIPS
+    // RELATIONSHIPS
 
-    //application belongs to a user
+    // application belongs to a user
     public function user(){
         return $this->belongsTo(User::class);
     }
 
-    //application has a status
+    // application has a status
     public function status(){
         return $this->belongsTo(Status::class);
     }
 
-    //application may belong to a grant
+    // application may belong to a grant
     public function grant(){
         return $this->belongsTo(Grant::class);
     }
 
-    //application has one or many documents
+    // ✅ ADDED: application has many documents (polymorphic)
     public function documents(){
-        return $this->hasMany(Document::class);
+        return $this->morphMany(Document::class, 'documentable');
     }
 }

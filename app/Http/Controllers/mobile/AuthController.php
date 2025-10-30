@@ -33,7 +33,7 @@ class AuthController extends Controller
             'middle_name' => 'nullable|string|max:255',
             'suffix' => 'nullable|string|max:10',
             'phone_number' => 'nullable|string|max:20|unique:users,phone_number',
-            'mpin' => 'nullable|digits:6',
+            'mpin' => 'nullable|digits:4',
         ]);
 
         $user = User::create([
