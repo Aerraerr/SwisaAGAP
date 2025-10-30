@@ -6,23 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('user_info', function (Blueprint $table) {
-            $table->string('qr_code')->nullable()->after('profile_img');
+            $table->string('house_no', 50)->nullable()->after('city');
+            $table->string('sc_house_no', 50)->nullable()->after('sc_city');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('user_info', function (Blueprint $table) {
-            //
+            $table->dropColumn(['house_no', 'sc_house_no']);
         });
     }
 };

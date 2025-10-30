@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use phpDocumentor\Reflection\Types\Nullable;
 
 return new class extends Migration
 {
@@ -15,40 +14,43 @@ return new class extends Migration
         Schema::create('user_info', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('sector_id')->constrained('sectors')->onDelete('cascade');
 
-            //USER INFO
+            // --- USER INFO ---
             $table->string('fname', 50);
             $table->string('mname', 50)->nullable();
             $table->string('lname', 50);
-            $table->enum('suffix', ['jr', 'sr'])->nullable();
+            $table->string('name')->nullable(); // ADDED: For full name storage
+            $table->string('suffix', 50)->nullable();
             $table->date('birthdate');
-            $table->enum('gender', ['Male', 'Female']);
+            $table->string('civil_status', 50)->nullable();
+            $table->string('gender', 50);
             $table->string('contact_no', 20);
             $table->string('province', 50);
             $table->string('city', 50);
             $table->string('barangay', 50);
             $table->string('zone', 50);
             $table->string('profile_img', 255)->nullable();
+            $table->string('qr_code')->unique()->nullable(); // --- ADD THIS LINE ---
 
-            //AGRI INFO
-            $table->string('farm_location');
-            $table->string('land_size');
-            $table->string('water_source');
+            // --- AGRI INFO ---
+            $table->string('farmer_type', 50)->nullable();
+            $table->string('farm_location')->nullable();
+            $table->string('land_size')->nullable();
+            $table->string('water_source')->nullable();
 
-            //SECOND CONTACT INFO
-            $table->string('sc_fname', 50);
+            // --- SECONDARY CONTACT INFO ---
+            $table->string('sc_fname', 50)->nullable();
             $table->string('sc_mname', 50)->nullable();
-            $table->string('sc_lname', 50);
-            $table->enum('sc_suffix', ['Jr', 'Sr', 'I', 'II', 'IV', 'V', 'None'])->nullable();
-            $table->enum('sc_gender', ['Male', 'Female']);
-            $table->string('sc_contact_no', 20);
-            $table->string('sc_email', 20)->nullable();
-            $table->string('sc_province', 50);
-            $table->string('sc_city', 50);
-            $table->string('sc_barangay', 50);
+            $table->string('sc_lname', 50)->nullable();
+            $table->string('sc_suffix', 50)->nullable();
+            $table->string('sc_gender', 50)->nullable();
+            $table->string('sc_contact_no', 20)->nullable();
+            $table->string('sc_email')->nullable();
+            $table->string('sc_province', 50)->nullable();
+            $table->string('sc_city', 50)->nullable();
+            $table->string('sc_barangay', 50)->nullable();
             $table->string('sc_zone', 50)->nullable();
-            $table->enum('relationship', ['Parent', 'Sibling', 'Spouse', 'Child', 'Relative', 'Friend', 'Guardian', 'Other']);
+            $table->string('relationship', 50)->nullable();
 
             $table->timestamps();
         });
@@ -62,3 +64,4 @@ return new class extends Migration
         Schema::dropIfExists('user_info');
     }
 };
+

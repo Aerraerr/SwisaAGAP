@@ -5,10 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\GrantType;
-use App\Models\Application;
-use App\Models\GrantRequirement;
-
 class Grant extends Model
 {
     use HasFactory;
@@ -23,20 +19,19 @@ class Grant extends Model
         'end_at',
     ];
 
-    //RELATIONSHIPS
-
-    //a grant belongs to a user
-    public function grant_type(){
+    // RELATIONSHIPS
+    public function grantType()
+    {
         return $this->belongsTo(GrantType::class, 'type_id');
     }
 
-    //a grant can have many requirements
-    public function grantRequirements(){
+    public function grantRequirements()
+    {
         return $this->hasMany(GrantRequirement::class);
     }
 
-    //a grant can have many application
-    public function applications(){
+    public function applications()
+    {
         return $this->hasMany(Application::class);
     }
 }
