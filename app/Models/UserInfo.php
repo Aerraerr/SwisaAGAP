@@ -24,7 +24,10 @@ class UserInfo extends Model
         'birthdate',
         'civil_status',
         'gender',
-        'contact_no',
+        'contact_no', // halion nalang pag ok na ta pinalitan ni boa naging phone_no kupal
+        'contact_info',
+        'phone_no',
+        'email',
         'province',
         'city',
         'barangay',
@@ -38,13 +41,16 @@ class UserInfo extends Model
         'sc_lname',
         'sc_suffix',
         'sc_gender',
-        'sc_contact_no',
+        'sc_contact_no', // halion nalang pag ok na ta pinalitan ni boa naging sc_phone_no kupal
+        'sc_contact_info',
+        'sc_phone_no',
         'sc_email',
         'sc_province',
         'sc_city',
         'sc_barangay',
         'sc_zone',
         'relationship',
+        'qr_code',
     ];
 
     const Sexes = ['Male', 'Female'];
