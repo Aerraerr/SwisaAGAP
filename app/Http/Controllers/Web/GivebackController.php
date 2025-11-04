@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Giveback;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GivebackController extends Controller
 {
@@ -24,11 +25,16 @@ class GivebackController extends Controller
     }
 
     public function updateStatus(Request $request, $id){
-        $giveback = Giveback::findOrFail($id);
+        try{
+            $giveback = Giveback::findOrFail($id);
 
-        $giveback->status_id = '46';
-        $giveback->save();
+            $giveback->status_id = '46'; //received stattus
+            $giveback->save();
 
-        return redirect()->back()->with('success', 'Giveback marked as received.');
+            return redirect()->back()->with('success', 'Giveback marked as received.');
+        }catch(\Exception $error){
+            Log::error('Giveback Status Update Error: ' . $error->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong while updating giveback status.');
+        }
     }
 }

@@ -140,14 +140,14 @@
                         <tbody>
                             @forelse($member->applications as $member)
                                 <tr class="border border-gray-300">
-                                    <td class="px-4 py-2 text-sm text-gray-700">REQ-ITEM{{ $applications->id }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $applications->grant->grant_name}}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $applications->grant->grant_type}}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700 font-medium"><button onclick="openModal('viewReasonModal')">{{ $applications->purpose}}</button></td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $applications->created_at}}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">REQ-ITEM{{ $member->id }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $member->grant->title ?? '-'}}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $member->grant->grant_type->grant_type ?? '-'}}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700 font-medium"><button onclick="openModal('viewReasonModal')">{{ $member->purpose ?? '-'}}</button></td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $member->created_at}}</td>
                                     <td class="px-4 py-3 ">
                                         <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
-                                            {{ $applications->status->status_name}}
+                                            {{ $member->status->status_name ?? '-'}}
                                         </div>
                                     </td>
                                 </tr>
@@ -214,7 +214,7 @@
             </div>
         </div>
         @include('components.modals.grant-overview')
-        @include('components.modals.view-applications')
+        {{--@include('components.modals.view-applications')--}}
         @include('components.modals.view-logs')
         @include('components.modals.view-reason')
        

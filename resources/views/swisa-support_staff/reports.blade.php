@@ -53,9 +53,10 @@
                         reportId="{{ $report->id ?? '-'}}"
                     />
                 @empty
-                    <x-cards.report-card
-                        empty
-                    />
+                    <div class="col-span-full flex flex-col items-center justify-center py-5 text-center">
+                        <p class="text-gray-500 text-lg font-medium">No Grant Report Found</p>
+                        <p class="text-gray-400 text-sm">Try checking back later or adding new entries.</p>
+                    </div>
                 @endforelse
             </div>
 
@@ -124,8 +125,8 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr class="border border-gray-300 hover:bg-gray-100">
-                                    <td class="px-4 py-2 text-sm text-gray-700">EMPTY</td>
+                                <tr>
+                                    <td colspan="8" class="text-center py-8 text-gray-500 text-sm">No Grant Report Found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

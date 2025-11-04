@@ -41,6 +41,14 @@ class Grant extends Model
         return $this->belongsToMany(Requirement::class, 'grant_requirements');
     }
 
+    public function grant_requirements(){
+        return $this->hasMany(GrantRequirement::class, 'grant_id');
+    }
+
+    public function membership_requirements(){
+        return $this->hasMany(MembershipRequirement::class, 'grant_id');
+    }
+
     //a grant can have many application
     public function applications(){
         return $this->hasMany(Application::class);

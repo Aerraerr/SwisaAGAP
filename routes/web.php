@@ -10,27 +10,9 @@ use App\Http\Controllers\Web\GrantController;
 use App\Http\Controllers\Web\GrantReportController;
 use App\Http\Controllers\Web\MemberController;
 use App\Http\Controllers\Web\TrainingController;
-use App\Models\GrantReport;
 use Illuminate\Support\Facades\Route;
 
-use App\Services\DocumentChecker;
-
-Route::get('/test-doc', function () {
-    $filePath = storage_path('app/testfiles/requestform.docx'); // change to your test file
-    $checker = new DocumentChecker();
-    $text = $checker->extractText($filePath);
-
-    return nl2br(e($text)); // show extracted text
-});
-
-Route::get('/test-img', function () {
-    $filePath = storage_path('app/testfiles/1758968894_Screenshot 2025-09-27 182621.png'); // your test file
-    $checker = new DocumentChecker();
-    $text = $checker->extractText($filePath);
-
-    return nl2br(e($text));
-});
-
+//
 Route::get('/', function () {
     return view('auth.landing');
 });
@@ -43,47 +25,9 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-//-----------ADMIN-REPORTS ROUTES----------------
-
-Route::get('/admin-reports', function () {
-    return view('swisa-admin.reports');
-})->middleware(['auth', 'verified'])->name('admin-reports');
-
-//------------MEMBER ROUTES--------------
 
 
-Route::get('/members', [MemberController::class, 'displayMember'])
-->middleware(['auth', 'verified'])->name('members');
 
-//for view profile 
-Route::get('/view-profile/{id}', [MemberController::class, 'viewProfile'])
-->middleware(['auth', 'verified'])->name('view-profile');
-
-//-----------GRANT ROUTES-------------
-
-//display grant
-Route::get('/grantsNequipment', [GrantController::class, 'displayGrants'])
-->middleware(['auth', 'verified'])->name('grantsNequipment');
-
-//for view grant 
-Route::get('/view-grant/{id}', [GrantController::class, 'viewGrantDetails'])
-->middleware(['auth', 'verified'])->name('view-grant');
-
-//for grantcontroller/addgrant
-Route::post('/grantsNequipment/add-grant', [GrantController::class, 'addGrant'])
-->middleware(['auth', 'verified'])->name('grantsNequipment.store');
-
-//add stock to a grant
-Route::patch('view-grant/{id}/add-stock', [GrantController::class, 'addGrantStock'])
-->middleware(['auth', 'verified'])->name('addGrantStock.update');
-
-//edit grant
-Route::patch('view-grant/{id}/edit-grant', [GrantController::class, 'editGrantInfo'])
-->middleware(['auth', 'verified'])->name('editGrantInfo.update');
-
-//delete grant
-Route::delete('view-grant/{id}/delete-grant', [GrantController::class, 'deleteGrant'])
-->middleware(['auth', 'verified'])->name('deleteGrant.delete');
 
 //-------------ANNOUNCEMENT ROUTES------------
 
@@ -109,7 +53,7 @@ Route::get('/initandevents', function () {
 Route::get('/training-workshop', [TrainingController::class, 'displayTraining'])
 ->middleware(['auth', 'verified'])->name('training-workshop');
 
-//for grantcontroller/addgrant
+//for add training
 Route::post('/trainings', [TrainingController::class, 'addTraining'])
 ->middleware(['auth', 'verified'])->name('training.store');
 
@@ -130,10 +74,16 @@ Route::delete('view-training/{id}/delete-event', [TrainingController::class, 'de
 Route::get('/grant-request', [GrantRequestController::class, 'displayApplications'] )
 ->middleware(['auth', 'verified'])->name('grant-request'); 
 
+Route::patch('/member-application/{id}', [GrantRequestController::class, 'approvedApplication'])
+->middleware(['auth', 'verified'])->name('member-application.update');
+
 //------------APPLICATION ROUTE------------------
 
 Route::get('/member-application', [MembershipController::class, 'displayApplications'])
 ->middleware(['auth', 'verified'])->name('member-application');
+
+Route::patch('/member-application/{id}', [MembershipController::class, 'approvedApplication'])
+->middleware(['auth', 'verified'])->name('member-application.update');
 
 
 Route::get('/settings', function () {
@@ -150,43 +100,72 @@ Route::get('/messages', function () {
 
 
 
+Route::middleware(['role:3', 'throttle:3,1'])->group(function () {
+
+    //-----------ADMIN-REPORTS ROUTES----------------
+
+    Route::get('/admin-reports', function () {
+        return view('swisa-admin.reports');
+    })->name('admin-reports');
+
+    //------------MEMBER ROUTES--------------
+
+
+    Route::get('/members', [MemberController::class, 'displayMember'])->name('members');
+
+    //for view profile 
+    Route::get('/view-profile/{id}', [MemberController::class, 'viewProfile'])->name('view-profile');
+
+    //-----------GRANT ROUTES-------------
+
+    //display grant
+    Route::get('/grantsNequipment', [GrantController::class, 'displayGrants'])->name('grantsNequipment');
+
+    //for view grant 
+    Route::get('/view-grant/{id}', [GrantController::class, 'viewGrantDetails'])->name('view-grant');
+
+    //for grantcontroller/addgrant
+    Route::post('/grantsNequipment/add-grant', [GrantController::class, 'addGrant'])->name('grantsNequipment.store');
+
+    //add stock to a grant
+    Route::patch('view-grant/{id}/add-stock', [GrantController::class, 'addGrantStock'])->name('addGrantStock.update');
+
+    //edit grant
+    Route::patch('view-grant/{id}/edit-grant', [GrantController::class, 'editGrantInfo'])->name('editGrantInfo.update');
+
+    //delete grant
+    Route::delete('view-grant/{id}/delete-grant', [GrantController::class, 'deleteGrant'])->name('deleteGrant.delete');
+});
 
 // SWISA STAFF: Main pages
+Route::middleware(['role:2', 'throttle:3,1'])->group(function () {
+    // ----- for giveback -------------
+    Route::get('/giveback', [GivebackController::class, 'displayGivebacks'])->name('giveback');
 
-// ----- for giveback -------------
-Route::get('/giveback', [GivebackController::class, 'displayGivebacks'])
-->middleware(['auth', 'verified'])->name('giveback');
+    Route::get('/view-giveback/{id}', [GivebackController::class, 'viewGiveback'])->name('view-giveback');
 
-Route::get('/view-giveback/{id}', [GivebackController::class, 'viewGiveback'])
-->middleware(['auth', 'verified'])->name('view-giveback');
+    Route::patch('/view-giveback/{id}/received', [GivebackController::class, 'updateStatus'])->name('giveback.updateStatus');
 
-Route::patch('/view-giveback/{id}/received', [GivebackController::class, 'updateStatus'])
-->middleware(['auth', 'verified'])->name('giveback.updateStatus');
+    // -------- for assisting page ---------------
+    Route::get('/assisted-creation', [AssistController::class, 'displayMembers'])->name('assisted-creation');
 
-// -------- for assisting page ---------------
-Route::get('/assisted-creation', [AssistController::class, 'displayMembers'])
-->middleware(['auth', 'verified'])->name('assisted-creation');
+    //assist register
+    Route::post('/assisted-creation', [AssistController::class, 'assistRegisterAccount'])->name('assistRegister.store');
 
-//assist register
-Route::post('/assisted-creation', [AssistController::class, 'assistRegisterAccount'])
-->name('assistRegister.store');
+    //assist membership
+    Route::post('/assisted-creation/{id}/membership', [AssistController::class, 'assistMembershipApplication'])->name('assistMembershipApplication.store');
 
-//assist membership
-Route::post('/assisted-creation/{id}/membership', [AssistController::class, 'assistMembershipApplication'])
-->middleware(['auth', 'verified'])->name('assistMembershipApplication.store');
+    //assist grant request
+    Route::post('/assisted-creation/{id}/grant_application', [AssistController::class, 'assistGrantApplication'])->name('assistGrantApplication.store');
 
-//assist grant request
-Route::post('/assisted-creation/{id}/request_grant', [AssistController::class, 'assistGrantApplication'])
-->middleware(['auth', 'verified'])->name('assistGrantApplication.store');
+    //  --------- for grant reports -------------
 
-//  --------- for grant reports -------------
+    Route::get('/report', [GrantReportController::class, 'displayGrantReports'])->name('report');
 
-Route::get('/report', [GrantReportController::class, 'displayGrantReports'])
-->middleware(['auth', 'verified'])->name('report');
+    //views in support staff
+    Route::get('/view-report/{id}', [GrantReportController::class, 'viewGrantReport'])->name('view-report');
+});
 
-//views in support staff
-Route::get('/view-report/{id}', [GrantReportController::class, 'viewGrantReport'])
-->middleware(['auth', 'verified'])->name('view-report');
 
 
 

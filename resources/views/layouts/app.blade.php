@@ -20,6 +20,7 @@
         <script src="//unpkg.com/alpinejs" defer></script>
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     </head>
     
@@ -56,4 +57,45 @@
     document.addEventListener("DOMContentLoaded", function() {
         document.body.style.zoom = "90%";
     });
+</script>
+<!-- popup/flash message -->
+<script>
+    // SweetAlert2 Global Flash Message
+
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 1500 
+        })
+    @endif
+
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: '{{ session('error') }}',
+            confirmButtonText: 'Got It',
+            customClass: {
+                confirmButton: 'bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded',
+            },
+            buttonsStyling: false,
+        })
+    @endif
+
+    @if(session('warning'))
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning!',
+            text: '{{ session('warning') }}',
+            showConfirmButton: true,
+            confirmButtonText: 'Okay',
+            customClass: { 
+                confirmButton: 'bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded',
+            },
+            buttonsStyling: false,
+        })
+    @endif
 </script>

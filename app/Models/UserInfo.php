@@ -22,6 +22,7 @@ class UserInfo extends Model
         'lname',
         'suffix',
         'birthdate',
+        'civil_status',
         'gender',
         'contact_no',
         'province',
@@ -49,7 +50,7 @@ class UserInfo extends Model
     const Sexes = ['Male', 'Female'];
     const Suffix = ['Jr', 'Sr', 'I', 'II', 'III', 'IV', 'V'];
     const Relation = ['Parent', 'Sibling', 'Spouse', 'Child', 'Friend', 'Guardian', 'Relative'];
-
+    const Cvl_Stats = ['Single', 'Married', 'Widowed','Separated'];
     //RELATIONSHIPS
 
     // user_info belongs to one user

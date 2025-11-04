@@ -107,23 +107,26 @@
                             @forelse($applications['all'] as $app)
                                 <tr 
                                     class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
-                                    :class="{ 
-                                        'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
-                                    }"
+                                    
                                     @click="selectedUser = { 
+                                        id: '{{ $app->id ?? '-'}}', 
                                         name: '{{ $app->user->name ?? '-'}}', 
-                                        id: 'REQ-{{ $app->id ?? '-'}}', 
-                                        date: '{{ $app->created_at ?? '-'}}', 
-                                        status: '{{ $app->stats->status_name ?? '-'}}',
+                                        date: '{{ $app->created_at->format('F d Y') ?? '-'}}',
+                                        updated: '{{ $app->updated_at->format('F d Y') ?? '-'}}', 
+                                        status: '{{ ucfirst($app->status?->status_name ?? '-') }}',
                                         number: '{{ $app->user->user_info->contact_no ?? '-'}}',
-                                        email: '{{ $app->user->email ?? '-'}}' 
+                                        email: '{{ $app->user->email ?? '-'}}',
+                                        reason: '{{ $app->rejection_reason ?? '-'}}',
+                                        documents: @js($app->documents),
+                                        form_img: '{{ $app->form_img ?? '-'}}' 
+                                        
                                     }"
                                 >
                                     <td class="px-4 py-3 text-xs text-gray-700">APP-{{ $app->id ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
                                     <td class="px-4 py-3">
                                         <span class="inline-block text-xs font-medium text-white px-3 py-1 rounded-full 
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
@@ -147,7 +150,7 @@
 
 
             <div x-show="activeTab === 'All-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">
-                    <div class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
+                    <div x-data="{ verified: false,  membershipRequirements: @js($membershipRequirements), selectedRequirement: null }" class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
                         <!-- default display -->
                         <template x-if="!selectedUser">
                             <div class="flex flex-col items-center my-6">
@@ -159,7 +162,7 @@
                         </template>
 
                         <!-- Show selected user details -->
-                        <template x-if="selectedUser" x-data="{ verified: false }">
+                        <template x-if="selectedUser">
                             <div class="flex flex-col items-stretch text-left space-y-2">
 
                                 <!-- Header -->
@@ -192,48 +195,93 @@
                                 <!-- Requirements List -->
                                 <div class="border rounded-md p-4 space-y-2">
                                     <div class="flex justify-between items-center mb-2">
-                                        <p class="flex items-center font-semibold text-sm text-customIT">{{--<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 mr-2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                        </svg>--}}Uploaded Requirements</p>
-                                        <span class="text-customIT text-xs font-semibold">Status</span>
+                                        <p class="flex items-center font-semibold text-sm text-customIT">Uploaded Requirements</p>
+                                        <span class="text-customIT text-sm font-semibold">Status</span>
                                     </div>
                                     <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                        @forelse($uploadedReq as $docu)
+                                         <template x-for="req in membershipRequirements" :key="req.membership_requirement_id">
                                             <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                                <span onclick="openModal('requirementModal')" class="flex">{{ $docu->requirement->requirement_name ?? '-'}}
-                                                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                    <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                    </svg>
+                                                <span class="flex items-center">
+                                                    <span x-text="req.requirement_name"></span>
+                                                    <span 
+                                                        @click="selectedRequirement = {
+                                                            name: req.requirement_name,
+                                                            document: selectedUser.documents.find(d => d.membership_requirement_id === req.membership_requirement_id)
+                                                        }; openModal('requirementModal');"
+                                                        class="flex"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
+                                                        <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
+                                                        </svg>
+                                                    </span>
                                                 </span>
-                                                <span class="text-approved">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                    </svg>
-                                                </span>
+                                                
+                                               <!-- display 'Passed or Needs Checking' depending on the result of the documentChecker -->
+                                                <span 
+                                                    x-text="selectedUser.documents.find(d => d.membership_requirement_id === req.membership_requirement_id)?.check_result || 'Uploaded'"
+                                                    :class="{
+                                                        'text-green-500 font-semibold': $el.textContent === 'Passed',
+                                                        'text-red-500 italic': $el.textContent === 'Needs Checking'
+                                                    }"
+                                                    class="text-xs"
+                                                ></span>
                                             </li>
-                                        @empty
-                                            <li class="text-gray-400 italic">No uploaded requirements yet.</li>
-                                        @endforelse
+                                        </template>
                                     </ul>
-                                    <div class="text-xs text-approved font-medium">
-                                        <p>Checked by the system on 25 August 2025</p>
+                                    <div class="mt-3 border-t pt-2">
+                                        <span class="font-medium text-xs text-gray-600 pl-4">Membership Application Form</span>
+                                        <template x-if="selectedUser.form_img && selectedUser.form_img !== '-'">
+                                            <a :href="'/storage/' + selectedUser.form_img"
+                                            target="_blank"
+                                            class="text-blue-600 underline italic text-xs hover:text-blue-800">
+                                            view form
+                                            </a>
+                                        </template>
+                                        <template x-if="!selectedUser.form_img || selectedUser.form_img === '-'">
+                                            <span class="text-xs text-gray-500 italic">Not yet generated.</span>
+                                        </template>
+                                    </div>
+
+                                    @include('components.modals.requirement-view')
+                                    
+                                    <div class="text-xs font-medium">
+                                        <!-- Pending -->
+                                        <template x-if="selectedUser.status === 'Pending'">
+                                            <p class="text-gray-500 italic">*Pending for the Support Staff to double check on it.</p>
+                                        </template>
+
+                                        <!-- Approved -->
+                                        <template  x-if="selectedUser.status === 'Approved'">
+                                            <p class="text-gray-500 italic">*Checked by the Support Staff on <span x-text="selectedUser.updated"></span></p>
+                                        </template>
+
+                                        <!-- Rejected -->
+                                        <template x-if="selectedUser.status === 'Rejected'">
+                                            <p class="text-gray-500 italic">*Checked by the Support Staff and it's rejected.</p>
+                                            <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected"></span></p>
+                                        </template>
                                     </div>
                                 </div>
 
                                 <!-- Verification Note -->
-                                <div class="flex items-center">
-                                    <input type="checkbox" x-model="verified" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
-                                    <p class="text-xs text-bsctxt ml-2">All requirements have been reviewed and verified.</p>
-                                </div>
+                                <template x-if="selectedUser.status === 'Pending'">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" x-model="verified" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
+                                        <p class="text-xs text-bsctxt ml-2">All requirements have been reviewed and verified.</p>
+                                    </div>
+                                </template>
 
                                 <!-- Approve Button -->
-                                <div class="grid grid-cols-2 pt-4">
-                                    <button onclick="openModal('approvedModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
-                                        :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
-                                        :disabled="!verified">
-                                        Approve
-                                    </button>
-                                </div>
+                                <template x-if="selectedUser.status === 'Pending'">
+                                    <div class="grid grid-cols-2 pt-4">
+                                        <button onclick="openModal('approvedModalAll')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                            :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
+                                            :disabled="!verified">
+                                            Approve
+                                        </button>
+                                    </div>
+                                </template>
+                                @include('components.modals.approved-modal', ['modalId' => 'approvedModalAll'])
                             </div>
                         </template>
                     </div>
@@ -250,8 +298,8 @@
                         <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
                     </div>
                     <div class="overflow-auto h-[80vh]">
-                        <table class="table table-hover min-w-full border-spacing-y-1">
-                            <thead class="bg-snbg border-gray-300">
+                        <table class="min-w-full border-collapse">
+                            <thead class="bg-snbg sticky top-0 z-10">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
                                     <th class="px-4 py-3 rounded-tl-md">APPLICATION ID</th>
                                     <th class="px-4 py-3">NAME</th>
@@ -265,25 +313,28 @@
                                 @forelse($applications['pending'] as $app)
                                     <tr 
                                         class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
-                                        :class="{ 
-                                            'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
-                                        }"
                                         @click="selectedUser = { 
+                                            id: '{{ $app->id ?? '-'}}', 
                                             name: '{{ $app->user->name ?? '-'}}', 
-                                            id: 'REQ-{{ $app->id ?? '-'}}', 
-                                            date: '{{ $app->created_at ?? '-'}}', 
-                                            status: '{{ $app->stats->status_name ?? '-'}}',
+                                            date: '{{ $app->created_at->format('F d Y') ?? '-'}}', 
+                                            status: '{{ ucfirst($app->status?->status_name ?? '-') }}',
                                             number: '{{ $app->user->user_info->contact_no ?? '-'}}',
-                                            email: '{{ $app->user->email ?? '-'}}' 
+                                            email: '{{ $app->user->email ?? '-'}}', 
+                                            documents: @js($app->documents),
+                                            form_img: '{{ $app->form_img ?? '-'}}' 
                                         }"
                                     >
-                                        <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">APP-{{ $app->id ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
                                         <td class="px-4 py-3">
-                                            <span class="inline-block text-xs font-medium bg-pending text-white px-3 py-1 rounded-full">
+                                            <span class="inline-block text-xs font-medium text-white px-3 py-1 rounded-full 
+                                            {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
+                                            {{ $app->status->status_name === 'pending' ? 'bg-pending text-white' : '' }}
+                                            {{ $app->status->status_name === 'rejected' ? 'bg-rejected text-white' : '' }}
+                                            ">
                                                 {{ ucfirst($app->status->status_name) ?? '-'}}
                                             </span>
                                         </td>
@@ -300,24 +351,24 @@
             </div>
 
             <div x-show="activeTab === 'Pending-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">
-                    <div class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
+                    <div x-data="{ verified: false,  membershipRequirements: @js($membershipRequirements), selectedRequirement: null }" class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
                         <!-- default display -->
                         <template x-if="!selectedUser">
                             <div class="flex flex-col items-center my-6">
                                 <img src="{{ asset('images/file-svg.svg') }}" class="w-32 h-32 pt-4"/>
                                 <div class="border-t border-gray-300">
-                                    <p class="text-gray-300 font-medium text-md mt-2">Select a request to view details</p>
+                                    <p class="text-gray-300 font-medium text-md mt-2">Select an application to view details</p>
                                 </div>
                             </div>
                         </template>
 
                         <!-- Show selected user details -->
-                        <template x-if="selectedUser" x-data="{ verified: false }">
+                        <template x-if="selectedUser">
                             <div class="flex flex-col items-stretch text-left space-y-2">
 
                                 <!-- Header -->
                                 <div class="flex justify-between items-center">
-                                    <h2 class="text-lg font-bold text-customIT">Requested Item</h2>
+                                    <h2 class="text-lg font-bold text-customIT">Application Details</h2>
                                     <span x-text="selectedUser.status" class="text-white text-xs px-3 py-1 rounded-full font-medium"
                                     :class="{
                                         'bg-approved': selectedUser.status === 'Approved',
@@ -344,90 +395,57 @@
                                 <!-- Basic Requirements -->
                                 <div class="border rounded-md p-4 space-y-2">
                                     <div class="flex justify-between items-center mb-2">
-                                        <p class="flex items-center font-semibold text-sm text-customIT">
-                                            Uploaded Requirements</p>
-                                        <span class="text-customIT text-xs font-semibold">Status</span>
+                                        <p class="flex items-center font-semibold text-sm text-customIT">Uploaded Requirements</p>
+                                        <span class="text-customIT text-sm font-semibold">Status</span>
                                     </div>
                                     <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Member ID
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Valid ID
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5 text-pending">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Application Form
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
+                                         <template x-for="req in membershipRequirements" :key="req.membership_requirement_id">
+                                            <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
+                                                <span class="flex items-center">
+                                                    <span x-text="req.requirement_name"></span>
+                                                    <span 
+                                                        @click="selectedRequirement = {
+                                                            name: req.requirement_name,
+                                                            document: selectedUser.documents.find(d => d.membership_requirement_id === req.membership_requirement_id)
+                                                        }; openModal('requirementModal');"
+                                                        class="flex"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
+                                                        <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
+                                                        </svg>
+                                                    </span>
+                                                </span>
+
+                                                <!-- display 'Passed or Needs Checking' depending on the result of the documentChecker -->
+                                                <span 
+                                                    x-text="selectedUser.documents.find(d => d.membership_requirement_id === req.membership_requirement_id)?.check_result || 'Missing'"
+                                                    :class="{
+                                                        'text-green-500 font-semibold': $el.textContent === 'Passed',
+                                                        'text-red-500 italic': $el.textContent === 'Needs Checking'
+                                                    }"
+                                                    class="text-xs"
+                                                ></span>
+                                            </li>
+                                        </template>
                                     </ul>
+                                    <div class="mt-3 border-t pt-2">
+                                        <span class="font-medium text-xs text-gray-600 pl-4">Membership Application Form</span>
+                                        <template x-if="selectedUser.form_img && selectedUser.form_img !== '-'">
+                                            <a :href="'/storage/' + selectedUser.form_img"
+                                            target="_blank"
+                                            class="text-blue-600 underline italic text-xs hover:text-blue-800">
+                                            view form
+                                            </a>
+                                        </template>
+                                        <template x-if="!selectedUser.form_img || selectedUser.form_img === '-'">
+                                            <span class="text-xs text-gray-500 italic">Not yet generated.</span>
+                                        </template>
+                                    </div>
+                                    @include('components.modals.requirement-view')
                                     <div class="text-xs text-approved font-medium">
-                                        <p>Pending for the system to checked on it</p>
+                                        <p class="text-gray-500 italic">*Pending for the Support Staff to double checked on it.</p>
                                     </div>
                                 </div>
-
-                                <!-- Additional Requirements -->
-                                {{--<div class="border rounded-md p-4 space-y-2">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <p class="flex items-center font-semibold text-sm text-customIT">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 mr-2 text-pending">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                            </svg>
-                                        Basic Requirements</p>
-                                        <span class="text-pending text-xs font-semibold">In process</span>
-                                    </div>
-                                    <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Barangay Certificate
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Farm Profile
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5 text-pending">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                    </ul>
-                                </div>--}}
 
                                 <!-- Verification Note -->
                                 <div class="flex items-center">
@@ -437,12 +455,13 @@
 
                                 <!-- Approve Button -->
                                 <div class="grid grid-cols-2 pt-4">
-                                    <button onclick="openModal('approvedModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                    <button onclick="openModal('approvedModalPending')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
                                         :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
                                         :disabled="!verified">
                                         Approve
                                     </button>
                                 </div>
+                                @include('components.modals.approved-modal', ['modalId' => 'approvedModalPending'])
                             </div>
                         </template>
                     </div>
@@ -478,19 +497,22 @@
                                             'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
                                         }"
                                         @click="selectedUser = { 
+                                            id: 'APP-{{ $app->id ?? '-'}}', 
                                             name: '{{ $app->user->name ?? '-'}}', 
-                                            id: 'REQ-{{ $app->id ?? '-'}}', 
-                                            date: '{{ $app->created_at ?? '-'}}', 
-                                            status: '{{ $app->stats->status_name ?? '-'}}',
+                                            date: '{{ $app->created_at->format('F d Y') ?? '-'}}',
+                                            updated: '{{ $app->updated_at->format('F d Y') ?? '-'}}', 
+                                            status: '{{ ucfirst($app->status?->status_name ?? '-') }}',
                                             number: '{{ $app->user->user_info->contact_no ?? '-'}}',
-                                            email: '{{ $app->user->email ?? '-'}}' 
+                                            email: '{{ $app->user->email ?? '-'}}',
+                                            documents: @js($app->documents),
+                                            form_img: '{{ $app->form_img ?? '-'}}'  
                                         }"
                                     >
-                                        <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">APP-{{ $app->id ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
                                         <td class="px-4 py-3">
                                             <span class="inline-block text-xs font-medium bg-approved text-white px-3 py-1 rounded-full">
                                                 {{ ucfirst($app->status->status_name) ?? '-'}}
@@ -509,24 +531,24 @@
             </div>
 
             <div x-show="activeTab === 'Approved-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">
-                    <div class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
+                    <div x-data="{ verified: false,  membershipRequirements: @js($membershipRequirements), selectedRequirement: null }" class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
                         <!-- default display -->
                         <template x-if="!selectedUser">
                             <div class="flex flex-col items-center my-6">
                                 <img src="{{ asset('images/file-svg.svg') }}" class="w-32 h-32 pt-4"/>
                                 <div class="border-t border-gray-300">
-                                    <p class="text-gray-300 font-medium text-md mt-2">Select a request to view details</p>
+                                    <p class="text-gray-300 font-medium text-md mt-2">Select an application to view details</p>
                                 </div>
                             </div>
                         </template>
 
                         <!-- Show selected user details -->
-                        <template x-if="selectedUser" x-data="{ verified: false }">
+                        <template x-if="selectedUser">
                             <div class="flex flex-col items-stretch text-left space-y-2">
 
                                 <!-- Header -->
                                 <div class="flex justify-between items-center">
-                                    <h2 class="text-lg font-bold text-customIT">Requested Item</h2>
+                                    <h2 class="text-lg font-bold text-customIT">Application Details</h2>
                                     <span x-text="selectedUser.status" class="text-white text-xs px-3 py-1 rounded-full font-medium"
                                     :class="{
                                         'bg-approved': selectedUser.status === 'Approved',
@@ -553,129 +575,49 @@
                                 <!-- Basic Requirements -->
                                 <div class="border rounded-md p-4 space-y-2">
                                     <div class="flex justify-between items-center mb-2">
-                                        <p class="flex items-center font-semibold text-sm text-customIT"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 mr-2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                        </svg>Basic Requirements</p>
-                                        <span class="text-approved text-xs font-semibold">Approved</span>
+                                        <p class="flex items-center font-semibold text-sm text-customIT">Uploaded Requirements</p>
+                                        <span class="text-customIT text-sm font-semibold">Status</span>
                                     </div>
                                     <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Registered Member
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Member ID
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Valid ID
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Request Form
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Proof of need
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
+                                        <template x-for="req in membershipRequirements" :key="req.membership_requirement_id">
+                                            <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
+                                                <span class="flex items-center">
+                                                    <span x-text="req.requirement_name"></span>
+                                                    <span 
+                                                        @click="selectedRequirement = {
+                                                            name: req.requirement_name,
+                                                            document: selectedUser.documents.find(d => d.membership_requirement_id === req.membership_requirement_id)
+                                                        }; openModal('requirementModal');"
+                                                        class="flex"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
+                                                        <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
+                                                        </svg>
+                                                    </span>
+                                                </span>
+
+                                                <!-- display Uploaded when approved or rejected -->
+                                                <span class="text-xs">Uploaded</span>
+                                            </li>
+                                        </template>
                                     </ul>
+                                    <div class="mt-3 border-t pt-2">
+                                        <span class="font-medium text-xs text-gray-600 pl-4">Membership Application Form</span>
+                                        <template x-if="selectedUser.form_img && selectedUser.form_img !== '-'">
+                                            <a :href="'/storage/' + selectedUser.form_img"
+                                            target="_blank"
+                                            class="text-blue-600 underline italic text-xs hover:text-blue-800">
+                                            view form
+                                            </a>
+                                        </template>
+                                        <template x-if="!selectedUser.form_img || selectedUser.form_img === '-'">
+                                            <span class="text-xs text-gray-500 italic">Not yet generated.</span>
+                                        </template>
+                                    </div>
+                                    @include('components.modals.requirement-view')
                                     <div class="text-xs text-approved font-medium">
-                                        <p>*Checked by the system on 25 August 2025</p>
+                                        <p class="text-gray-500 italic">*Checked by the Support Staff on <span x-text="selectedUser.updated"></span></p>
                                     </div>
-                                </div>
-
-                                <!-- Additional Requirements -->
-                                {{--<div class="border rounded-md p-4 space-y-2">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <p class="flex items-center font-semibold text-sm text-customIT">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 mr-2 text-pending">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                            </svg>
-                                        Basic Requirements</p>
-                                        <span class="text-pending text-xs font-semibold">In process</span>
-                                    </div>
-                                    <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Barangay Certificate
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Farm Profile
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5 text-pending">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                    </ul>
-                                </div>--}}
-
-                                <!-- Verification Note -->
-                                <div class="flex items-center">
-                                    <input type="checkbox" x-model="verified" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
-                                    <p class="text-xs text-bsctxt ml-2">All requirements have been reviewed and verified.</p>
-                                </div>
-
-                                <!-- Approve Button -->
-                                <div class="grid grid-cols-2 pt-4">
-                                    <button onclick="openModal('approvedModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
-                                        :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
-                                        :disabled="!verified">
-                                        Approve
-                                    </button>
                                 </div>
                             </div>
                         </template>
@@ -712,19 +654,22 @@
                                             'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
                                         }"
                                         @click="selectedUser = { 
+                                            id: 'APP-{{ $app->id ?? '-'}}', 
                                             name: '{{ $app->user->name ?? '-'}}', 
-                                            id: 'REQ-{{ $app->id ?? '-'}}', 
-                                            date: '{{ $app->created_at ?? '-'}}', 
-                                            status: '{{ $app->stats->status_name ?? '-'}}',
+                                            date: '{{ $app->created_at->format('F d Y') ?? '-'}}', 
+                                            status: '{{ ucfirst($app->status?->status_name ?? '-') }}',
                                             number: '{{ $app->user->user_info->contact_no ?? '-'}}',
-                                            email: '{{ $app->user->email ?? '-'}}' 
+                                            email: '{{ $app->user->email ?? '-'}}',
+                                            reason: '{{ $app->rejection_reason ?? '-'}}',
+                                            documents: @js($app->documents),
+                                            form_img: '{{ $app->form_img ?? '-'}}'  
                                         }"
                                     >
-                                        <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">APP-{{ $app->id ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
                                         <td class="px-4 py-3">
                                             <span class="inline-block text-xs font-medium bg-rejected text-white px-3 py-1 rounded-full">
                                                 {{ ucfirst($app->status->status_name) ?? '-'}}
@@ -743,24 +688,24 @@
             </div>
 
             <div x-show="activeTab === 'Rejected-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">
-                    <div class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
+                    <div x-data="{ verified: false,  membershipRequirements: @js($membershipRequirements), selectedRequirement: null }" class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
                         <!-- default display -->
                         <template x-if="!selectedUser">
                             <div class="flex flex-col items-center my-6">
                                 <img src="{{ asset('images/file-svg.svg') }}" class="w-32 h-32 pt-4"/>
                                 <div class="border-t border-gray-300">
-                                    <p class="text-gray-300 font-medium text-md mt-2">Select a request to view details</p>
+                                    <p class="text-gray-300 font-medium text-md mt-2">Select an application to view details</p>
                                 </div>
                             </div>
                         </template>
 
                         <!-- Show selected user details -->
-                        <template x-if="selectedUser" x-data="{ verified: false }">
+                        <template x-if="selectedUser">
                             <div class="flex flex-col items-stretch text-left space-y-2">
 
                                 <!-- Header -->
                                 <div class="flex justify-between items-center">
-                                    <h2 class="text-lg font-bold text-customIT">Requested Item</h2>
+                                    <h2 class="text-lg font-bold text-customIT">Application Details</h2>
                                     <span x-text="selectedUser.status" class="text-white text-xs px-3 py-1 rounded-full font-medium"
                                     :class="{
                                         'bg-approved': selectedUser.status === 'Approved',
@@ -787,93 +732,51 @@
                                 <!-- Basic Requirements -->
                                 <div class="border rounded-md p-4 space-y-2">
                                     <div class="flex justify-between items-center mb-2">
-                                        <p class="flex items-center font-semibold text-sm text-customIT"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-rejected mr-2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                            </svg>
-                                            Basic Requirements
-                                        </p>
-                                        <span class="text-rejected text-xs font-semibold">rejected</span>
+                                        <p class="flex items-center font-semibold text-sm text-customIT">Uploaded Requirements</p>
+                                        <span class="text-customIT text-sm font-semibold">Status</span>
                                     </div>
                                     <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Member ID
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-rejected">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Valid ID
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-rejected">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Application Form
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-rejected">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                                </svg>
-                                            </span>
-                                        </li>
+                                        <template x-for="req in membershipRequirements" :key="req.membership_requirement_id">
+                                            <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
+                                                <span class="flex items-center">
+                                                    <span x-text="req.requirement_name"></span>
+                                                    <span 
+                                                        @click="selectedRequirement = {
+                                                            name: req.requirement_name,
+                                                            document: selectedUser.documents.find(d => d.membership_requirement_id === req.membership_requirement_id)
+                                                        }; openModal('requirementModal');"
+                                                        class="flex"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
+                                                        <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
+                                                        </svg>
+                                                    </span>
+                                                </span>
+
+                                                <!-- display Uploaded when approved or rejected -->
+                                                <span class="text-xs">Uploaded</span>
+                                            </li>
+                                        </template>
                                     </ul>
-                                    <div class="text-xs text-approved font-medium">
-                                        <p class="cursor-pointer">Checked by the system and it's rejected.</p>
+                                    <div class="mt-3 border-t pt-2">
+                                        <span class="font-medium text-xs text-gray-600 pl-4">Membership Application Form</span>
+                                        <template x-if="selectedUser.form_img && selectedUser.form_img !== '-'">
+                                            <a :href="'/storage/' + selectedUser.form_img"
+                                            target="_blank"
+                                            class="text-blue-600 underline italic text-xs hover:text-blue-800">
+                                            view form
+                                            </a>
+                                        </template>
+                                        <template x-if="!selectedUser.form_img || selectedUser.form_img === '-'">
+                                            <span class="text-xs text-gray-500 italic">Not yet generated.</span>
+                                        </template>
+                                    </div>
+                                    @include('components.modals.requirement-view')
+                                    <div class="text-xs font-medium">
+                                        <p class="text-gray-500 italic">*Checked by the Support Staff and it's rejected.</p>
+                                        <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected italic"></span> </p>
                                     </div>
                                 </div>
-
-                                <!-- Additional Requirements -->
-                                {{--<div class="border rounded-md p-4 space-y-2">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <p class="flex items-center font-semibold text-sm text-customIT">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6 mr-2 text-pending">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                            </svg>
-                                        Basic Requirements</p>
-                                        <span class="text-pending text-xs font-semibold">In process</span>
-                                    </div>
-                                    <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Barangay Certificate
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                            <span onclick="openModal('requirementModal')" class="flex">Farm Profile
-                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                                <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                                </svg>
-                                            </span>
-                                            <span class="text-approved">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5 text-pending">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                                </svg>
-                                            </span>
-                                        </li>
-                                    </ul>
-                                </div>--}}
                             </div>
                         </template>
                     </div>
@@ -881,6 +784,4 @@
         </div>
     </div>
 </div>
-@include('components.modals.requirement-view')
-@include('components.modals.approved-modal')
 @endsection

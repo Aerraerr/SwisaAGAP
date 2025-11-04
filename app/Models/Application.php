@@ -20,6 +20,7 @@ class Application extends Model
         'status_id',
         'application_type',
         'purpose',
+        'form_img',
     ];
 
     //RELATIONSHIPS

@@ -82,7 +82,7 @@
                 <div class="flex items-center">
                     <img src="{{ asset('images/file-svg-green.svg') }}"
                         class="w-12 h-12" />
-                    <p class="text-customIT text-lg font-bold">Grant Request List</p>
+                    <p class="text-customIT text-lg font-bold">Grant Application List</p>
                 </div>
                 <div class="flex justify-end mb-2">
                     <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
@@ -103,21 +103,31 @@
                             @forelse($applications['all'] as $app)
                                 <tr class="border border-gray-300 hover:bg-gray-100"
                                     @click="selectedUser = {
-                                    name: '{{ $app->user->name ?? '-'}}', 
-                                    id: 'REQ-{{ $app->id ?? '-'}}', 
-                                    item: '{{ $app->grant->title ?? '-'}}',
-                                    type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
-                                    date: '{{ $app->created_at ?? '-'}}', 
-                                    status: '{{ $app->status->status_name ?? '-'}}',
-                                    phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
-                                    email: '{{ $app->user->email ?? '-'}}', 
-                                    image: '{{ $app->grant->documents->first()?->file_path ? asset('storage/' . $app->grant->documents->first()->file_path) : asset('images/no-image.png') }}'
+                                        id: '{{ $app->id ?? '-'}}', 
+                                        name: '{{ $app->user->name ?? '-'}}', 
+                                        item: '{{ $app->grant->title ?? '-'}}',
+                                        type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
+                                        date: '{{ $app->created_at->format('F d Y') ?? '-'}}',
+                                        updated: '{{ $app->updated_at->format('F d Y') ?? '-'}}',  
+                                        status: '{{ ucfirst($app->status?->status_name ?? '-')}}',
+                                        phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                        email: '{{ $app->user->email ?? '-'}}',
+                                        reason: '{{ $app->rejection_reason ?? '-'}}',
+                                        documents: @js($app->documents),
+                                        form_img: '{{ $app->form_img ?? '-'}}', 
+                                        image: '{{ $app->grant->documents->first()?->file_path ? asset('storage/' . $app->grant->documents->first()->file_path) : asset('images/no-image.png') }}',
+                                        requirements: @js($app->grant->grant_requirements->map(function($gr) {
+                                            return [
+                                                'grant_requirement_id' => $gr->id,
+                                                'requirement_name' => $gr->requirement->requirement_name
+                                            ];
+                                        })) 
                                     }">
                                     <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
                                     <td class="px-4 py-3">
                                         <div class="inline-block text-xs font-medium text-white text-center px-3 py-1 rounded-full
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
@@ -140,19 +150,19 @@
             </div>
 
             <div x-show="activeTab === 'All-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">
-                <div class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
+                <div x-data="{ verified: false,  grantRequirements: @js($grantRequirements), selectedRequirement: null }" class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
                     <!-- default display -->
                     <template x-if="!selectedUser">
                         <div class="flex flex-col items-center my-6">
                             <img src="{{ asset('images/file-svg.svg') }}" class="w-32 h-32 pt-4"/>
                             <div class="border-t border-gray-300">
-                                <p class="text-gray-300 font-medium text-md mt-2">Select a request to view details</p>
+                                <p class="text-gray-300 font-medium text-md mt-2">Select an application to view details</p>
                             </div>
                         </div>
                     </template>
 
                     <!-- Show selected user details -->
-                    <template x-if="selectedUser" x-data="{ verified: false }">
+                    <template x-if="selectedUser">
                          <div class="flex flex-col items-stretch text-left space-y-2">
 
                             <!-- Header -->
@@ -160,9 +170,9 @@
                                 <h2 class="text-lg font-bold text-customIT">Requested Item</h2>
                                 <span x-text="selectedUser.status" class="text-white text-xs px-3 py-1 rounded-full font-medium"
                                 :class="{
-                                    'bg-approved': selectedUser.status === 'approved',
-                                    'bg-pending': selectedUser.status === 'pending',
-                                    'bg-rejected': selectedUser.status === 'rejected'
+                                    'bg-approved': selectedUser.status === 'Approved',
+                                    'bg-pending': selectedUser.status === 'Pending',
+                                    'bg-rejected': selectedUser.status === 'Rejected'
                                     }">
                                 </span>
                             </div>
@@ -172,8 +182,8 @@
                                 <!--image grant here-->
                                 <div class="w-28 h-28 bg-gray-200 rounded-md">
                                     <img 
-                                        src="selectedUser.image"
-                                        alt="Item image placeholder" 
+                                        :src="selectedUser.image"
+                                        alt="selectedUser.item" 
                                         class="object-cover w-full h-full"
                                     >
                                 </div>
@@ -203,24 +213,73 @@
                             <div class="border rounded-md p-4 space-y-2">
                                 <div class="flex justify-between items-center mb-2">
                                     <p class="flex items-center font-semibold text-sm text-customIT">Uploaded Requirements</p>
-                                    <span class="text-approved text-xs font-semibold">Status</span>
+                                    <span class="text-customIT text-sm font-semibold">Status</span>
                                 </div>
                                 <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                    <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                        <span onclick="openModal('requirementModal')" class="flex">Registered Member
-                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                            <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                            </svg>
-                                        </span>
-                                        <span class="text-approved">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                            </svg>
-                                        </span>
-                                    </li>
+                                    <template x-for="req in selectedUser.requirements" :key="req.grant_requirement_id">
+                                        <li class="flex justify-between items-center hover:text-gray-700">
+                                            <span class="flex items-center">
+                                                <!--display requirement name -->
+                                                <span x-text="req.requirement_name"></span>
+
+                                                <!--show the uploaded document for a certain requirement through modal -->
+                                                <span 
+                                                    @click="selectedRequirement = {
+                                                        name: req.requirement_name,
+                                                        document: selectedUser.documents.find(d => String(d.grant_requirement_id) === String(req.grant_requirement_id))
+                                                    }; openModal('requirementModal');"
+                                                    class="flex cursor-pointer"
+                                                >
+                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
+                                                    <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
+                                                </svg>
+                                                </span>
+                                            </span>
+
+                                            <!-- display 'Passed or Needs Checking' depending on the result of the documentChecker -->
+                                            <span 
+                                                x-text="selectedUser.documents.find(d => d.grant_requirement_id === req.grant_requirement_id)?.check_result || 'Uploaded'"
+                                                :class="{
+                                                    'text-green-500 font-semibold': $el.textContent === 'Passed',
+                                                    'text-red-500 italic': $el.textContent === 'Needs Checking'
+                                                }"
+                                                class="text-xs"
+                                            ></span>
+                                        </li>
+                                    </template>
                                 </ul>
-                                <div class="text-xs text-approved font-medium">
-                                    <p>Checked by the system on 25 August 2025</p>
+                                <div class="mt-3 border-t pt-2">
+                                    <span class="font-medium text-xs text-gray-600 pl-4">Grant Application Form</span>
+                                    <template x-if="selectedUser.form_img && selectedUser.form_img !== '-'">
+                                        <a :href="'/storage/' + selectedUser.form_img"
+                                        target="_blank"
+                                        class="text-blue-600 underline italic text-xs hover:text-blue-800">
+                                        view form
+                                        </a>
+                                    </template>
+                                    <template x-if="!selectedUser.form_img || selectedUser.form_img === '-'">
+                                        <span class="text-xs text-gray-500 italic">Not yet generated.</span>
+                                    </template>
+                                </div>
+
+                                @include('components.modals.requirement-view')
+
+                                <div class="text-xs font-medium">
+                                    <!-- Pending -->
+                                    <template x-if="selectedUser.status === 'Pending'">
+                                        <p class="text-gray-500 italic">*Pending for the Support Staff to double check on it.</p>
+                                    </template>
+
+                                    <!-- Approved -->
+                                    <template  x-if="selectedUser.status === 'Approved'">
+                                        <p class="text-gray-500 italic">*Checked by the Support Staff on <span x-text="selectedUser.updated"></span></p>
+                                    </template>
+
+                                    <!-- Rejected -->
+                                    <template x-if="selectedUser.status === 'Rejected'">
+                                        <p class="text-gray-500 italic">*Checked by the Support Staff and it's rejected.</p>
+                                        <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected"></span></p>
+                                    </template>
                                 </div>
                             </div>
 
@@ -232,12 +291,13 @@
 
                             <!-- Approve Button -->
                             <div class="grid grid-cols-2 pt-4">
-                                <button onclick="openModal('deleteGrantModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                <button onclick="openModal('approvedModalAll')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
                                     :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
                                     :disabled="!verified">
                                     Approve
                                 </button>
                             </div>
+                            @include('components.modals.approved-modal', ['modalId' => 'approvedModalAll'])
                         </div>
                     </template>
                 </div>
@@ -248,7 +308,7 @@
                 <div class="flex items-center">
                     <img src="{{ asset('images/file-svg-green.svg') }}"
                         class="w-12 h-12" />
-                    <p class="text-customIT text-lg font-bold">Request List</p>
+                    <p class="text-customIT text-lg font-bold">Pending Grant Application List</p>
                 </div>
                 <div class="flex justify-end mb-2">
                     <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
@@ -269,20 +329,29 @@
                             @forelse($applications['pending'] as $app)
                                 <tr class="border border-gray-300 hover:bg-gray-100"
                                     @click="selectedUser = {
-                                    name: '{{ $app->user->name ?? '-'}}', 
-                                    id: 'REQ-{{ $app->id ?? '-'}}', 
-                                    item: '{{ $app->grant->title ?? '-'}}',
-                                    type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
-                                    date: '{{ $app->created_at ?? '-'}}', 
-                                    status: '{{ $app->status->status_name ?? '-'}}',
-                                    phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
-                                    email: '{{ $app->user->email ?? '-'}}' 
+                                        id: '{{ $app->id ?? '-'}}', 
+                                        name: '{{ $app->user->name ?? '-'}}', 
+                                        item: '{{ $app->grant->title ?? '-'}}',
+                                        type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
+                                        date: '{{ $app->created_at->format('F d Y') ?? '-'}}', 
+                                        status: '{{ $app->status->status_name ?? '-'}}',
+                                        phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                        email: '{{ $app->user->email ?? '-'}}',
+                                        documents: @js($app->documents),
+                                        form_img: '{{ $app->form_img ?? '-'}}', 
+                                        image: '{{ $app->grant->documents->first()?->file_path ? asset('storage/' . $app->grant->documents->first()->file_path) : asset('images/no-image.png') }}',
+                                        requirements: @js($app->grant->grant_requirements->map(function($gr) {
+                                            return [
+                                                'grant_requirement_id' => $gr->id,
+                                                'requirement_name' => $gr->requirement->requirement_name
+                                            ];
+                                        })) 
                                     }">
                                     <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
                                     <td class="px-4 py-3">
                                         <div class="inline-block text-xs font-medium text-white text-center px-3 py-1 rounded-full
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
@@ -305,7 +374,7 @@
             </div>
 
             <div x-show="activeTab === 'Pending-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">
-                <div class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
+                <div x-data="{ verified: false,  grantRequirements: @js($grantRequirements), selectedRequirement: null }" class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
                     <!-- default display -->
                     <template x-if="!selectedUser">
                         <div class="flex flex-col items-center my-6">
@@ -317,7 +386,7 @@
                     </template>
 
                     <!-- Show selected user details -->
-                    <template x-if="selectedUser" x-data="{ verified: false }">
+                    <template x-if="selectedUser">
                          <div class="flex flex-col items-stretch text-left space-y-2">
 
                             <!-- Header -->
@@ -335,7 +404,13 @@
                             <!-- Item Info -->
                             <div class="flex gap-4">
                                 <!--image dgd -->
-                                <div class="w-28 h-28 bg-gray-200 rounded-md"></div>
+                                <div class="w-28 h-28 bg-gray-200 rounded-md">
+                                    <img 
+                                        :src="selectedUser.image"
+                                        alt="selectedUser.item" 
+                                        class="object-cover w-full h-full"
+                                    >
+                                </div>
                                 <div>
                                     <h3 x-text="selectedUser.item" class="text-green-700 font-semibold"></h3>
                                     <p class="text-xs font-semibold text-gray-500">Request ID: <span x-text="selectedUser.id" class="font-medium ml-2"></span></p>
@@ -362,24 +437,56 @@
                             <div class="border rounded-md p-4 space-y-2">
                                 <div class="flex justify-between items-center mb-2">
                                     <p class="flex items-center font-semibold text-sm text-customIT">Uploaded Requirements</p>
-                                    <span class="text-approved text-xs font-semibold">Status</span>
+                                    <span class="text-customIT text-sm font-semibold">Status</span>
                                 </div>
                                 <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                    <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                        <span onclick="openModal('requirementModal')" class="flex">Registered Member
-                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                            <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                            </svg>
-                                        </span>
-                                        <span class="text-approved">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                            </svg>
-                                        </span>
-                                    </li>
+                                    <template x-for="req in selectedUser.requirements" :key="req.grant_requirement_id">
+                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
+                                            <span class="flex items-center">
+                                                <span x-text="req.requirement_name"></span>
+                                                <span 
+                                                    @click="selectedRequirement = {
+                                                        name: req.requirement_name,
+                                                        document: selectedUser.documents.find(d => d.grant_requirement_id === req.grant_requirement_id)
+                                                    }; openModal('requirementModal');"
+                                                    class="flex"
+                                                >
+                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
+                                                    <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
+                                                </svg>
+                                                </span>
+                                            </span>
+
+                                            <!-- display 'Passed or Needs Checking' depending on the result of the documentChecker -->
+                                            <span 
+                                                x-text="selectedUser.documents.find(d => d.grant_requirement_id === req.grant_requirement_id)?.check_result || 'Missing'"
+                                                :class="{
+                                                    'text-green-500 font-semibold': $el.textContent === 'Passed',
+                                                    'text-red-500 italic': $el.textContent === 'Needs Checking'
+                                                }"
+                                                class="text-xs"
+                                            ></span>
+                                        </li>
+                                    </template>
                                 </ul>
+                                <div class="mt-3 border-t pt-2">
+                                    <span class="font-medium text-xs text-gray-600 pl-4">Grant Application Form</span>
+                                    <template x-if="selectedUser.form_img && selectedUser.form_img !== '-'">
+                                        <a :href="'/storage/' + selectedUser.form_img"
+                                        target="_blank"
+                                        class="text-blue-600 underline italic text-xs hover:text-blue-800">
+                                        view form
+                                        </a>
+                                    </template>
+                                    <template x-if="!selectedUser.form_img || selectedUser.form_img === '-'">
+                                        <span class="text-xs text-gray-500 italic">Not yet generated.</span>
+                                    </template>
+                                </div>
+
+                                @include('components.modals.requirement-view')
+
                                 <div class="text-xs text-approved font-medium">
-                                    <p>Checked by the system on 25 August 2025</p>
+                                    <p class="text-gray-500 italic">*Pending for the Support Staff to double checked on it.</p>
                                 </div>
                             </div>
 
@@ -391,12 +498,13 @@
 
                             <!-- Approve Button -->
                             <div class="grid grid-cols-2 pt-4">
-                                <button onclick="openModal('deleteGrantModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                <button onclick="openModal('approvedModalPending')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
                                     :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
                                     :disabled="!verified">
                                     Approve
                                 </button>
                             </div>
+                            @include('components.modals.approved-modal', ['modalId' => 'approvedModalPending'])
                         </div>
                     </template>
                 </div>
@@ -407,7 +515,7 @@
                 <div class="flex items-center">
                     <img src="{{ asset('images/file-svg-green.svg') }}"
                         class="w-12 h-12" />
-                    <p class="text-customIT text-lg font-bold">Request List</p>
+                    <p class="text-customIT text-lg font-bold">Approved Grant Application List</p>
                 </div>
                 <div class="flex justify-end mb-2">
                     <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
@@ -428,20 +536,30 @@
                             @forelse($applications['approved'] as $app)
                                 <tr class="border border-gray-300 hover:bg-gray-100"
                                     @click="selectedUser = {
-                                    name: '{{ $app->user->name ?? '-'}}', 
-                                    id: 'REQ-{{ $app->id ?? '-'}}', 
-                                    item: '{{ $app->grant->title ?? '-'}}',
-                                    type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
-                                    date: '{{ $app->created_at ?? '-'}}', 
-                                    status: '{{ $app->status->status_name ?? '-'}}',
-                                    phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
-                                    email: '{{ $app->user->email ?? '-'}}' 
+                                        id: '{{ $app->id ?? '-'}}', 
+                                        name: '{{ $app->user->name ?? '-'}}', 
+                                        item: '{{ $app->grant->title ?? '-'}}',
+                                        type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
+                                        date: '{{ $app->created_at->format('F d Y') ?? '-'}}',
+                                        updated: '{{ $app->updated_at->format('F d Y') ?? '-'}}',  
+                                        status: '{{ $app->status->status_name ?? '-'}}',
+                                        phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                        email: '{{ $app->user->email ?? '-'}}',
+                                        documents: @js($app->documents),
+                                        form_img: '{{ $app->form_img ?? '-'}}', 
+                                        image: '{{ $app->grant->documents->first()?->file_path ? asset('storage/' . $app->grant->documents->first()->file_path) : asset('images/no-image.png') }}',
+                                        requirements: @js($app->grant->grant_requirements->map(function($gr) {
+                                            return [
+                                                'grant_requirement_id' => $gr->id,
+                                                'requirement_name' => $gr->requirement->requirement_name
+                                            ];
+                                        }))  
                                     }">
                                     <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
                                     <td class="px-4 py-3">
                                         <div class="inline-block text-xs font-medium text-white text-center px-3 py-1 rounded-full
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
@@ -464,7 +582,7 @@
             </div>
 
             <div x-show="activeTab === 'Approved-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">
-                <div class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
+                <div x-data="{ verified: false,  grantRequirements: @js($grantRequirements), selectedRequirement: null }" class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
                     <!-- default display -->
                     <template x-if="!selectedUser">
                         <div class="flex flex-col items-center my-6">
@@ -476,7 +594,7 @@
                     </template>
 
                     <!-- Show selected user details -->
-                    <template x-if="selectedUser" x-data="{ verified: false }">
+                    <template x-if="selectedUser">
                          <div class="flex flex-col items-stretch text-left space-y-2">
 
                             <!-- Header -->
@@ -494,7 +612,13 @@
                             <!-- Item Info -->
                             <div class="flex gap-4">
                                 <!--image dgd -->
-                                <div class="w-28 h-28 bg-gray-200 rounded-md"></div>
+                                <div class="w-28 h-28 bg-gray-200 rounded-md">
+                                    <img 
+                                        :src="selectedUser.image"
+                                        alt="selectedUser.item" 
+                                        class="object-cover w-full h-full"
+                                    >
+                                </div>
                                 <div>
                                     <h3 x-text="selectedUser.item" class="text-green-700 font-semibold"></h3>
                                     <p class="text-xs font-semibold text-gray-500">Request ID: <span x-text="selectedUser.id" class="font-medium ml-2"></span></p>
@@ -521,40 +645,51 @@
                             <div class="border rounded-md p-4 space-y-2">
                                 <div class="flex justify-between items-center mb-2">
                                     <p class="flex items-center font-semibold text-sm text-customIT">Uploaded Requirements</p>
-                                    <span class="text-approved text-xs font-semibold">Status</span>
+                                    <span class="text-customIT text-sm font-semibold">Status</span>
                                 </div>
                                 <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                    <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                        <span onclick="openModal('requirementModal')" class="flex">Registered Member
-                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                            <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                            </svg>
-                                        </span>
-                                        <span class="text-approved">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                            </svg>
-                                        </span>
-                                    </li>
+                                    <template x-for="req in selectedUser.requirements" :key="req.grant_requirement_id">
+                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
+                                            <span class="flex items-center">
+                                                <span x-text="req.requirement_name"></span>
+                                                <span 
+                                                    @click="selectedRequirement = {
+                                                        name: req.requirement_name,
+                                                        document: selectedUser.documents.find(d => d.grant_requirement_id === req.grant_requirement_id)
+                                                    }; openModal('requirementModal');"
+                                                    class="flex"
+                                                >
+                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
+                                                    <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
+                                                </svg>
+                                                </span>
+                                            </span>
+                                            
+                                            <!-- display Passed for approve applications-->
+                                            <span class="text-xs">Uploaded</span>
+                                        </li>
+                                    </template>
                                 </ul>
-                                <div class="text-xs text-approved font-medium">
-                                    <p>Checked by the system on 25 August 2025</p>
+
+                                <div class="mt-3 border-t pt-2">
+                                    <span class="font-medium text-xs text-gray-600 pl-4">Grant Application Form</span>
+                                    <template x-if="selectedUser.form_img && selectedUser.form_img !== '-'">
+                                        <a :href="'/storage/' + selectedUser.form_img"
+                                        target="_blank"
+                                        class="text-blue-600 underline italic text-xs hover:text-blue-800">
+                                        view form
+                                        </a>
+                                    </template>
+                                    <template x-if="!selectedUser.form_img || selectedUser.form_img === '-'">
+                                        <span class="text-xs text-gray-500 italic">Not yet generated.</span>
+                                    </template>
                                 </div>
-                            </div>
+                                
+                                @include('components.modals.requirement-view')
 
-                            <!-- Verification Note -->
-                            <div class="flex items-center">
-                                <input type="checkbox" x-model="verified" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
-                                <p class="text-xs text-bsctxt ml-2">All requirements have been reviewed and verified.</p>
-                            </div>
-
-                            <!-- Approve Button -->
-                            <div class="grid grid-cols-2 pt-4">
-                                <button onclick="openModal('deleteGrantModal')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
-                                    :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
-                                    :disabled="!verified">
-                                    Approve
-                                </button>
+                                <div class="text-xs text-approved font-medium">
+                                    <p class="text-gray-500 italic">*Checked by the Support Staff on <span x-text="selectedUser.updated"></span></p>
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -566,7 +701,7 @@
                 <div class="flex items-center">
                     <img src="{{ asset('images/file-svg-green.svg') }}"
                         class="w-12 h-12" />
-                    <p class="text-customIT text-lg font-bold">Request List</p>
+                    <p class="text-customIT text-lg font-bold">Rejected Grant Application List</p>
                 </div>
                 <div class="flex justify-end mb-2">
                     <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
@@ -587,20 +722,30 @@
                             @forelse($applications['rejected'] as $app)
                                 <tr class="border border-gray-300 hover:bg-gray-100"
                                     @click="selectedUser = {
-                                    name: '{{ $app->user->name ?? '-'}}', 
-                                    id: 'REQ-{{ $app->id ?? '-'}}', 
-                                    item: '{{ $app->grant->title ?? '-'}}',
-                                    type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
-                                    date: '{{ $app->created_at ?? '-'}}', 
-                                    status: '{{ $app->status->status_name ?? '-'}}',
-                                    phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
-                                    email: '{{ $app->user->email ?? '-'}}' 
+                                        id: '{{ $app->id ?? '-'}}', 
+                                        name: '{{ $app->user->name ?? '-'}}', 
+                                        item: '{{ $app->grant->title ?? '-'}}',
+                                        type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
+                                        date: '{{ $app->created_at->format('F d Y') ?? '-'}}', 
+                                        status: '{{ $app->status->status_name ?? '-'}}',
+                                        phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                        email: '{{ $app->user->email ?? '-'}}',
+                                        reason: '{{ $app->rejection_reason ?? '-'}}',
+                                        documents: @js($app->documents),
+                                        form_img: '{{ $app->form_img ?? '-'}}', 
+                                        image: '{{ $app->grant->documents->first()?->file_path ? asset('storage/' . $app->grant->documents->first()->file_path) : asset('images/no-image.png') }}',
+                                        requirements: @js($app->grant->grant_requirements->map(function($gr) {
+                                            return [
+                                                'grant_requirement_id' => $gr->id,
+                                                'requirement_name' => $gr->requirement->requirement_name
+                                            ];
+                                        }))  
                                     }">
                                     <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
                                     <td class="px-4 py-3">
                                         <div class="inline-block text-xs font-medium text-white text-center px-3 py-1 rounded-full
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
@@ -623,7 +768,7 @@
             </div>
 
             <div x-show="activeTab === 'Rejected-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">
-                <div class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
+                <div x-data="{ verified: false,  grantRequirements: @js($grantRequirements), selectedRequirement: null }" class="flex flex-col bg-white shadow-lg px-8 py-6 h-auto rounded-md text-center overflow-auto">
                     <!-- default display -->
                     <template x-if="!selectedUser">
                         <div class="flex flex-col items-center my-6">
@@ -635,7 +780,7 @@
                     </template>
 
                     <!-- Show selected user details -->
-                    <template x-if="selectedUser" x-data="{ verified: false }">
+                    <template x-if="selectedUser">
                          <div class="flex flex-col items-stretch text-left space-y-2">
 
                             <!-- Header -->
@@ -653,7 +798,13 @@
                             <!-- Item Info -->
                             <div class="flex gap-4">
                                 <!--image dgd -->
-                                <div class="w-28 h-28 bg-gray-200 rounded-md"></div>
+                                <div class="w-28 h-28 bg-gray-200 rounded-md">
+                                    <img 
+                                        :src="selectedUser.image"
+                                        alt="selectedUser.item" 
+                                        class="object-cover w-full h-full"
+                                    >
+                                </div>
                                 <div>
                                     <h3 x-text="selectedUser.item" class="text-green-700 font-semibold"></h3>
                                     <p class="text-xs font-semibold text-gray-500">Request ID: <span x-text="selectedUser.id" class="font-medium ml-2"></span></p>
@@ -682,24 +833,50 @@
                                     <p class="flex items-center font-semibold text-sm text-customIT">
                                         Uploaded Requirements
                                     </p>
-                                    <span class="text-rejected text-xs font-semibold">Status</span>
+                                    <span class="text-customIT text-sm font-semibold">Status</span>
                                 </div>
-                                <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
-                                    <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
-                                        <span onclick="openModal('requirementModal')" class="flex">Registered Member
-                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
-                                            <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
-                                            </svg>
-                                        </span>
-                                        <span class="text-approved">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                                            </svg>
-                                        </span>
-                                    </li>
+                                <ul class="space-y-1 font-medium text-sm text-gray-600 px-4">
+                                    <template x-for="req in selectedUser.requirements" :key="req.grant_requirement_id">
+                                        <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
+                                            <span class="flex items-center">
+                                                <span x-text="req.requirement_name"></span>
+                                                <span 
+                                                    @click="selectedRequirement = {
+                                                        name: req.requirement_name,
+                                                        document: selectedUser.documents.find(d => d.grant_requirement_id === req.grant_requirement_id)
+                                                    }; openModal('requirementModal');"
+                                                    class="flex"
+                                                >
+                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="12" height="12" viewBox="0 0 48 48" class="text-customIT ml-1">
+                                                    <path d="M 41.470703 4.9863281 A 1.50015 1.50015 0 0 0 41.308594 5 L 27.5 5 A 1.50015 1.50015 0 1 0 27.5 8 L 37.878906 8 L 22.439453 23.439453 A 1.50015 1.50015 0 1 0 24.560547 25.560547 L 40 10.121094 L 40 20.5 A 1.50015 1.50015 0 1 0 43 20.5 L 43 6.6894531 A 1.50015 1.50015 0 0 0 41.470703 4.9863281 z M 12.5 8 C 8.3754991 8 5 11.375499 5 15.5 L 5 35.5 C 5 39.624501 8.3754991 43 12.5 43 L 32.5 43 C 36.624501 43 40 39.624501 40 35.5 L 40 25.5 A 1.50015 1.50015 0 1 0 37 25.5 L 37 35.5 C 37 38.003499 35.003499 40 32.5 40 L 12.5 40 C 9.9965009 40 8 38.003499 8 35.5 L 8 15.5 C 8 12.996501 9.9965009 11 12.5 11 L 22.5 11 A 1.50015 1.50015 0 1 0 22.5 8 L 12.5 8 z"></path>
+                                                </svg>
+                                                </span>
+                                            </span>
+                                            
+                                            <!-- display 'Passed or Needs Checking' depending on the result of the documentChecker -->
+                                            <span class="text-xs">Uploaded</span>
+                                        </li>
+                                    </template>
                                 </ul>
-                                <div class="text-xs text-approved font-medium">
-                                    <p>Checked by the system and it's rejected</p>
+                                <div class="mt-3 border-t pt-2">
+                                    <span class="font-medium text-xs text-gray-600 pl-4">Grant Application Form</span>
+                                    <template x-if="selectedUser.form_img && selectedUser.form_img !== '-'">
+                                        <a :href="'/storage/' + selectedUser.form_img"
+                                        target="_blank"
+                                        class="text-blue-600 underline italic text-xs hover:text-blue-800">
+                                        view form
+                                        </a>
+                                    </template>
+                                    <template x-if="!selectedUser.form_img || selectedUser.form_img === '-'">
+                                        <span class="text-xs text-gray-500 italic">Not yet generated.</span>
+                                    </template>
+                                </div>
+
+                                @include('components.modals.requirement-view')
+
+                                <div class="text-xs font-medium">
+                                    <p class="text-gray-500 italic">*Checked by the Support Staff and it's rejected.</p>
+                                    <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected"></span></p>
                                 </div>
                             </div>
                         </div>
@@ -709,5 +886,5 @@
         </div>
     </div>
 </div>
-@include('components.modals.requirement-view')
+
 @endsection

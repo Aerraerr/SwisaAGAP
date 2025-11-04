@@ -50,7 +50,7 @@
 
         <!-- for table/list front -->
         <div x-show="activeTab === 'list'" class="tab-pane">
-                <div class="overflow-auto h-auto shadow-lg">
+                <div class="overflow-auto-visible h-auto shadow-lg">
                     <table class="min-w-full bg-white border-spacing-y-1">
                     <thead class="bg-snbg border border-gray-100 px-8">
                         <tr class="text-customIT text-left ">
@@ -65,61 +65,93 @@
                         </tr>
                     </thead>
                     <tbody>
-                       @foreach($members as $member)
-                         <tr class="border border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->id}}</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->name}}</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->user_info->phone ?? '-'}}</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->email}}</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->created_at->format('F d Y')}}</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">{{ $member->created_at < now()->subMonths(3) ? 'Old User' : 'New User'}}</td>
-                            <td class="px-4 py-2 text-sm text-gray-700">
-                                @if($member->applications->where('application_type', 'membership')->count() > 0)
-                                    <span class="text-green-600 font-medium">Applied</span>
-                                @else
-                                    <span class="text-red-600 font-medium">Not Applied</span>
-                                @endif
-                            </td>
+                        @forelse($members as $member)
+                            <tr class="border border-gray-300 hover:bg-gray-100">
+                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->id}}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->name}}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->user_info->contact_no ?? '-'}}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->email}}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->created_at->format('F d Y')}}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->created_at < now()->subMonths(3) ? 'Old User' : 'New User'}}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">
+                                    @php
+                                        $membershipApps = $member->applications->where('application_type', 'membership');
+                                    @endphp
 
-                            <td class="pl-4 py-2 text-sm">
-                                <div class="relative" x-data="{ show: false }" @click.away="show = false">
-                                    <button @click="show = !show"  class="border border-gray-300 rounded-sm pl-2">
-                                        <img src="{{ asset('images/dot-menu.svg') }}"
-                                        class="w-5 h-5 rounded-sm mr-2"/>
-                                    </button>
-                                    <!-- The Popover Menu, controlled by Alpine.js -->
-                                    <div x-show="show" 
-                                    class="absolute top-full right-0 z-10 w-56 bg-white rounded-lg shadow-xl p-4 border border-gray-200 origin-top-right">
-                                        <h3 class="text-md font-bold text-customIT mb-2">
-                                            Choose an Action
-                                        </h3>
-                                        <p class="text-xs font-light text-bsctxt">Select an option to assist member</p>
-                                        <div class="border-t border-gray-200 py-2">
-                                            <ul class="space-y-2">
-                                                <li>
-                                                    <button onclick="openModal('assistGrantRequestModal-{{ $member->id}}')"class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Grant Request</button>
-                                                </li>
-                                                <li>
-                                                     @if($member->applications->where('application_type', 'membership')->count() > 0)
+                                    @if($membershipApps->count() > 0)
+                                        @if($membershipApps->where('status_id', 32)->isNotEmpty())
+                                            <span class="inline-block text-xs font-medium text-white text-center bg-pending px-3 py-1 rounded-full">Pending</span>
+                                        @elseif($membershipApps->where('status_id', 33)->isNotEmpty())
+                                            <span class="inline-block text-xs font-medium text-white text-center bg-approved px-3 py-1 rounded-full">Approved</span>
+                                        @elseif($membershipApps->where('status_id', 35)->isNotEmpty())
+                                            <span class="inline-block text-xs font-medium text-white text-center bg-rejected px-3 py-1 rounded-full">Rejected</span>
+                                        @endif
+                                    @else
+                                        <span class="text-gray-700 font-medium">Not Applied</span>
+                                    @endif
+                                </td>
+
+                                <td class="pl-4 py-2 text-sm">
+                                    <div class="relative" x-data="{ show: false }" @click.away="show = false">
+                                        <button @click="show = !show"  class="border border-gray-300 rounded-sm pl-2">
+                                            <img src="{{ asset('images/dot-menu.svg') }}"
+                                            class="w-5 h-5 rounded-sm mr-2"/>
+                                        </button>
+                                        <!-- The Popover Menu, controlled by Alpine.js -->
+                                        <div x-show="show" class="absolute top-full right-0 z-10 w-56 bg-white rounded-lg shadow-xl p-4 border border-gray-200 origin-top-right">
+                                            <h3 class="text-md font-bold text-customIT mb-2">
+                                                Choose an Action
+                                            </h3>
+                                            <p class="text-xs font-light text-bsctxt">Select an option to assist member</p>
+                                            <div class="border-t border-gray-200 py-2">
+                                                <ul class="space-y-2">
+                                                    <li>
+                                                        <!-- <button onclick="openModal('assistGrantRequestModal-{{ $member->id}}')" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">Assisted Grant Request</button>-->
+                                                        <div 
+                                                            x-data="{
+                                                                membership: {{ $member->applications->where('application_type', 'membership')->first() ? json_encode($member->applications->where('application_type', 'membership')->first()) : 'null' }},
+                                                            }"
+                                                            class="p-4"
+                                                        >
+                                                            <button
+                                                                onclick="openModal('assistGrantRequestModal-{{ $member->id}}')"
+                                                                :disabled="!membership || membership.status_id !== 33"
+                                                                :class="!membership || membership.status_id !== 33 
+                                                                    ? 'px-4 py-2 rounded-md bg-gray-400 text-gray-200 cursor-not-allowed' 
+                                                                    : 'px-4 py-2 rounded-md bg-btncolor text-white hover:bg-opacity-90'"
+                                                                class="transition"
+                                                            >
+                                                                Assist Grant Application
+                                                            </button>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        @if($member->applications->where('application_type', 'membership')->count() > 0)
                                                         <span class="block px-4 py-2 text-xs rounded-md text-green-600 font-medium">
-                                                            Already a Member
-                                                        </span>
-                                                    @else
-                                                        <button onclick="openModal('assistMembershipModal-{{ $member->id}}')" 
-                                                            class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">
-                                                            Assist Membership Application
-                                                        </button>
-                                                    @endif
-                                                </li>
-                                            </ul>
+                                                                Already a Member
+                                                            </span>
+                                                        @else
+                                                            <button onclick="openModal('assistMembershipModal-{{ $member->id}}')" 
+                                                                class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-gray-600 font-medium">
+                                                                Assist Membership Application
+                                                            </button>
+                                                        @endif
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
                         @include('components.modals.assist-membership')
                         @include('components.modals.assist-grant-request')
-                       @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-8 text-gray-500 text-sm">
+                                    No Users Found.
+                                </td>
+                            </tr>
+                       @endforelse
                     </tbody>
                     </table>
                 </div>

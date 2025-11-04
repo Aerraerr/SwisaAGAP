@@ -67,9 +67,11 @@
         <p class="text-gray-600 text-sm">🔔 You have 3 new notifications.</p>
         <!-- Example notifications -->
         <div class="mt-3 space-y-2">
-            <div class="p-2 bg-gray-50 rounded">New message from Admin</div>
-            <div class="p-2 bg-gray-50 rounded">System update completed</div>
-            <div class="p-2 bg-gray-50 rounded">Member application approved</div>
+            {{--@forelse($variable as $key => $value)
+                <div class="p-2 bg-gray-50 rounded">New message from Admin</div>
+            @empty
+                <div class="p-2">No notification...</div>
+            @endforelse--}}
         </div>
     </div>
 </div>

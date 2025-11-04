@@ -14,6 +14,7 @@ class Document extends Model
 
     protected $fillable = [
         'grant_requirement_id',
+        'membership_requirement_id',
         'user_id',
         'status_id',
         'file_path',
@@ -24,9 +25,17 @@ class Document extends Model
 
     //RELATIONSHIPS
 
+    public function requirement(){
+        return $this->belongsTo(Requirement::class, 'requirement_id');
+    }
     //document belongs to a grant requirement
     public function grantRequirement(){
         return $this->belongsTo(GrantRequirement::class);
+    }
+
+    public function membershipRequirement()
+    {
+        return $this->belongsTo(MembershipRequirement::class);
     }
 
     //document belongs to a status

@@ -11,6 +11,7 @@ use PhpOffice\PhpWord\Element\Row;
 use PhpOffice\PhpWord\Element\Cell;
 use PhpOffice\PhpWord\Element\TextRun;
 use PhpOffice\PhpWord\Element\Text;
+use Illuminate\Support\Facades\Log;
 
 class DocumentChecker
 {
@@ -37,61 +38,92 @@ class DocumentChecker
 
     private function extractFromPdf($filePath)
     {
-        $parser = new PdfParser();
-        $pdf = $parser->parseFile($filePath);
-        return $pdf->getText();
+        try {
+            $parser = new PdfParser();
+            $pdf = $parser->parseFile($filePath);
+            return $pdf->getText();
+        } catch (\Exception $e) {
+            Log::error("PDF parsing failed for {$filePath}: " . $e->getMessage());
+            return '';
+        }
     }
 
     public function extractFromDocx($filePath)
     {
-        $phpWord = IOFactory::load($filePath);
+        try {
+            $phpWord = IOFactory::load($filePath);
+            $text = '';
+
+            foreach ($phpWord->getSections() as $section) {
+                foreach ($section->getElements() as $element) {
+                    $text .= $this->extractTextFromElement($element);
+                }
+            }
+
+            return trim($text);
+        } catch (\Exception $e) {
+            Log::error("DOCX parsing failed for {$filePath}: " . $e->getMessage());
+            return '';
+        }
+    }
+
+    private function extractTextFromElement($element)
+    {
         $text = '';
 
-        foreach ($phpWord->getSections() as $section) {
-            foreach ($section->getElements() as $element) {
-                if ($element instanceof Text) {
-                    $text .= $element->getText() . " ";
-                } elseif ($element instanceof TextRun) {
-                    foreach ($element->getElements() as $e) {
-                        if ($e instanceof Text) {
-                            $text .= $e->getText() . " ";
-                        }
-                    }
-                } elseif ($element instanceof Table) {
-                    foreach ($element->getRows() as $row) {
-                        foreach ($row->getCells() as $cell) {
-                            foreach ($cell->getElements() as $ce) {
-                                if ($ce instanceof Text) {
-                                    $text .= $ce->getText() . " ";
-                                } elseif ($ce instanceof TextRun) {
-                                    foreach ($ce->getElements() as $t) {
-                                        if ($t instanceof Text) {
-                                            $text .= $t->getText() . " ";
-                                        }
-                                    }
-                                }
-                            }
-                        }
+        if ($element instanceof Text) {
+            $text .= $element->getText() . ' ';
+        } elseif ($element instanceof TextRun) {
+            foreach ($element->getElements() as $e) {
+                if ($e instanceof Text) {
+                    $text .= $e->getText() . ' ';
+                }
+            }
+        } elseif ($element instanceof Table) {
+            foreach ($element->getRows() as $row) {
+                foreach ($row->getCells() as $cell) {
+                    foreach ($cell->getElements() as $ce) {
+                        $text .= $this->extractTextFromElement($ce);
                     }
                 }
             }
         }
 
-        return trim($text);
+        return $text;
     }
 
     private function extractFromImage($filePath)
     {
-        $response = Http::attach(
-            'file', file_get_contents($filePath), basename($filePath)
-        )->post('https://api.ocr.space/parse/image', [
-            'apikey' => env('OCR_SPACE_API_KEY'),
-            'language' => 'eng',
-        ]);
+        $maxRetries = 3;
+        $retryDelay = 2; // seconds between retries
 
-        if ($response->successful()) {
-            $json = $response->json();
-            return $json['ParsedResults'][0]['ParsedText'] ?? '';
+        for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+            try {
+                Log::info("OCR attempt {$attempt} for image: {$filePath}");
+
+                $response = Http::timeout(60)
+                    ->connectTimeout(15)
+                    ->attach('file', file_get_contents($filePath), basename($filePath))
+                    ->post('https://api.ocr.space/parse/image', [
+                        'apikey' => env('OCR_SPACE_API_KEY'),
+                        'language' => 'eng',
+                    ]);
+
+                if ($response->successful()) {
+                    $json = $response->json();
+                    return $json['ParsedResults'][0]['ParsedText'] ?? '';
+                }
+
+                Log::warning("OCR API unsuccessful response: " . $response->status());
+            } catch (\Exception $e) {
+                Log::warning("OCR attempt {$attempt} failed: " . $e->getMessage());
+                if ($attempt === $maxRetries) {
+                    Log::error("All OCR attempts failed for {$filePath}");
+                    return '';
+                }
+
+                sleep($retryDelay);
+            }
         }
 
         return '';
@@ -99,12 +131,26 @@ class DocumentChecker
 
     public function checkRequirementInFile($filePath, $requirementName)
     {
-        $text = $this->extractText($filePath);
-
-        // Normalize text (case insensitive, trim spaces)
-        $text = strtolower($text);
+        $text = strtolower($this->extractText($filePath));
         $requirementName = strtolower($requirementName);
 
-        return str_contains($text, $requirementName);
+        Log::info("Extracted text sample: " . substr($text, 0, 300));
+        Log::info("Searching for '{$requirementName}'");
+
+        // Normalize both strings
+        $text = preg_replace('/\s+/', ' ', $text);
+        $requirementName = preg_replace('/\s+/', ' ', $requirementName);
+
+        // Split requirement into individual words
+        $words = explode(' ', $requirementName);
+
+        // Check if all words exist somewhere in the text
+        foreach ($words as $word) {
+            if (!str_contains($text, $word)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

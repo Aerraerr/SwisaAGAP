@@ -18,7 +18,7 @@ class Requirement extends Model
 
     //a requirement can belong to many grants (through grant_requirements) (M:M)
     public function grants(){
-        return $this->belongsToMany(Grant::class, 'grant_requirements')
+        return $this->belongsToMany(Grant::class, 'grant_requirements', 'membership_requirements')
                     ->withTimestamps();
     }
 

@@ -48,7 +48,7 @@
                                  <x-cards.member-card
                                     status="active"
                                     name="{{ $member->name}}"
-                                    role="{{ $member->user_info->sector ?? 'no sector initialize'}}"
+                                    role="{{ $member->user_info->sector->sector_name ?? 'no sector initialize'}}"
                                     memberId="{{ $member->id}}"
                                     registered="{{ $member->created_at->format('F d Y') }}"
                                     modalId="{{ $member->id}}"
@@ -130,6 +130,6 @@
         </div>
 
     </div>
-    @include('components.modals.view-applications')
+    {{--@include('components.modals.view-applications')--}}
 </div>
 @endsection
