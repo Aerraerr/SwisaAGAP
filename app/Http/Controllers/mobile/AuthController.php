@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -161,9 +162,67 @@ class AuthController extends Controller
     // CLEAR RATE LIMIT ON SUCCESS
     RateLimiter::clear($key);
 
+    $message = "Hello {$user->first_name},\n\n";
+    $message .= "Your password for SwisaAGAP was changed successfully on " . now()->toDateTimeString() . ".\n";
+    $message .= "If you did not request this change, please contact our support immediately.\n\n";
+    $message .= "Thank you,\nSwisaAGAP Team";
+
+    Mail::raw($message, function ($mail) use ($user) {
+    $mail->to($user->email)
+         ->subject('SwisaAGAP - Password Changed')
+         ->replyTo('noreply@yourdomain.com', 'No Reply');
+    });
+
+
     return response()->json([
         'message' => 'Password changed successfully. Please log in again.',
         'force_logout' => true,
     ], 200);
   }
+
+    // API route: POST /api/reset-password
+    public function resetPassword(Request $request)
+    {
+
+    $request->validate([
+        'email' => 'required|string|email|exists:users,email',
+        'new_password' => [
+            'required',
+            'string',
+            'min:8',
+            'confirmed',
+            'regex:/[a-z]/',      
+            'regex:/[A-Z]/',      
+            'regex:/[0-9]/',      
+        ]
+    ]);
+
+    // Find user
+    $user = User::where('email', $request->email)->first();
+
+    // Update password
+    $user->password = Hash::make($request->new_password);
+    $user->save();
+
+
+    $message = "Hello {$user->first_name},\n\n";
+    $message .= "Your password for SwisaAGAP was changed successfully on " . now()->toDateTimeString() . ".\n";
+    $message .= "If you did not request this change, please contact our support immediately.\n\n";
+    $message .= "Thank you,\nSwisaAGAP Team";
+
+    Mail::raw($message, function ($mail) use ($user) {
+    $mail->to($user->email)
+         ->subject('SwisaAGAP - Password Changed')
+         ->replyTo('noreply@yourdomain.com', 'No Reply');
+    });
+
+   return response()->json([
+    'success' => true,
+    'message' => 'Password reset successful.'
+        ]);
+
+    }
+
+
+  
 }

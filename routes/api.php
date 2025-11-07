@@ -25,6 +25,11 @@ Route::prefix('mobile')->group(function (Router $router) {
     $router->post('/register', [AuthController::class, 'register']);
     $router->post('/login', [AuthController::class, 'login']);
 
+    Route::post('/otp/send', [OtpController::class, 'sendOtp']);
+    Route::post('/otp/verify', [OtpController::class, 'verifyOtp']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
+
     // PROTECTED ROUTES (Requires Sanctum token)
     $router->middleware('auth:sanctum')->group(function () use ($router) {
         // Test route to get the authenticated user
@@ -37,6 +42,10 @@ Route::prefix('mobile')->group(function (Router $router) {
         $router->post('/profile/picture', [ProfileController::class, 'updatePicture']);
 
         Route::get('/grants', [GrantController::class, 'index']);
+
+        Route::post('/grant-applications', [GrantApplicationController::class, 'store']);
+        Route::get('/grant-applications', [GrantApplicationController::class, 'index']);
+        Route::get('/grant-applications/{id}', [GrantApplicationController::class, 'show']);
 
     });
 });
@@ -60,9 +69,7 @@ Route::middleware('auth:sanctum')->group(function() {
     // Membership
     Route::post('/membership-application', [MembershipController::class, 'store']);
 
-    //Otp
-    Route::post('/otp/send', [OtpController::class, 'sendOtp']);
-    Route::post('/otp/verify', [OtpController::class, 'verifyOtp']);
+  
    
 
       Route::post('/documents/upload', [DocumentController::class, 'upload']);
@@ -88,6 +95,8 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::delete('/{id}', [NotificationController::class, 'destroy']);
     });
 });
+
+
 
 // Trainings routes (protected)
 Route::prefix('mobile')->middleware('auth:sanctum')->group(function () {
