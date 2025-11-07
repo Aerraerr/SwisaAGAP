@@ -5,14 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\Document;
-use App\Models\User;
-use App\Models\Status;
-use App\Models\Grant;
-
 class Application extends Model
 {
     use HasFactory;
+
+    public $timestamps = true;
 
     protected $fillable = [
         'user_id',
@@ -22,29 +19,32 @@ class Application extends Model
         'purpose',
     ];
 
-    // RELATIONSHIPS
-
-    // application belongs to a user
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    // application has a status
-    public function status(){
-        return $this->belongsTo(Status::class);
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'status_id');
     }
 
-    // application may belong to a grant
-    public function grant(){
+    public function grant()
+    {
         return $this->belongsTo(Grant::class);
     }
 
-    // ✅ ADDED: application has many documents (polymorphic)
-    public function documents(){
+    public function statusHistories()
+    {
+        return $this->hasMany(ApplicationStatusHistory::class)
+            ->orderBy('created_at', 'asc');  // Oldest first
+    }
+
+    public function documents()
+    {
         return $this->morphMany(Document::class, 'documentable');
     }
 
-    // ✅ Add this relationship
     public function grantClaim()
     {
         return $this->hasOne(GrantClaim::class);

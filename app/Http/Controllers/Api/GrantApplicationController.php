@@ -296,10 +296,19 @@ class GrantApplicationController extends Controller
         }
     }
 
+    /**
+     * ✅ UPDATED: Get all grant applications with status object and status histories
+     */
     public function index(): JsonResponse
     {
         try {
-            $applications = Application::with(['user', 'grant.grantType', 'status'])
+            $applications = Application::with([
+                'user',
+                'grant.grantType',
+                'grant.grantRequirements',
+                'status',                    // ✅ Load status relationship
+                'statusHistories.status'    // ✅ Load status histories with their status objects
+            ])
                 ->where('user_id', auth()->id())
                 ->whereNotNull('grant_id')
                 ->orderBy('created_at', 'desc')
@@ -314,7 +323,17 @@ class GrantApplicationController extends Controller
                     'id' => $app->id,
                     'user_id' => $app->user_id,
                     'grant_id' => $app->grant_id,
-                    'status' => $app->status->status_name ?? 'pending',
+                    'status_id' => $app->status_id,
+                    'status' => $app->status,  // ✅ FIXED: Return entire status object
+                    'status_histories' => $app->statusHistories->map(function($history) {
+                        return [
+                            'id' => $history->id,
+                            'application_id' => $history->application_id,
+                            'status_id' => $history->status_id,
+                            'created_at' => $history->created_at,
+                            'status' => $history->status, // ✅ Include status object
+                        ];
+                    }),
                     'purpose' => $app->purpose,
                     'application_type' => $app->application_type,
                     'created_at' => $app->created_at,

@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\ApplicationController;
 use App\Http\Controllers\Api\GrantTypeController;
 
+
 // ============================================
 // PUBLIC ROUTES (No Authentication Required)
 // ============================================
@@ -21,12 +22,15 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/sectors', [SectorController::class, 'index']);
 
+
 // ✅ Grant Types (public so filter works before login)
 Route::get('/grant-types', [GrantTypeController::class, 'index']);
+
 
 // ✅ OTP routes (PUBLIC)
 Route::post('/otp/send', [OtpController::class, 'sendOtp']);
 Route::post('/otp/verify', [OtpController::class, 'verifyOtp']);
+
 
 // ============================================
 // PROTECTED ROUTES (Authentication Required)
@@ -36,17 +40,21 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::post('/profile/picture', [ProfileController::class, 'updatePicture']);
 
+
     // Membership
     Route::post('/membership-application', [MembershipController::class, 'store']);
     
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
 
+
     // Credit Score
     Route::get('/credit-score', [CreditScoreController::class, 'show']);
 
+
     // Grants
     Route::get('/grants', [GrantController::class, 'index']);
+
 
     // ============================================
     // GRANT APPLICATIONS (Order matters!)
@@ -64,20 +72,39 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/grant-applications', [GrantApplicationController::class, 'index']); // List all applications
     Route::post('/grant-applications', [GrantApplicationController::class, 'store']); // Create new application
 
-    // Application Status (alternative endpoint)
-    Route::get('/applications', [GrantApplicationController::class, 'index']);
-    Route::get('/applications/{id}', [ApplicationController::class, 'show']);
+
+    // ============================================
+    // APPLICATION ROUTES (Separate from grant-applications)
+    // ============================================
+    Route::get('/applications', [GrantApplicationController::class, 'index']); // List all (alternative endpoint)
+    Route::get('/applications/{id}', [ApplicationController::class, 'show']); // ✅ Get single application
+    Route::post('/applications/{id}/resubmit', [ApplicationController::class, 'resubmit']); // ✅ Resubmit documents
+    
+    // ✅ NEW: CONTRIBUTIONS (via ApplicationController)
+    Route::post('/applications/{applicationId}/contributions', [ApplicationController::class, 'submitContribution']); // Submit contribution
+
 
     // Grant Settings
     Route::get('/grant-settings', [SettingsController::class, 'getGrantSettings']);
+    
+    
+    // Contribution
+    Route::post('/applications/{applicationId}/contribute', [ApplicationController::class, 'contribute']);
+    Route::get('/applications/{applicationId}/contributions', [ApplicationController::class, 'getContributions']);
 
-    // Document Management
+
+
+
+    // ============================================
+    // DOCUMENT MANAGEMENT
+    // ============================================
     Route::post('/documents/upload', [DocumentController::class, 'upload']);
     Route::get('/applications/{applicationId}/documents', [DocumentController::class, 'index']);
     Route::get('/documents/{id}', [DocumentController::class, 'show']);
     Route::get('/documents/{id}/download', [DocumentController::class, 'download']);
     Route::delete('/documents/{id}', [DocumentController::class, 'destroy']);
 });
+
 
 // ============================================
 // DEBUG ROUTE (Optional - remove in production)
