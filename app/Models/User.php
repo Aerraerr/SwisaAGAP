@@ -12,15 +12,14 @@ use App\Models\Document;
 use App\Models\Notification;
 use App\Models\Training;
 use App\Models\UserInfo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-// --- ADD THESE MISSING IMPORTS ---
 use App\Models\CreditScore;
 use App\Models\CreditScoreHistory;
+use App\Models\PhoneOtp;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
-    // ⭐️ REQUIRED FOR SANCTUM: Add the HasApiTokens trait here
     use HasFactory, Notifiable, HasApiTokens;
 
     /**
@@ -29,18 +28,19 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-    'first_name',
-    'middle_name',
-    'last_name',
-    'suffix',
-    'email',
-    'phone_number',
-    'password',
-    'mpin',
-    'role_id',
-    'email_verified_at',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'suffix',
+        'email',
+        'phone_number',
+        'password',
+        'mpin',
+        'login_method', // ✅ ADDED
+        'role_id',
+        'email_verified_at',
+        'phone_verified_at', // ✅ ADDED
     ];
-
 
     /**
      * The attributes that should be hidden for serialization.
@@ -49,7 +49,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'mpin', // Hide MPIN for security
+        'mpin',
         'remember_token',
     ];
 
@@ -62,33 +62,18 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime', // ✅ ADDED
             'password' => 'hashed',
         ];
     }
 
-    // --- Existing Relationships ---
-    public function role(){
+    // ============================================
+    // RELATIONSHIPS
+    // ============================================
+
+    public function role()
+    {
         return $this->belongsTo(Role::class);
-    }
-
-    public function user_info(){
-        return $this->hasOne(UserInfo::class);
-    }
-
-    public function applications(){
-        return $this->hasMany(Application::class);
-    }
-
-    public function documents(){
-        return $this->morphMany(Document::class, 'documentable');
-    }
-
-    public function trainings(){
-        return $this->hasMany(Training::class, 'participants');
-    }
-
-    public function notifications(){
-        return $this->hasMany(Notification::class);
     }
 
     public function userInfo()
@@ -96,16 +81,120 @@ class User extends Authenticatable
         return $this->hasOne(UserInfo::class);
     }
 
-    // --- NEW CREDIT SCORE RELATIONSHIPS ---
+    // Alias for consistency
+    public function user_info()
+    {
+        return $this->hasOne(UserInfo::class);
+    }
 
-    // In User.php model
-public function creditScore()
-{
-    return $this->hasOne(CreditScore::class);
-}
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
 
-public function creditScoreHistory()
-{
-    return $this->hasMany(CreditScoreHistory::class);
-}
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
+
+    public function trainings()
+    {
+        return $this->hasMany(Training::class, 'participants');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    // ============================================
+    // CREDIT SCORE RELATIONSHIPS
+    // ============================================
+
+    public function creditScore()
+    {
+        return $this->hasOne(CreditScore::class);
+    }
+
+    public function creditScoreHistory()
+    {
+        return $this->hasMany(CreditScoreHistory::class);
+    }
+
+    // ============================================
+    // PHONE OTP RELATIONSHIPS
+    // ============================================
+
+    /**
+     * Get phone OTP records for this user
+     */
+    public function phoneOtps()
+    {
+        return $this->hasMany(PhoneOtp::class, 'phone_number', 'phone_number');
+    }
+
+    /**
+     * Get latest phone OTP
+     */
+    public function latestPhoneOtp()
+    {
+        return $this->hasOne(PhoneOtp::class, 'phone_number', 'phone_number')
+            ->latestOfMany();
+    }
+
+    // ============================================
+    // HELPER METHODS
+    // ============================================
+
+    /**
+     * Check if user's phone is verified
+     */
+    public function isPhoneVerified(): bool
+    {
+        return $this->phone_verified_at !== null;
+    }
+
+    /**
+     * Check if user's email is verified
+     */
+    public function isEmailVerified(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+
+    /**
+     * Get user's full name
+     */
+    public function getFullNameAttribute(): string
+    {
+        $name = trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+        if ($this->suffix && $this->suffix !== 'N/A') {
+            $name .= " {$this->suffix}";
+        }
+        return $name;
+    }
+
+    /**
+     * Get user's identifier (email or phone)
+     */
+    public function getIdentifierAttribute(): string
+    {
+        return $this->email ?? $this->phone_number ?? 'Unknown';
+    }
+
+    /**
+     * Check if user registered with email
+     */
+    public function isEmailUser(): bool
+    {
+        return $this->login_method === 'email' || !empty($this->email);
+    }
+
+    /**
+     * Check if user registered with phone
+     */
+    public function isPhoneUser(): bool
+    {
+        return $this->login_method === 'phone' || !empty($this->phone_number);
+    }
 }

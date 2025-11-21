@@ -15,7 +15,8 @@ return new class extends Migration
             $table->foreignId('status_id')->constrained('statuses')->onDelete('cascade');
             $table->string('type'); // Cash, Crop, etc.
             $table->integer('quantity')->nullable();
-            $table->string('image_path')->nullable(); // ✅ NEW: Image column
+            $table->string('quantity_unit')->default('PHP')->nullable(); // ✅ FIXED: Removed ->after()
+            $table->string('image_path')->nullable(); // Image column
             $table->text('notes')->nullable();
             $table->timestamps();
         });

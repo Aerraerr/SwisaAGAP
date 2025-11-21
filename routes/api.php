@@ -13,109 +13,138 @@ use App\Http\Controllers\Api\SectorController;
 use App\Http\Controllers\Api\SettingsController; 
 use App\Http\Controllers\Api\ApplicationController;
 use App\Http\Controllers\Api\GrantTypeController;
-
+use App\Http\Controllers\Api\PhoneOtpController;
 
 // ============================================
 // PUBLIC ROUTES (No Authentication Required)
 // ============================================
+
+// Authentication
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Public Data
 Route::get('/sectors', [SectorController::class, 'index']);
-
-
-// ✅ Grant Types (public so filter works before login)
 Route::get('/grant-types', [GrantTypeController::class, 'index']);
 
+// ============================================
+// OTP ROUTES (PUBLIC)
+// ============================================
 
-// ✅ OTP routes (PUBLIC)
-Route::post('/otp/send', [OtpController::class, 'sendOtp']);
-Route::post('/otp/verify', [OtpController::class, 'verifyOtp']);
+// Email OTP
+Route::prefix('otp')->group(function () {
+    Route::post('/send', [OtpController::class, 'sendOtp']);
+    Route::post('/verify', [OtpController::class, 'verifyOtp']);
+});
 
+// Phone/SMS OTP
+Route::prefix('phone/otp')->group(function () {
+    Route::post('/send', [PhoneOtpController::class, 'sendOtp']);
+    Route::post('/verify', [PhoneOtpController::class, 'verifyOtp']);
+    Route::post('/resend', [PhoneOtpController::class, 'resendOtp']);
+    Route::post('/check', [PhoneOtpController::class, 'checkVerification']);
+});
 
 // ============================================
 // PROTECTED ROUTES (Authentication Required)
 // ============================================
+
 Route::middleware('auth:sanctum')->group(function() {
-    // Profile
-    Route::get('/profile', [ProfileController::class, 'show']);
-    Route::post('/profile/picture', [ProfileController::class, 'updatePicture']);
-
-
-    // Membership
-    Route::post('/membership-application', [MembershipController::class, 'store']);
     
-    // Logout
+    // ============================================
+    // AUTHENTICATION
+    // ============================================
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    // ============================================
+    // PROFILE
+    // ============================================
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'show']);
+        Route::post('/picture', [ProfileController::class, 'updatePicture']);
+    });
 
-    // Credit Score
+    // ============================================
+    // MEMBERSHIP
+    // ============================================
+    Route::post('/membership-application', [MembershipController::class, 'store']);
+    
+    // ============================================
+    // CREDIT SCORE
+    // ============================================
     Route::get('/credit-score', [CreditScoreController::class, 'show']);
 
-
-    // Grants
+    // ============================================
+    // GRANTS
+    // ============================================
     Route::get('/grants', [GrantController::class, 'index']);
-
+    Route::get('/grant-settings', [SettingsController::class, 'getGrantSettings']);
 
     // ============================================
-    // GRANT APPLICATIONS (Order matters!)
+    // GRANT APPLICATIONS
     // ============================================
+    // ⚠️ IMPORTANT: Specific routes MUST come before generic {id} routes
     
-    // ✅ SPECIFIC ROUTES FIRST (before generic routes)
+    // Action routes (specific)
     Route::post('/grant-applications/{id}/approve', [GrantApplicationController::class, 'approve']);
     Route::post('/grant-applications/{id}/reject', [GrantApplicationController::class, 'reject']);
     Route::post('/grant-applications/{id}/complete', [GrantApplicationController::class, 'complete']);
     
-    // ✅ Then ID-based routes
-    Route::get('/grant-applications/{id}', [GrantApplicationController::class, 'getClaimDetails']); // For claim screen
+    // Single resource route
+    Route::get('/grant-applications/{id}', [GrantApplicationController::class, 'getClaimDetails']);
     
-    // ✅ Finally, the general list route
-    Route::get('/grant-applications', [GrantApplicationController::class, 'index']); // List all applications
-    Route::post('/grant-applications', [GrantApplicationController::class, 'store']); // Create new application
-
+    // Collection routes
+    Route::get('/grant-applications', [GrantApplicationController::class, 'index']);
+    Route::post('/grant-applications', [GrantApplicationController::class, 'store']);
 
     // ============================================
-    // APPLICATION ROUTES (Separate from grant-applications)
+    // APPLICATIONS (Alternative Endpoints)
     // ============================================
-    Route::get('/applications', [GrantApplicationController::class, 'index']); // List all (alternative endpoint)
-    Route::get('/applications/{id}', [ApplicationController::class, 'show']); // ✅ Get single application
-    Route::post('/applications/{id}/resubmit', [ApplicationController::class, 'resubmit']); // ✅ Resubmit documents
-    
-    // ✅ NEW: CONTRIBUTIONS (via ApplicationController)
-    Route::post('/applications/{applicationId}/contributions', [ApplicationController::class, 'submitContribution']); // Submit contribution
-
-
-    // Grant Settings
-    Route::get('/grant-settings', [SettingsController::class, 'getGrantSettings']);
-    
-    
-    // Contribution
-    Route::post('/applications/{applicationId}/contribute', [ApplicationController::class, 'contribute']);
-    Route::get('/applications/{applicationId}/contributions', [ApplicationController::class, 'getContributions']);
-
-
-
+    Route::prefix('applications')->group(function () {
+        // List and single application
+        Route::get('/', [GrantApplicationController::class, 'index']);
+        Route::get('/{id}', [ApplicationController::class, 'show']);
+        
+        // Application actions
+        Route::post('/{id}/resubmit', [ApplicationController::class, 'resubmit']);
+        
+        // Contributions
+        Route::post('/{applicationId}/contribute', [ApplicationController::class, 'contribute']);
+        Route::get('/{applicationId}/contributions', [ApplicationController::class, 'getContributions']);
+        Route::post('/{applicationId}/contributions', [ApplicationController::class, 'submitContribution']);
+        
+        // Documents
+        Route::get('/{applicationId}/documents', [DocumentController::class, 'index']);
+    });
 
     // ============================================
     // DOCUMENT MANAGEMENT
     // ============================================
-    Route::post('/documents/upload', [DocumentController::class, 'upload']);
-    Route::get('/applications/{applicationId}/documents', [DocumentController::class, 'index']);
-    Route::get('/documents/{id}', [DocumentController::class, 'show']);
-    Route::get('/documents/{id}/download', [DocumentController::class, 'download']);
-    Route::delete('/documents/{id}', [DocumentController::class, 'destroy']);
+    Route::prefix('documents')->group(function () {
+        Route::post('/upload', [DocumentController::class, 'upload']);
+        Route::get('/{id}', [DocumentController::class, 'show']);
+        Route::get('/{id}/download', [DocumentController::class, 'download']);
+        Route::delete('/{id}', [DocumentController::class, 'destroy']);
+    });
 });
 
-
 // ============================================
-// DEBUG ROUTE (Optional - remove in production)
+// DEBUG ROUTES (Remove in Production)
 // ============================================
-Route::get('/check-php-config', function () {
-    $uploadMax = ini_get('upload_max_filesize');
-    $postMax = ini_get('post_max_size');
+if (config('app.debug')) {
+    Route::get('/check-php-config', function () {
+        return response()->json([
+            'upload_max_filesize' => ini_get('upload_max_filesize'),
+            'post_max_size' => ini_get('post_max_size'),
+            'memory_limit' => ini_get('memory_limit'),
+            'max_execution_time' => ini_get('max_execution_time'),
+            'php_version' => PHP_VERSION,
+            'laravel_version' => app()->version(),
+        ]);
+    });
     
-    return response()->json([
-        'upload_max_filesize' => $uploadMax,
-        'post_max_size' => $postMax,
-        'message' => 'These are the current settings your server is using.'
-    ]);
-});
+    Route::get('/test-sms', function () {
+        $result = \App\Services\SMSService::send('09171234567', 'Test message from SwisaAGAP');
+        return response()->json($result);
+    });
+}

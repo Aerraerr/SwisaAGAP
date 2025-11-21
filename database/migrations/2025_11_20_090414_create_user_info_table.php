@@ -15,28 +15,37 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 
-            // --- USER INFO ---
+            // --- USER BASIC INFO ---
             $table->string('fname', 50);
             $table->string('mname', 50)->nullable();
             $table->string('lname', 50);
-            $table->string('name')->nullable(); // ADDED: For full name storage
+            $table->string('name', 255)->nullable(); // Full name
             $table->string('suffix', 50)->nullable();
-            $table->date('birthdate');
+            $table->date('birthdate')->nullable();
             $table->string('civil_status', 50)->nullable();
-            $table->string('gender', 50);
-            $table->string('contact_no', 20);
-            $table->string('province', 50);
-            $table->string('city', 50);
-            $table->string('barangay', 50);
-            $table->string('zone', 50);
+            $table->string('gender', 50)->nullable();
+            
+            // --- CONTACT INFO ---
+            $table->string('contact_info', 100)->nullable(); // Raw input (email or phone)
+            $table->string('phone_no', 20)->nullable();      // Extracted phone number
+            $table->string('email', 100)->nullable();        // Extracted email
+            
+            // --- ADDRESS INFO ---
+            $table->string('province', 50)->nullable();
+            $table->string('city', 50)->nullable();
+            $table->string('house_no', 50)->nullable();
+            $table->string('barangay', 50)->nullable();
+            $table->string('zone', 50)->nullable();
+            
+            // --- PROFILE & IDENTITY ---
             $table->string('profile_img', 255)->nullable();
-            $table->string('qr_code')->unique()->nullable(); // --- ADD THIS LINE ---
+            $table->string('qr_code', 255)->unique()->nullable();
 
-            // --- AGRI INFO ---
+            // --- AGRICULTURAL INFO ---
             $table->string('farmer_type', 50)->nullable();
-            $table->string('farm_location')->nullable();
-            $table->string('land_size')->nullable();
-            $table->string('water_source')->nullable();
+            $table->string('farm_location', 255)->nullable();
+            $table->string('land_size', 255)->nullable();
+            $table->string('water_source', 255)->nullable();
 
             // --- SECONDARY CONTACT INFO ---
             $table->string('sc_fname', 50)->nullable();
@@ -44,10 +53,16 @@ return new class extends Migration
             $table->string('sc_lname', 50)->nullable();
             $table->string('sc_suffix', 50)->nullable();
             $table->string('sc_gender', 50)->nullable();
-            $table->string('sc_contact_no', 20)->nullable();
-            $table->string('sc_email')->nullable();
+            
+            // --- SECONDARY CONTACT ---
+            $table->string('sc_contact_info', 100)->nullable(); // Raw input
+            $table->string('sc_phone_no', 20)->nullable();      // Extracted phone
+            $table->string('sc_email', 100)->nullable();        // Extracted email
+            
+            // --- SECONDARY ADDRESS ---
             $table->string('sc_province', 50)->nullable();
             $table->string('sc_city', 50)->nullable();
+            $table->string('sc_house_no', 50)->nullable();
             $table->string('sc_barangay', 50)->nullable();
             $table->string('sc_zone', 50)->nullable();
             $table->string('relationship', 50)->nullable();
@@ -64,4 +79,3 @@ return new class extends Migration
         Schema::dropIfExists('user_info');
     }
 };
-

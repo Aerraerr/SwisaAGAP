@@ -13,6 +13,10 @@ class DatabaseSeeder extends Seeder
             RequirementSeeder::class,
             GrantSeeder::class,
             GrantRequirementSeeder::class,
+            RequirementSeeder::class,
+            RoleSeeder::class,
+            SectorSeeder::class,
+            StatusSeeder::class,
         ]);
     }
 }
