@@ -67,7 +67,14 @@ Route::middleware('auth:sanctum')->group(function() {
     // ============================================
     // MEMBERSHIP
     // ============================================
+    // User: Submit membership application
     Route::post('/membership-application', [MembershipController::class, 'store']);
+    
+    // Admin: Approve/Reject membership applications
+    Route::prefix('membership-applications')->group(function () {
+        Route::post('/{id}/approve', [MembershipController::class, 'approveMembership']);
+        Route::post('/{id}/reject', [MembershipController::class, 'rejectMembership']);
+    });
     
     // ============================================
     // CREDIT SCORE

@@ -41,7 +41,7 @@ class GrantApplicationController extends Controller
             $creditCost = $this->getCreditCost($grant->grantType->grant_type);
             $currentScore = $user->creditScore->score ?? 0;
             
-            // ✅ VALIDATION 1: Check credit score sufficiency (IMMEDIATE DEDUCTION)
+            // ✅ VALIDATION 1: Check credit score sufficiency
             if ($currentScore < $creditCost) {
                 return response()->json([
                     'success' => false,
@@ -50,9 +50,10 @@ class GrantApplicationController extends Controller
             }
             
             // ✅ VALIDATION 2: Check for duplicate ongoing application
+            // Status IDs: 4=pending, 5=approved, 18=processing_application, 19=waiting_for_approval, 21=on_hold
             $ongoingApplication = Application::where('user_id', $user->id)
                 ->where('grant_id', $grant->id)
-                ->whereIn('status_id', [3, 4, 7])
+                ->whereIn('status_id', [4, 5, 18, 19, 21]) // ✅ CORRECTED
                 ->exists();
                 
             if ($ongoingApplication) {
@@ -66,10 +67,11 @@ class GrantApplicationController extends Controller
             $quarterStart = Carbon::now()->startOfQuarter();
             $quarterEnd = Carbon::now()->endOfQuarter();
             
+            // Status IDs: 1=claimed, 4=pending, 5=approved, 6=completed, 18=processing, 19=waiting
             $quarterlyApplications = Application::where('user_id', $user->id)
                 ->whereBetween('created_at', [$quarterStart, $quarterEnd])
                 ->whereNotNull('grant_id')
-                ->whereIn('status_id', [3, 4, 5, 7])
+                ->whereIn('status_id', [1, 4, 5, 6, 18, 19]) // ✅ CORRECTED
                 ->with('grant.grantType')
                 ->get();
             
@@ -108,11 +110,11 @@ class GrantApplicationController extends Controller
             DB::beginTransaction();
             
             try {
-                // ✅ Create application
+                // ✅ Create application with PENDING status
                 $application = Application::create([
                     'user_id' => $user->id,
                     'grant_id' => $request->grant_id,
-                    'status_id' => 3, // pending
+                    'status_id' => 4, // ✅ 4 = pending (Flutter: "Application Submitted")
                     'application_type' => 'Grant Application',
                     'purpose' => $request->purpose ?? 'Grant assistance request',
                 ]);
@@ -183,8 +185,8 @@ class GrantApplicationController extends Controller
             DB::beginTransaction();
             
             try {
-                // ✅ Update application status
-                $application->update(['status_id' => 4]); // Approved
+                // ✅ Update application status to APPROVED
+                $application->update(['status_id' => 5]); // ✅ 5 = approved (Flutter: "Ready to Claim")
                 
                 // ✅ Create grant claim record
                 GrantClaim::create([
@@ -239,8 +241,8 @@ class GrantApplicationController extends Controller
             DB::beginTransaction();
             
             try {
-                // ✅ Update status to rejected
-                $application->update(['status_id' => 6]);
+                // ✅ Update status to REJECTED
+                $application->update(['status_id' => 7]); // ✅ 7 = rejected (Flutter: "Rejected")
                 
                 // ✅ REFUND credits since application was rejected
                 $application->user->creditScore->increment('score', $creditCost);
@@ -281,7 +283,8 @@ class GrantApplicationController extends Controller
     {
         try {
             $application = Application::findOrFail($applicationId);
-            $application->update(['status_id' => 5]);
+            // ✅ Update to COMPLETED
+            $application->update(['status_id' => 6]); // ✅ 6 = completed (Flutter: "Contribution Completed")
             
             return response()->json([
                 'success' => true,
@@ -297,7 +300,7 @@ class GrantApplicationController extends Controller
     }
 
     /**
-     * ✅ UPDATED: Get all grant applications with status object and status histories
+     * ✅ Get all grant applications with status object and status histories
      */
     public function index(): JsonResponse
     {
@@ -306,8 +309,8 @@ class GrantApplicationController extends Controller
                 'user',
                 'grant.grantType',
                 'grant.grantRequirements',
-                'status',                    // ✅ Load status relationship
-                'statusHistories.status'    // ✅ Load status histories with their status objects
+                'status',
+                'statusHistories.status'
             ])
                 ->where('user_id', auth()->id())
                 ->whereNotNull('grant_id')
@@ -324,14 +327,14 @@ class GrantApplicationController extends Controller
                     'user_id' => $app->user_id,
                     'grant_id' => $app->grant_id,
                     'status_id' => $app->status_id,
-                    'status' => $app->status,  // ✅ FIXED: Return entire status object
+                    'status' => $app->status,
                     'status_histories' => $app->statusHistories->map(function($history) {
                         return [
                             'id' => $history->id,
                             'application_id' => $history->application_id,
                             'status_id' => $history->status_id,
                             'created_at' => $history->created_at,
-                            'status' => $history->status, // ✅ Include status object
+                            'status' => $history->status,
                         ];
                     }),
                     'purpose' => $app->purpose,
@@ -395,7 +398,7 @@ class GrantApplicationController extends Controller
         }
     }
 
-    // ✅ NEW: Get grant claim details for Claim screen
+    // ✅ Get grant claim details for Claim screen
     public function getClaimDetails($id): JsonResponse
     {
         try {
@@ -428,7 +431,7 @@ class GrantApplicationController extends Controller
         }
     }
 
-    // ✅ NEW: Mark grant as claimed
+    // ✅ Mark grant as claimed
     public function markAsClaimed($applicationId): JsonResponse
     {
         try {
@@ -445,8 +448,8 @@ class GrantApplicationController extends Controller
                     'claimed_at' => now(),
                 ]);
                 
-                // Update application status to completed
-                $claim->application->update(['status_id' => 5]);
+                // ✅ Update application status to CLAIMED
+                $claim->application->update(['status_id' => 1]); // ✅ 1 = claimed (Flutter: "Grant Claimed")
                 
                 DB::commit();
                 
