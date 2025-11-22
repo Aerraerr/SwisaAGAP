@@ -11,7 +11,7 @@ class CreditScoreController extends Controller {
         $user->load('creditScore', 'creditScoreHistory');
 
         // Now you can safely use the score - it defaults to 20 from the model
-        $currentScore = $user->creditScore?->score ?? 20;
+        $currentScore = $user->creditScore?->score ?? 0;
         $history = $user->creditScoreHistory;
 
         return response()->json([

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Mail;
-
+use App\Services\SMSService;
 class AuthController extends Controller
 {
     // --- 1. REGISTER: Creates user in DB with hashed password ---
@@ -162,17 +162,24 @@ class AuthController extends Controller
     // CLEAR RATE LIMIT ON SUCCESS
     RateLimiter::clear($key);
 
-    $message = "Hello {$user->first_name},\n\n";
-    $message .= "Your password for SwisaAGAP was changed successfully on " . now()->toDateTimeString() . ".\n";
-    $message .= "If you did not request this change, please contact our support immediately.\n\n";
-    $message .= "Thank you,\nSwisaAGAP Team";
+   if ($user) {
+    // Send SMS if phone number exists
+    if ($user->phone_number) {
+        $number = preg_replace('/^0/', '63', $user->phone_number);
+        $smsMessage = "[SWISA-AGAP]\nHello {$user->first_name}, your password was changed successfully on " . now()->toDateTimeString() . ".";
+        SMSService::send($number, $smsMessage);
+    }
 
-    Mail::raw($message, function ($mail) use ($user) {
-    $mail->to($user->email)
-         ->subject('SwisaAGAP - Password Changed')
-         ->replyTo('noreply@yourdomain.com', 'No Reply');
-    });
-
+    // Send email if email exists
+    if ($user->email) {
+        $emailMessage = "Hello {$user->first_name},\n\nYour password for SwisaAGAP was changed successfully on " . now()->toDateTimeString() . ".\nIf you did not request this change, please contact our support immediately.\n\nThank you,\nSwisaAGAP Team";
+        Mail::raw($emailMessage, function ($mail) use ($user) {
+            $mail->to($user->email)
+                 ->subject('SwisaAGAP - Password Changed')
+                 ->replyTo('noreply@yourdomain.com', 'No Reply');
+        });
+    }
+}
 
     return response()->json([
         'message' => 'Password changed successfully. Please log in again.',
@@ -181,48 +188,60 @@ class AuthController extends Controller
   }
 
     // API route: POST /api/reset-password
-    public function resetPassword(Request $request)
-    {
-
+   public function resetPassword(Request $request)
+{
     $request->validate([
-        'email' => 'required|string|email|exists:users,email',
+        'email' => 'nullable|string|email|exists:users,email',
+        'phone' => 'nullable|string|exists:users,phone_number',
         'new_password' => [
-            'required',
-            'string',
-            'min:8',
-            'confirmed',
-            'regex:/[a-z]/',      
-            'regex:/[A-Z]/',      
-            'regex:/[0-9]/',      
+            'required', 'string', 'min:8', 'confirmed',
+            'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/'
         ]
     ]);
+    if (!$request->email && !$request->phone) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Either email or phone is required.'
+        ], 422);
+    }
+    $user = null;
+    if ($request->email) {
+        $user = User::where('email', $request->email)->first();
+    } elseif ($request->phone) {
+        $user = User::where('phone_number', $request->phone)->first();
+    }
+    if (!$user) {
+        return response()->json([
+            'success' => false,
+            'message' => 'User not found.'
+        ], 404);
+    }
 
-    // Find user
-    $user = User::where('email', $request->email)->first();
-
-    // Update password
     $user->password = Hash::make($request->new_password);
     $user->save();
 
-
-    $message = "Hello {$user->first_name},\n\n";
-    $message .= "Your password for SwisaAGAP was changed successfully on " . now()->toDateTimeString() . ".\n";
-    $message .= "If you did not request this change, please contact our support immediately.\n\n";
-    $message .= "Thank you,\nSwisaAGAP Team";
-
-    Mail::raw($message, function ($mail) use ($user) {
-    $mail->to($user->email)
-         ->subject('SwisaAGAP - Password Changed')
-         ->replyTo('noreply@yourdomain.com', 'No Reply');
-    });
-
-   return response()->json([
-    'success' => true,
-    'message' => 'Password reset successful.'
-        ]);
-
+    if ($user->email) {
+        $message = "Hello {$user->first_name},\n\n";
+        $message .= "Your password for SwisaAGAP was changed successfully on " . now()->toDateTimeString() . ".\n";
+        $message .= "If you did not request this change, please contact our support immediately.\n\n";
+        $message .= "Thank you,\nSwisaAGAP Team";
+        Mail::raw($message, function ($mail) use ($user) {
+            $mail->to($user->email)
+                ->subject('SwisaAGAP - Password Changed')
+                ->replyTo('noreply@yourdomain.com', 'No Reply');
+        });
     }
 
+    if ($user->phone_number) {
+        $number = preg_replace('/^0/', '63', $user->phone_number);
+        $smsMessage = "[SWISA-AGAP]\nHello {$user->first_name}, your password was changed successfully on " . now()->toDateTimeString() . ". If this wasn't you, contact support.";
+        SMSService::send($number, $smsMessage);
+    }
 
-  
+    return response()->json([
+        'success' => true,
+        'message' => 'Password reset successful.'
+    ]);
+}
+
 }

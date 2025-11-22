@@ -136,7 +136,7 @@ class MembershipController extends Controller
         $application = Application::create([
             'user_id' => $user->id,
             'grant_id' => null,
-            'status_id' => 4,
+            'status_id' => 3, // 3 ang pending
             'application_type' => 'Membership',
             'purpose' => 'Membership Application',
         ]);

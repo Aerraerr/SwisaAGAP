@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\CreditScore;
 use App\Models\CreditScoreHistory;
+use App\Models\PhoneOtp;
 
 class User extends Authenticatable
 {
@@ -36,6 +37,9 @@ class User extends Authenticatable
         'phone_number',
         'mpin',
         'role_id',
+        'login_method', 
+        'phone_verified_at',
+        'email_verified_at',
     ];
 
     /**
@@ -57,20 +61,11 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
 
-    /*Boot method - automatically create credit score when user is created*/
-    protected static function booted()
-    {
-        static::created(function ($user) {
-            CreditScore::create([
-                'user_id' => $user->id,
-                'score' => 20
-            ]);
-        });
-    }
 
     // --- Relationships ---
 
@@ -126,7 +121,7 @@ class User extends Authenticatable
         // Get or create credit score
         $creditScore = $this->creditScore()->firstOrCreate(
             ['user_id' => $this->id],
-            ['score' => 20]
+            ['score' => 0]
         );
 
         // Update the score
@@ -145,5 +140,57 @@ class User extends Authenticatable
         ]);
 
         return $newScore;
+    }
+
+      /**
+     * Get phone OTP records for this user
+     */
+    public function phoneOtps()
+    {
+        return $this->hasMany(PhoneOtp::class, 'phone_number', 'phone_number');
+    }
+
+    /**
+     * Get latest phone OTP
+     */
+    public function latestPhoneOtp()
+    {
+        return $this->hasOne(PhoneOtp::class, 'phone_number', 'phone_number')
+            ->latestOfMany();
+    }
+
+    // ============================================
+    // HELPER METHODS
+    // ============================================
+
+    /**
+     * Check if user's phone is verified
+     */
+    public function isPhoneVerified(): bool
+    {
+        return $this->phone_verified_at !== null;
+    }
+
+    /**
+     * Check if user's email is verified
+     */
+    public function isEmailVerified(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+     /**
+     * Check if user registered with email
+     */
+    public function isEmailUser(): bool
+    {
+        return $this->login_method === 'email' || !empty($this->email);
+    }
+
+    /**
+     * Check if user registered with phone
+     */
+    public function isPhoneUser(): bool
+    {
+        return $this->login_method === 'phone' || !empty($this->phone_number);
     }
 }

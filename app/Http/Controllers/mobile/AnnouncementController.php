@@ -32,4 +32,5 @@ class AnnouncementController extends Controller
 
         return response()->json($announcements);
     }
+
 }

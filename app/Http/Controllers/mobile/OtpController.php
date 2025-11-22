@@ -38,7 +38,7 @@ class OtpController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'OTP Sent Successfully',
+            'message' => 'OTP sent successfully',
             'otp' => config('app.debug') ? $otp : null, // Only show in debug mode
         ]);
     }
@@ -73,7 +73,7 @@ class OtpController extends Controller
         if ($storedOtp !== $request->otp) {
             return response()->json([
                 'success' => false,
-                'message' => 'Incorrect OTP'
+                'message' => 'Invalid OTP'
             ], 400);
         }
 
@@ -82,7 +82,7 @@ class OtpController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'OTP Verified Successfully'
+            'message' => 'OTP verified successfully'
         ]);
     }
 

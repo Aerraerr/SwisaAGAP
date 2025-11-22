@@ -10,7 +10,7 @@ class CreditScore extends Model
 
     // Set default value at model level
     protected $attributes = [
-        'score' => 20,
+        'score' => 0,
     ];
 
     public function user()

@@ -50,12 +50,15 @@ class DocumentController extends Controller
             $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('documents', $filename, 'public');
 
-            // Save to database using polymorphic relationship
+            // ✅ Save to database with additional fields
             $document = Document::create([
                 'grant_requirement_id' => $request->grant_requirement_id,
                 'status_id' => 3, // Pending verification
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
+                'file_type' => $file->getClientMimeType(), // ✅ NEW
+                'file_size' => $file->getSize(),            // ✅ NEW
+                'document_type' => 'initial',                // ✅ NEW
                 'documentable_id' => $request->application_id,
                 'documentable_type' => Application::class,
             ]);

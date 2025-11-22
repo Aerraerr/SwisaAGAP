@@ -5,33 +5,30 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Document extends Model
+class ApplicationStatusHistory extends Model
 {
     use HasFactory;
 
     public $timestamps = true;
 
     protected $fillable = [
-        'grant_requirement_id',
+        'application_id',
         'status_id',
-        'file_path',
-        'file_name',
-        'file_type',
-        'file_size',
-        'document_type',
-        'requirement_id',
-        'documentable_id',
-        'documentable_type',
+        'notes',
+        'changed_by',
+        'created_at',
+        'updated_at',
     ];
 
+    // ✅ Cast created_at and updated_at to datetime
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
-    public function grantRequirement()
+    public function application()
     {
-        return $this->belongsTo(GrantRequirement::class);
+        return $this->belongsTo(Application::class);
     }
 
     public function status()
@@ -39,8 +36,8 @@ class Document extends Model
         return $this->belongsTo(Status::class);
     }
 
-    public function documentable()
+    public function changedBy()
     {
-        return $this->morphTo();
+        return $this->belongsTo(User::class, 'changed_by');
     }
 }
