@@ -10,8 +10,8 @@ class CreditScoreController extends Controller {
         // Eager load the relationships for efficiency
         $user->load('creditScore', 'creditScoreHistory');
 
-        // Now you can safely use the score - it defaults to 20 from the model
-        $currentScore = $user->creditScore?->score ?? 0;
+        // Provide a default score of 0 if the relationship doesn't exist yet
+        $currentScore = $user->creditScore ? $user->creditScore->score : 0;
         $history = $user->creditScoreHistory;
 
         return response()->json([
@@ -20,3 +20,4 @@ class CreditScoreController extends Controller {
         ]);
     }
 }
+

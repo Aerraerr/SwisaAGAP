@@ -39,7 +39,7 @@ class CheckTrainingNoShows extends Command
                         $creditScore = CreditScore::where('user_id', $participant->user_id)->first();
                         
                         if ($creditScore) {
-                            $creditScore->current_score = max(0, $creditScore->current_score - 5);
+                            $creditScore->score = max(0, $creditScore->score - 5);
                             $creditScore->save();
 
                             CreditScoreHistory::create([

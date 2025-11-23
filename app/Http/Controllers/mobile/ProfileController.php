@@ -23,6 +23,7 @@ class ProfileController extends Controller
             'user' => [
                 'id' => $user->id,
                 'email' => $user->email,
+                'phone_number' => $user->phone_number, // ✅ ADD THIS LINE
                 'role_id' => $user->role_id,
                 
                 // Basic info from users table
@@ -120,8 +121,6 @@ class ProfileController extends Controller
 
             $path = $request->file('profile_picture')->store('profile_pictures', 'public');
             $user->userInfo->update(['profile_img' => $path]);
-
-            $user->userInfo->refresh();
 
             return response()->json([
                 'success' => true,

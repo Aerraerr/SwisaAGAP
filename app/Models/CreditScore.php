@@ -10,7 +10,12 @@ class CreditScore extends Model
     use HasFactory;
     
     protected $fillable = ['user_id', 'score'];
-    
+
+    public function setScoreAttribute($value)
+    {
+         $this->attributes['score'] = max(0, min($value, 50));
+    }
+
     // ✅ Add relationship to User
     public function user()
     {

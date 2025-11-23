@@ -14,8 +14,10 @@ use App\Http\Controllers\mobile\CreditScoreController;
 use App\Http\Controllers\mobile\DocumentController;
 use App\Http\Controllers\mobile\ProfileController;
 use App\Http\Controllers\mobile\MembershipController;
+use App\Http\Controllers\Api\SettingsController; 
 use App\Http\Controllers\mobile\SectorController;
 use App\Http\Controllers\mobile\GrantController;
+use App\Http\Controllers\Api\ApplicationController;
 use App\Http\Controllers\mobile\GrantApplicationController;
 use App\Http\Controllers\mobile\OtpController;
 use App\Http\Controllers\mobile\PhoneOtpController;
@@ -41,10 +43,23 @@ Route::prefix('mobile')->group(function (Router $router) {
         $router->post('/change-password', [AuthController::class, 'changePassword']);
 
         Route::get('/grants', [GrantController::class, 'index']);
+        Route::get('/grant-settings', [SettingsController::class, 'getGrantSettings']);
+
+
+        // Contributions 
+        // Contributions
+        Route::post('/{applicationId}/contribute', [ApplicationController::class, 'contribute']);
+        Route::get('/{applicationId}/contributions', [ApplicationController::class, 'getContributions']);
+        Route::post('/{applicationId}/contributions', [ApplicationController::class, 'submitContribution']);
+        
+        Route::get('/grant-applications/{id}', [GrantApplicationController::class, 'getClaimDetails']);
 
         Route::post('/grant-applications', [GrantApplicationController::class, 'store']);
         Route::get('/grant-applications', [GrantApplicationController::class, 'index']);
         Route::get('/grant-applications/{id}', [GrantApplicationController::class, 'show']);
+         Route::post('/grant-applications/{id}/approve', [GrantApplicationController::class, 'approve']);
+        Route::post('/grant-applications/{id}/reject', [GrantApplicationController::class, 'reject']);
+        Route::post('/grant-applications/{id}/complete', [GrantApplicationController::class, 'complete']);
 
     });
 });
@@ -102,11 +117,15 @@ Route::middleware(['auth:sanctum'])->group(function() {
      Route::post('/profile/picture', [ProfileController::class, 'updatePicture']);
      // Membership 
     Route::post('/membership-application', [MembershipController::class, 'store']);
+    Route::post('/membership-application/{id}/approve', [MembershipController::class, 'approveMembership']);
+    Route::post('/membership-application/{id}/reject', [MembershipController::class, 'rejectMembership']);
      // Grant Applications
     Route::post('/grant-applications', [GrantApplicationController::class, 'store']);
        // Document Management
     Route::post('/documents/upload', [DocumentController::class, 'upload']);
   });
+
+
 
 // Trainings routes (protected sanctum auth)
 Route::prefix('mobile')->middleware('auth:sanctum')->group(function () {
@@ -127,4 +146,20 @@ Route::get('/check-php-config', function () {
         'post_max_size' => $postMax,
         'message' => 'These are the current settings your server is using.'
     ]);
+});
+
+//============================================
+// FOR CHAT 
+//============================================
+use App\Http\Controllers\mobile\MobileChatController;
+
+Route::middleware('auth:sanctum')->prefix('mobile/chat')->group(function () {
+    // Changed from post /get-or-create to get /get (no creation, just fetch)
+    Route::get('/get', [MobileChatController::class, 'getChat']);
+
+    // Keep existing message endpoints
+    Route::post('/send', [MobileChatController::class, 'sendMessage']);
+    Route::get('/history/{chat_id}', [MobileChatController::class, 'getChatHistory']);
+    Route::get('/quick-replies/{role_id}', [MobileChatController::class, 'getQuickReplies']);
+    Route::post('/mark-read', [MobileChatController::class, 'markAsRead']);
 });

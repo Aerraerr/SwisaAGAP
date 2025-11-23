@@ -14,8 +14,8 @@ class UserInfo extends Model
         'fname',
         'mname',
         'lname',
-        'name', // ✅ Added (full name)
-        'name', // ✅ Added (full name)
+        'name', // Added (full name)
+        'name', // Added (full name)
         'suffix',
         'birthdate',
         'civil_status',
@@ -72,13 +72,6 @@ class UserInfo extends Model
     {
         return $this->morphMany(Document::class, 'documentable');
     }
-    public function documents()
-    {
-        return $this->morphMany(Document::class, 'documentable');
-    }
-
-    public function user()
-    {
     public function user()
     {
         return $this->belongsTo(User::class);

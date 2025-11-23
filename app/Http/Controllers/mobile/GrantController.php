@@ -8,16 +8,12 @@ use Illuminate\Http\JsonResponse;
 
 class GrantController extends Controller
 {
-   public function index(): JsonResponse
-{
-    $grants = Grant::with(['grantType', 'grantRequirements.requirement'])
-        ->withCount('applications')
-        ->get();
+    public function index(): JsonResponse
+    {
+        $grants = Grant::with(['grantType', 'grantRequirements.requirement'])
+            ->withCount('applications')
+            ->get();
 
-    return response()->json([
-        'success' => true,
-        'data' => $grants
-    ]);
-}
-
+        return response()->json($grants);
+    }
 }

@@ -13,6 +13,9 @@ use App\Models\CreditScoreHistory;
 
 class MembershipController extends Controller
 {
+    /**
+     * Submit membership application
+     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -24,7 +27,7 @@ class MembershipController extends Controller
             'birthdate' => 'required|date',
             'civil_status' => 'nullable|string',
             'gender' => 'required|string',
-            'contact_info' => 'required|string', // ✅ Changed from contact_no
+            'contact_info' => 'required|string',
             'province' => 'required|string',
             'city' => 'required|string',
             'house_no' => 'nullable|string',
@@ -38,13 +41,12 @@ class MembershipController extends Controller
             'sc_lname' => 'nullable|string',
             'sc_suffix' => 'nullable|string',
             'sc_gender' => 'nullable|string',
-            'sc_contact_info' => 'nullable|string', // ✅ Changed from sc_phone/sc_email
+            'sc_contact_info' => 'nullable|string',
             'sc_province' => 'nullable|string',
             'sc_city' => 'nullable|string',
             'sc_house_no' => 'nullable|string',
             'sc_barangay' => 'nullable|string',
             'sc_zone' => 'nullable|string',
-            'sector_id' => 'required|integer',
             'relationship' => 'nullable|string',
             'valid_id' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
@@ -59,7 +61,7 @@ class MembershipController extends Controller
             ], 409);
         }
 
-        // ✅ Auto-detect primary contact (phone or email)
+        // Auto-detect primary contact (phone or email)
         $primaryContact = $validatedData['contact_info'];
         $contactPhone = null;
         $contactEmail = null;
@@ -70,7 +72,7 @@ class MembershipController extends Controller
             $contactPhone = $primaryContact;
         }
         
-        // ✅ Auto-detect secondary contact (phone or email)
+        // Auto-detect secondary contact (phone or email)
         $secondaryContact = $validatedData['sc_contact_info'] ?? null;
         $scPhone = null;
         $scEmail = null;
@@ -83,7 +85,7 @@ class MembershipController extends Controller
             }
         }
 
-        // ✅ Create UserInfo with smart detection
+        // Create UserInfo with smart detection
         $userInfo = UserInfo::create([
             'user_id' => $user->id,
             'farmer_type' => $validatedData['farmer_type'],
@@ -96,7 +98,7 @@ class MembershipController extends Controller
             'civil_status' => $validatedData['civil_status'],
             'gender' => $validatedData['gender'],
             
-            // ✅ Store contact in both formats
+            // Store contact in both formats
             'contact_info' => $primaryContact,
             'phone_no' => $contactPhone,
             'email' => $contactEmail,
@@ -117,7 +119,7 @@ class MembershipController extends Controller
             'sc_suffix' => $validatedData['sc_suffix'],
             'sc_gender' => $validatedData['sc_gender'],
             
-            // ✅ Store secondary contact in both formats
+            // Store secondary contact in both formats
             'sc_contact_info' => $secondaryContact,
             'sc_phone_no' => $scPhone,
             'sc_email' => $scEmail,
@@ -128,27 +130,25 @@ class MembershipController extends Controller
             'sc_barangay' => $validatedData['sc_barangay'],
             'sc_zone' => $validatedData['sc_zone'],
             'relationship' => $validatedData['relationship'],
-
-            'sector_id' => $validatedData['sector_id'],
         ]);
 
-        // ✅ Create Application record for membership
+        // Create Application with PENDING status
         $application = Application::create([
             'user_id' => $user->id,
             'grant_id' => null,
-            'status_id' => 3, // 3 ang pending
+            'status_id' => 4, // PENDING STATUS
             'application_type' => 'Membership',
             'purpose' => 'Membership Application',
         ]);
 
-        // ✅ Store Valid ID document
+        // Store Valid ID document
         if ($request->hasFile('valid_id')) {
             $file = $request->file('valid_id');
             $path = $file->store('membership_documents', 'public');
             
             Document::create([
                 'grant_requirement_id' => null,
-                'status_id' => 4,
+                'status_id' => 4, // PENDING STATUS
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'documentable_type' => 'App\Models\Application',
@@ -156,33 +156,121 @@ class MembershipController extends Controller
             ]);
         }
 
-        // Generate QR code
-        $userInfo->qr_code = Str::uuid()->toString();
-        $userInfo->save();
-
-        // Assign initial credit score
-        $user->creditScore()->create([
-            'score' => 20,
-        ]);
-
-        // Create credit history
-        $user->creditScoreHistory()->create([
-            'activity' => 'Membership Approved',
-            'points' => 20
-        ]);
-
-        // Change user role to member
-        $user->update(['role_id' => 2]);
-
         return response()->json([
             'success' => true,
-            'message' => 'Membership application submitted successfully!',
+            'message' => 'Membership application submitted successfully! Please wait for admin approval.',
             'user_info' => $userInfo,
             'application' => $application
         ], 201);
     }
+
+    /**
+     * Approve membership application (Admin only)
+     */
+    public function approveMembership(Request $request, $applicationId)
+    {
+        $application = Application::findOrFail($applicationId);
+        
+        // Check if application is for membership
+        if ($application->application_type !== 'Membership') {
+            return response()->json([
+                'success' => false,
+                'message' => 'This is not a membership application.'
+            ], 400);
+        }
+        
+        // Check if already approved
+        if ($application->status_id == 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Application already approved.'
+            ], 400);
+        }
+        
+        $user = $application->user;
+        $userInfo = $user->userInfo;
+        
+        // Update application status to APPROVED
+        $application->update(['status_id' => 1]); // 1 = Approved
+        
+        // Update document status to APPROVED
+        $application->documents()->update(['status_id' => 1]);
+        
+        // Generate QR code
+        if (!$userInfo->qr_code) {
+            $userInfo->qr_code = Str::uuid()->toString();
+            $userInfo->save();
+        }
+        
+        // Assign initial credit score (if not exists)
+        if (!$user->creditScore) {
+            $user->creditScore()->create([
+                'score' => 20,
+            ]);
+            
+            // Create credit history
+            $user->creditScoreHistory()->create([
+                'activity' => 'Membership Approved',
+                'points' => 20
+            ]);
+        }
+        
+        // Change user role to member
+        $user->update(['role_id' => 2]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Membership application approved successfully!',
+            'application' => $application,
+        ]);
+    }
+
+    /**
+     * Reject membership application (Admin only)
+     */
+    public function rejectMembership(Request $request, $applicationId)
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        $application = Application::findOrFail($applicationId);
+        
+        // Check if application is for membership
+        if ($application->application_type !== 'Membership') {
+            return response()->json([
+                'success' => false,
+                'message' => 'This is not a membership application.'
+            ], 400);
+        }
+        
+        // Check if already rejected
+        if ($application->status_id == 3) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Application already rejected.'
+            ], 400);
+        }
+        
+        // Update application status to REJECTED
+        $application->update([
+            'status_id' => 3, // 3 = Rejected
+            'rejection_reason' => $request->input('reason'),
+        ]);
+        
+        // Update document status to REJECTED
+        $application->documents()->update(['status_id' => 3]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Membership application rejected.',
+            'application' => $application,
+        ]);
+    }
     
-    // ✅ Helper method to detect if input is email
+    /**
+     * Helper method to detect if input is email
+     */
     private function isEmail($value)
     {
         return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
