@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\GrantController;
 
 Route::get('/', function () {
     return view('auth.landing');
@@ -96,6 +97,19 @@ Route::get('/view-report', function () {
 Route::get('/view-giveback', function () {
     return view('swisa-support_staff.view-giveback');
 })->middleware(['auth', 'verified'])->name('view-giveback');
+
+Route::middleware('auth')->group(function () {
+    //-----------GRANT ROUTES-------------
+
+    //display grant
+    Route::get('/grantsNequipment', [GrantController::class, 'displayGrants'])->name('grantsNequipment');
+
+    //for view grant 
+    Route::get('/view-grant/{id}', [GrantController::class, 'viewGrantDetails'])->name('view-grant');
+
+    //for grantcontroller/addgrant
+    Route::post('/grantsNequipment/add-grant', [GrantController::class, 'addGrant'])->name('grantsNequipment.store');
+});
 
 
 Route::middleware('auth')->group(function () {

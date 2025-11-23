@@ -105,24 +105,31 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/grant-applications', [GrantApplicationController::class, 'store']);
 
     // ============================================
-    // APPLICATIONS (Alternative Endpoints)
+    // APPLICATIONS (NEW - Includes Grants + Membership)
     // ============================================
-    Route::prefix('applications')->group(function () {
-        // List and single application
-        Route::get('/', [GrantApplicationController::class, 'index']);
-        Route::get('/{id}', [ApplicationController::class, 'show']);
-        
-        // Application actions
-        Route::post('/{id}/resubmit', [ApplicationController::class, 'resubmit']);
-        
-        // Contributions
-        Route::post('/{applicationId}/contribute', [ApplicationController::class, 'contribute']);
-        Route::get('/{applicationId}/contributions', [ApplicationController::class, 'getContributions']);
-        Route::post('/{applicationId}/contributions', [ApplicationController::class, 'submitContribution']);
-        
-        // Documents
-        Route::get('/{applicationId}/documents', [DocumentController::class, 'index']);
-    });
+    // ✅ Get all user applications (grants + membership)
+    Route::get('/applications', [ApplicationController::class, 'getMyApplications']);
+    
+    // ✅ Get single application details
+    Route::get('/applications/{id}', [ApplicationController::class, 'show']);
+    
+    // ✅ Claim approved grant
+    Route::post('/applications/{id}/claim', [ApplicationController::class, 'claimGrant']);
+    
+    // ✅ Resubmit documents for on-hold application
+    Route::post('/applications/{id}/resubmit', [ApplicationController::class, 'resubmit']);
+    
+    // ✅ Submit contribution after claiming
+    Route::post('/applications/{id}/contribute', [ApplicationController::class, 'contribute']);
+    
+    // ✅ Get contributions for specific application
+    Route::get('/applications/{id}/contributions', [ApplicationController::class, 'getContributions']);
+
+    // ============================================
+    // CONTRIBUTIONS (Global)
+    // ============================================
+    // ✅ Get all user contributions (across all applications)
+    Route::get('/contributions', [ApplicationController::class, 'getAllContributions']);
 
     // ============================================
     // DOCUMENT MANAGEMENT
@@ -154,4 +161,27 @@ if (config('app.debug')) {
         $result = \App\Services\SMSService::send('09171234567', 'Test message from SwisaAGAP');
         return response()->json($result);
     });
+    
+    // ✅ NEW: Test applications endpoint
+    Route::get('/test-applications', function() {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Not authenticated'], 401);
+        }
+        
+        return response()->json([
+            'user_id' => $user->id,
+            'grant_applications' => $user->applications()->count(),
+            'membership_applications' => $user->applications()->whereNull('grant_id')->count(),
+            'total_applications' => $user->applications()->count(),
+            'applications' => $user->applications()->with('status')->get()->map(function($app) {
+                return [
+                    'id' => $app->id,
+                    'type' => $app->application_type ?? ($app->grant_id ? 'Grant' : 'Membership'),
+                    'status' => $app->status->status_name ?? 'unknown',
+                    'grant_id' => $app->grant_id,
+                ];
+            }),
+        ]);
+    })->middleware('auth:sanctum');
 }
