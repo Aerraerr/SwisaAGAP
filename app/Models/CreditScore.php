@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CreditScore extends Model
 {
+    use HasFactory;
+    
     protected $fillable = ['user_id', 'score'];
-
-    // Set default value at model level
-    protected $attributes = [
-        'score' => 0,
-    ];
-
+    
+    // ✅ Add relationship to User
     public function user()
     {
         return $this->belongsTo(User::class);

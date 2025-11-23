@@ -21,6 +21,7 @@ use App\Models\PhoneOtp;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -33,13 +34,13 @@ class User extends Authenticatable
         'middle_name',
         'suffix',
         'email',
-        'password',
         'phone_number',
+        'password',
         'mpin',
+        'login_method', // ✅ ADDED
         'role_id',
-        'login_method', 
-        'phone_verified_at',
         'email_verified_at',
+        'phone_verified_at', // ✅ ADDED
     ];
 
     /**
@@ -61,20 +62,27 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'phone_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime', // ✅ ADDED
             'password' => 'hashed',
         ];
     }
 
-
-    // --- Relationships ---
+    // ============================================
+    // RELATIONSHIPS
+    // ============================================
 
     public function role()
     {
         return $this->belongsTo(Role::class);
     }
 
-    public function userInfo(): HasOne
+    public function userInfo()
+    {
+        return $this->hasOne(UserInfo::class);
+    }
+
+    // Alias for consistency
+    public function user_info()
     {
         return $this->hasOne(UserInfo::class);
     }
@@ -99,50 +107,25 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class);
     }
 
-    /**
-     * Get the credit score for the user.
-     */
-    public function creditScore(): HasOne
+    // ============================================
+    // CREDIT SCORE RELATIONSHIPS
+    // ============================================
+
+    public function creditScore()
     {
         return $this->hasOne(CreditScore::class);
     }
 
+    public function creditScoreHistory()
+    {
+        return $this->hasMany(CreditScoreHistory::class);
+    }
+
+    // ============================================
+    // PHONE OTP RELATIONSHIPS
+    // ============================================
+
     /**
-     * Get the credit score history for the user.
-     */
-    public function creditScoreHistory(): HasMany
-    {
-        return $this->hasMany(CreditScoreHistory::class)->latest();
-    }
-
-     /*Adjust the user's credit score and log it in history*/
-    public function adjustCreditScore(int $points, string $activity)
-    {
-        // Get or create credit score
-        $creditScore = $this->creditScore()->firstOrCreate(
-            ['user_id' => $this->id],
-            ['score' => 0]
-        );
-
-        // Update the score
-        $newScore = $creditScore->score + $points;
-        
-        // Don't let score go below 0
-        $newScore = max(0, $newScore);
-        
-        $creditScore->update(['score' => $newScore]);
-
-        // Log in history
-        CreditScoreHistory::create([
-            'user_id' => $this->id,
-            'activity' => $activity,
-            'points' => $points,
-        ]);
-
-        return $newScore;
-    }
-
-      /**
      * Get phone OTP records for this user
      */
     public function phoneOtps()
@@ -178,7 +161,28 @@ class User extends Authenticatable
     {
         return $this->email_verified_at !== null;
     }
-     /**
+
+    /**
+     * Get user's full name
+     */
+    public function getFullNameAttribute(): string
+    {
+        $name = trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+        if ($this->suffix && $this->suffix !== 'N/A') {
+            $name .= " {$this->suffix}";
+        }
+        return $name;
+    }
+
+    /**
+     * Get user's identifier (email or phone)
+     */
+    public function getIdentifierAttribute(): string
+    {
+        return $this->email ?? $this->phone_number ?? 'Unknown';
+    }
+
+    /**
      * Check if user registered with email
      */
     public function isEmailUser(): bool

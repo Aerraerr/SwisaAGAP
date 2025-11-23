@@ -3,13 +3,15 @@
   src: url("../fonts/ProductSans-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+}
 
-}@font-face {
+@font-face {
   font-family: 'Rubik';
   src: url('../fonts/Rubik1/Rubik-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
+
 @font-face {
   font-family: 'Poppins';
   src: url('../fonts/poppins/Poppins-Regular.ttf') format('truetype');
@@ -31,14 +33,12 @@
   font-style: normal;
 }
 
-
 :root {
   --primary-green: #2C6E49;
   --unselect-green: #697a8d;
   --accent-green: #2f8f4e;
   --hover-green: #D0E9D4;
   --light-bg: #eaf4ec;
-  --submenu-bg: #f3faf4;
   --icon-color: #68B2AB;
 }
 
@@ -76,23 +76,23 @@ body {
 }
 
 .hamburger.active-bg {
-  background-color:  transparent !important;
+  background-color: transparent !important;
   color: var(--icon-color) !important;
   font-size: 30px;
   left: 8px;
 }
+
 .hamburger.active-bg:hover {
-  background-color: var(--hover-green) !important; /* change background on hover */
-  color: var(--primary-green) !important;          /* change icon color on hover */
-  border-radius: 2px;                               /* optional: rounded hover effect */
+  background-color: var(--hover-green) !important;
+  color: var(--primary-green) !important;
+  border-radius: 2px;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-
 
 .sidebar {
   display: flex;
   flex-direction: column;
-  width: 250px;
+  width: 270px;
   background-color: #E8F6EF;
   height: 100%;
   position: fixed;
@@ -103,10 +103,13 @@ body {
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   color: var(--primary-green);
-    overflow: hidden;
+  overflow: hidden;
+  padding-left: 10px;
+  padding-right: 10px;
 }
-.managesec{
-  opacity: 0.5; 
+
+.managesec {
+  opacity: 0.5;
   cursor: default;
   color: var(--unselect-green);
 }
@@ -117,8 +120,8 @@ body {
 
 .sidebar-header {
   display: flex;
-  align-items: center;   /* vertically aligns inside header height */
-  justify-content: flex-start; /* keep it on the left side */
+  align-items: center;
+  justify-content: flex-start;
   padding: 15px;
   color: var(--primary-green);
 }
@@ -127,119 +130,88 @@ body {
   height: 70px;
   width: 180px;
   object-fit: contain;
-  margin-right: 0; /* remove old spacing */
+  margin-right: 0;
   margin-left: 10px;
   margin-top: -5px;
 }
 
 .sidebar.collapsed .sidebar-header {
-  justify-content: center; /* center when collapsed */
+  justify-content: center;
 }
 
 .sidebar.collapsed .brand-title {
-  display: transparent !important;
-  color: transparent;
+  display: none !important;
 }
 
 .sidebar.collapsed .menu-text,
-.sidebar.collapsed .submenu,
-.sidebar.collapsed .dropdown-icon,
 .sidebar.collapsed .managesec,
 .sidebar.collapsed .sidebar-logo {
   display: none !important;
 }
 
-
 .sidebar-menu {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 10px;
+  padding-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* spacing between items */
 }
 
 .sidebar.collapsed .sidebar-menu {
   overflow: hidden;
+  padding-top: 50px;
 }
 
 .sidebar .menu-item {
-  padding: 10px 10px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  cursor: pointer;
+  gap: 5px;              /* space between icon and text */
+  padding: 10px 20px;
   color: var(--icon-color);
   text-decoration: none;
-  padding-left: 20px;
   font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  border-radius: 5px;
+
+  /* handle long labels */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .menu-item:hover {
   background-color: var(--hover-green);
   border-right: 4px solid var(--primary-green);
   font-weight: bold;
+  border-radius: 5px;
 }
 
 .menu-item i {
   font-size: 20px;
   color: #68B2AB;
-  
+  flex-shrink: 0;
 }
 
-.sidebar.collapsed .menu-item i {
-  font-size: 30px;      
-  margin-left: 10px;      
-  text-align: center; 
+.menu-text {
+  flex: 1;
+  word-break: break-word;
 }
+
 .sidebar.collapsed .menu-item {
-  padding-left: 10px;  
-     
-
-}
-.sidebar.collapsed .sidebar-menu{
-  padding-top: 50px;
-}
-
-.submenu {
-  display: none;
-  flex-direction: column;
-  padding-left: 40px;
-  background-color: var(--submenu-bg);
-}
-.submenu-item {
-  padding: 10px 20px;
-  color: var(--primary-green);
-  text-decoration: none;
-  font-size: 14px;
-  font-family: 'Poppins', sans-serif;
+  justify-content: center; /* center icon */
+  padding: 15px 0; /* remove side padding */
+  margin: 0 auto;
+  width: 100%;
+  height: 50px;
 }
 
-.submenu-item:hover {
-  background-color: var(--hover-green);
-  border-right: 4px solid var(--primary-green);
-
+/* 🔑 Add margin-bottom for collapsed icons */
+.sidebar.collapsed .menu-item i {
+  font-size: 26px;
+  text-align: center;
+  margin-bottom: 2px; /* << adjust spacing under icons */
 }
-
-.dropdown-icon {
-  margin-left: auto;
-  transition: transform 0.3s ease;
-  color: rgba(104, 178, 171, 0.46) !important; /* same as var(--icon-color) but 80% */
-}
-
-.dropdown-toggle.open .dropdown-icon {
-  transform: rotate(180deg);
-  
-  
-}
-.dropdown-toggle.open{
-  background-color: var(--hover-green);
-  border-right: 4px solid var(--primary-green);
-  color: var(--primary-green);
-  font-weight: bold;
-}
-.dropdown-toggle.open i{
-  color: var(--primary-green);
-}
-
-
 
 .user-section {
   padding: 10px 0;
@@ -292,34 +264,35 @@ body {
 .sidebar.collapsed ~ .main-content {
   margin-left: 70px;
 }
-.sidebar-closebtn{
-  font-family: 'Producs Sans', sans-serif; 
+
+.sidebar-closebtn {
+  font-family: 'Product Sans', sans-serif;
   color: #68B2AB;
 }
 
-    .menu-item.active {
-      background-color: var(--hover-green) !important;
-      border-right: 4px solid var(--primary-green);
-      color: var(--primary-green) !important;
-      font-weight: bold;
-    }
-    .menu-item.active i { 
-      color: var(--primary-green) !important; 
-    }
+.menu-item.active {
+  background-color: var(--hover-green) !important;
+  border-right: 4px solid var(--primary-green);
+  color: var(--primary-green) !important;
+  font-weight: bold;
+  border-radius: 5px;
 
-    .submenu { display: none; flex-direction: column; padding-left: 20px; }
-    .submenu.show { display: flex; }
+  /* Fix shifting */
+  margin: 0;
+  padding-left: 20px;
+  box-sizing: border-box;
+}
 
-    .submenu-item.active {
-        background: #E6F4EA;
-        color: #2C6E49 !important;
-        font-weight: bold;
-        border-radius: 4px;
-    }
+.menu-item.active i {
+  color: var(--primary-green) !important;
+}
 
-
-
-
-
-
-
+.sidebar.collapsed .menu-item.active {
+  justify-content: center;
+  margin-bottom: 0px;
+  border-radius: 5px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+}

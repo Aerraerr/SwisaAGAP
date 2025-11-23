@@ -1,7 +1,7 @@
 <div 
     x-data="requestChart()" 
     x-init="initChart()" 
-    class="col-span-12 lg:col-span-9 bg-white rounded-md shadow p-4"
+    class="col-span-12 lg:col-span-9 bg-white rounded-xl shadow p-2 pt-1"
 >
     <!-- Header -->
     <div class="flex justify-between items-center mb-2 p-5">

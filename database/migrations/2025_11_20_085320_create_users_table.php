@@ -21,9 +21,21 @@ return new class extends Migration
             $table->string('phone_number')->unique()->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('phone_verified_at')->nullable();
+            
+            // Security
             $table->string('password');
             $table->string('mpin')->nullable();
             $table->foreignId('role_id')->nullable();
+            $table->string('mpin', 60);
+            
+            // Login Method
+            $table->enum('login_method', ['email', 'phone'])->default('email');
+            
+            // ✅ CHANGED: Remove foreign key constraint, just use unsignedBigInteger
+            $table->unsignedBigInteger('role_id')->nullable();
+            // No foreign key constraint - you can add it later when roles table exists
+            
             $table->rememberToken();
             $table->timestamps();
         });

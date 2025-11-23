@@ -4,8 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-use function Laravel\Prompts\password;
-
 return new class extends Migration
 {
     /**
@@ -13,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('role_id')->nullable()->constrained('roles')->onDelete('cascade')->after('password');
+        Schema::create('grant_settings', function (Blueprint $table) {
+            $table->id();
+            $table->string('setting_key')->unique();
+            $table->string('setting_value');
+            $table->text('description')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -23,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('grant_settings');
     }
 };

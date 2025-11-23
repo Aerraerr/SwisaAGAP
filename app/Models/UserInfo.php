@@ -11,13 +11,14 @@ class UserInfo extends Model
     protected $fillable = [
         'user_id',
         'farmer_type',
-    
         'fname',
         'mname',
         'lname',
         'name', // ✅ Added (full name)
+        'name', // ✅ Added (full name)
         'suffix',
         'birthdate',
+        'civil_status',
         'civil_status',
         'gender',
         'profile_img',
@@ -29,11 +30,14 @@ class UserInfo extends Model
         'province',
         'city',
         'house_no',
+        'house_no',
         'barangay',
         'zone',
         'farm_location',
         'land_size',
         'water_source',
+        
+        // Secondary Contact
         
         // Secondary Contact
         'sc_fname',
@@ -47,12 +51,20 @@ class UserInfo extends Model
         'sc_phone_no',        // Extracted phone number
         'sc_email',        // Extracted email
         
+        
+        // ✅ NEW: Secondary contact fields
+        'sc_contact_info', // Raw input (email or phone)
+        'sc_phone_no',        // Extracted phone number
+        'sc_email',        // Extracted email
+        
         'sc_province',
         'sc_city',
+        'sc_house_no',
         'sc_house_no',
         'sc_barangay',
         'sc_zone',
         'relationship',
+        'qr_code',
         'qr_code',
     ];
 
@@ -60,7 +72,13 @@ class UserInfo extends Model
     {
         return $this->morphMany(Document::class, 'documentable');
     }
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
 
+    public function user()
+    {
     public function user()
     {
         return $this->belongsTo(User::class);
