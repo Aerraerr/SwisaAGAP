@@ -16,6 +16,107 @@ use Illuminate\Support\Facades\Log;
 class ApplicationController extends Controller
 {
     /**
+     * ✅ GET ALL USER APPLICATIONS (GRANTS + MEMBERSHIP)
+     */
+    public function getMyApplications()
+    {
+        try {
+            $userId = auth()->id();
+            Log::info('📋 FETCHING ALL APPLICATIONS FOR USER: ' . $userId);
+
+            $applications = Application::with([
+                'grant.grantType',
+                'status',
+                'statusHistories.status'
+            ])
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($app) {
+                // ✅ Handle MEMBERSHIP applications (no grant)
+                if ($app->application_type === 'Membership' || $app->grant_id === null) {
+                    return [
+                        'id' => $app->id,
+                        'user_id' => $app->user_id,
+                        'grant_id' => null,
+                        'status_id' => $app->status_id,
+                        'purpose' => $app->purpose ?? 'Membership Application',
+                        'created_at' => $app->created_at?->toIso8601String(),
+                        'updated_at' => $app->updated_at?->toIso8601String(),
+                        'grant' => [
+                            'id' => 0,
+                            'grant_name' => 'SWISA Membership',
+                            'description' => 'Become a member of SWISA to access grants and benefits',
+                            'total_quantity' => null,
+                            'grant_type' => [
+                                'id' => 999,
+                                'type_name' => 'Membership',
+                            ],
+                        ],
+                        'status' => [
+                            'id' => $app->status->id,
+                            'status_name' => $app->status->status_name,
+                        ],
+                        'status_histories' => $app->statusHistories->map(function ($history) {
+                            return [
+                                'status_name' => $history->status->status_name ?? null,
+                                'created_at' => $history->created_at?->toIso8601String(),
+                            ];
+                        }),
+                        'type' => 'membership',
+                    ];
+                }
+
+                // ✅ Handle GRANT applications
+                return [
+                    'id' => $app->id,
+                    'user_id' => $app->user_id,
+                    'grant_id' => $app->grant_id,
+                    'status_id' => $app->status_id,
+                    'purpose' => $app->purpose,
+                    'created_at' => $app->created_at?->toIso8601String(),
+                    'updated_at' => $app->updated_at?->toIso8601String(),
+                    'grant' => [
+                        'id' => $app->grant->id,
+                        'grant_name' => $app->grant->title ?? $app->grant->grant_name,
+                        'description' => $app->grant->description,
+                        'total_quantity' => $app->grant->total_quantity ?? $app->grant->applicant_limit,
+                        'grant_type' => [
+                            'id' => $app->grant->grantType->id,
+                            'type_name' => $app->grant->grantType->grant_type ?? $app->grant->grantType->type_name,
+                        ],
+                    ],
+                    'status' => [
+                        'id' => $app->status->id,
+                        'status_name' => $app->status->status_name,
+                    ],
+                    'status_histories' => $app->statusHistories->map(function ($history) {
+                        return [
+                            'status_name' => $history->status->status_name ?? null,
+                            'created_at' => $history->created_at?->toIso8601String(),
+                        ];
+                    }),
+                    'type' => 'grant',
+                ];
+            });
+
+            Log::info('✅ Total applications fetched: ' . $applications->count());
+
+            return response()->json($applications, 200);
+
+        } catch (\Exception $e) {
+            Log::error('❌ FETCH MY APPLICATIONS ERROR: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch applications',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * ✅ GET SINGLE APPLICATION BY ID - WITH STATUS HISTORY NAMES & DATES
      */
     public function show($id)
@@ -57,9 +158,6 @@ class ApplicationController extends Controller
                 ->get();
 
             Log::info('📊 Status histories count: ' . $statusHistories->count());
-            foreach ($statusHistories as $history) {
-                Log::info('  - ' . $history->status_name . ' at ' . $history->created_at);
-            }
 
             return response()->json([
                 'success' => true,
@@ -76,7 +174,7 @@ class ApplicationController extends Controller
                         'status_name' => $application->status->status_name,
                     ],
                     
-                    'grant' => [
+                    'grant' => $application->grant ? [
                         'id' => $application->grant->id,
                         'title' => $application->grant->title ?? $application->grant->grant_name,
                         'grant_name' => $application->grant->grant_name ?? $application->grant->title,
@@ -98,7 +196,7 @@ class ApplicationController extends Controller
                                 'description' => $gr->requirement->description ?? 'Please upload a clear photo',
                             ];
                         }),
-                    ],
+                    ] : null,
                     
                     'documents' => $application->documents->map(function ($doc) {
                         return [
@@ -321,8 +419,7 @@ class ApplicationController extends Controller
     }
 
     /**
-     * ✅ SUBMIT CONTRIBUTION - NO CREDIT SCORE
-     * Grant Application status → 'completed' | Contribution status → 'pending' (admin review)
+     * ✅ SUBMIT CONTRIBUTION
      */
     public function contribute(Request $request, $id)
     {
@@ -360,7 +457,6 @@ class ApplicationController extends Controller
             $imagePath = $request->file('image')->store('contributions', 'public');
             Log::info('✅ Step 5: Image uploaded - Path: ' . $imagePath);
 
-            // ✅ STEP 6: Find 'pending' status for contribution (admin review)
             $pendingStatus = Status::where('status_name', 'pending')->first();
             if (!$pendingStatus) {
                 Log::error('❌ Step 6: Pending status not found');
@@ -368,7 +464,6 @@ class ApplicationController extends Controller
             }
             Log::info('✅ Step 6: Pending status found - ID: ' . $pendingStatus->id);
 
-            // ✅ STEP 7: Create contribution with 'pending' status (admin review)
             $contribution = new Contribution();
             $contribution->application_id = $id;
             $contribution->user_id = auth()->id();
@@ -377,16 +472,15 @@ class ApplicationController extends Controller
             $contribution->quantity_unit = $validated['quantity_unit'];
             $contribution->image_path = $imagePath;
             $contribution->notes = $validated['notes'] ?? null;
-            $contribution->status_id = $pendingStatus->id; // ✅ Contribution pending for admin review
+            $contribution->status_id = $pendingStatus->id;
             $contribution->save();
             
             Log::info('✅ Step 7: Contribution created with pending status - ID: ' . $contribution->id);
 
-            // ✅ STEP 8: Find 'completed' status for application (grant itself)
             $completedStatus = Status::where('status_name', 'completed')->first();
             if ($completedStatus) {
                 $now = now();
-                $app->status_id = $completedStatus->id; // ✅ Application is completed
+                $app->status_id = $completedStatus->id;
                 $app->updated_at = $now;
                 $app->save();
                 
@@ -412,8 +506,8 @@ class ApplicationController extends Controller
                     'quantity' => $contribution->quantity,
                     'quantity_unit' => $contribution->quantity_unit,
                     'image_path' => $imagePath,
-                    'contribution_status' => 'pending', // ✅ For admin to check
-                    'application_status' => 'completed', // ✅ Grant is completed
+                    'contribution_status' => 'pending',
+                    'application_status' => 'completed',
                     'timestamp' => $contribution->created_at->toIso8601String(),
                 ]
             ], 200);
@@ -462,7 +556,7 @@ class ApplicationController extends Controller
                         'type' => $contribution->type,
                         'quantity' => $contribution->quantity,
                         'quantity_unit' => $contribution->quantity_unit ?? 'PHP',
-                        'image_path' => url('storage/' . $contribution->image_path), // ✅ FULL URL!
+                        'image_path' => url('storage/' . $contribution->image_path),
                         'notes' => $contribution->notes,
                         'status' => $contribution->status->status_name ?? 'pending',
                         'created_at' => $contribution->created_at->toIso8601String(),
@@ -504,7 +598,7 @@ class ApplicationController extends Controller
                         'type' => $contribution->type,
                         'quantity' => $contribution->quantity,
                         'quantity_unit' => $contribution->quantity_unit ?? 'PHP',
-                        'image_path' => url('storage/' . $contribution->image_path), // ✅ FULL URL!
+                        'image_path' => url('storage/' . $contribution->image_path),
                         'notes' => $contribution->notes,
                         'status' => $contribution->status->status_name ?? 'pending',
                         'created_at' => $contribution->created_at->toIso8601String(),

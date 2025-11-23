@@ -180,7 +180,7 @@ class MembershipController extends Controller
         }
         
         // Check if already approved
-        if ($application->status_id == 1) {
+        if ($application->status_id == 5) {
             return response()->json([
                 'success' => false,
                 'message' => 'Application already approved.'
@@ -191,10 +191,10 @@ class MembershipController extends Controller
         $userInfo = $user->userInfo;
         
         // Update application status to APPROVED
-        $application->update(['status_id' => 1]); // 1 = Approved
+        $application->update(['status_id' => 5]); // 5 = Approved
         
         // Update document status to APPROVED
-        $application->documents()->update(['status_id' => 1]);
+        $application->documents()->update(['status_id' => 5]);
         
         // Generate QR code
         if (!$userInfo->qr_code) {
@@ -245,7 +245,7 @@ class MembershipController extends Controller
         }
         
         // Check if already rejected
-        if ($application->status_id == 3) {
+        if ($application->status_id == 7) {
             return response()->json([
                 'success' => false,
                 'message' => 'Application already rejected.'
@@ -254,12 +254,12 @@ class MembershipController extends Controller
         
         // Update application status to REJECTED
         $application->update([
-            'status_id' => 3, // 3 = Rejected
+            'status_id' => 7, // 7 = Rejected
             'rejection_reason' => $request->input('reason'),
         ]);
         
         // Update document status to REJECTED
-        $application->documents()->update(['status_id' => 3]);
+        $application->documents()->update(['status_id' => 7]);
         
         return response()->json([
             'success' => true,

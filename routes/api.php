@@ -61,6 +61,29 @@ Route::prefix('mobile')->group(function (Router $router) {
         Route::post('/grant-applications/{id}/reject', [GrantApplicationController::class, 'reject']);
         Route::post('/grant-applications/{id}/complete', [GrantApplicationController::class, 'complete']);
 
+    // APPLICATIONS (NEW - Includes Grants + Membership)
+    // Get all user applications (grants + membership)
+    Route::get('/applications', [ApplicationController::class, 'getMyApplications']);
+    
+    // ✅ Get single application details
+    Route::get('/applications/{id}', [ApplicationController::class, 'show']);
+    
+    // ✅ Claim approved grant
+    Route::post('/applications/{id}/claim', [ApplicationController::class, 'claimGrant']);
+    
+    // ✅ Resubmit documents for on-hold application
+    Route::post('/applications/{id}/resubmit', [ApplicationController::class, 'resubmit']);
+    
+    // ✅ Submit contribution after claiming
+    Route::post('/applications/{id}/contribute', [ApplicationController::class, 'contribute']);
+    
+    // ✅ Get contributions for specific application
+    Route::get('/applications/{id}/contributions', [ApplicationController::class, 'getContributions']);
+
+    // CONTRIBUTIONS (Global)
+    // ✅ Get all user contributions (across all applications)
+    Route::get('/contributions', [ApplicationController::class, 'getAllContributions']);
+
     });
 });
 
