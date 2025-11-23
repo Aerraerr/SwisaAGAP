@@ -42,8 +42,7 @@ Route::prefix('mobile')->group(function (Router $router) {
         $router->post('/logout', [AuthController::class, 'logout']);
         $router->post('/change-password', [AuthController::class, 'changePassword']);
 
-        Route::get('/grants', [GrantController::class, 'index']);
-        Route::get('/grant-settings', [SettingsController::class, 'getGrantSettings']);
+        
 
 
         // Contributions 
@@ -158,6 +157,14 @@ Route::prefix('mobile')->middleware('auth:sanctum')->group(function () {
     Route::get('/trainings/{trainingId}', [TrainingsController::class, 'show']);
     Route::delete('/trainings/{trainingId}/cancel', [TrainingsController::class, 'cancelAttendance']);
 });
+
+Route::prefix('mobile')
+    ->middleware('auth:sanctum') 
+    ->group(function () {
+        Route::get('/grant-settings', [SettingsController::class, 'getGrantSettings']);
+        Route::get('/grants', [GrantController::class, 'index']);
+        // ...other routes
+    });
 
 // Debug route
 Route::get('/check-php-config', function () {
