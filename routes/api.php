@@ -20,29 +20,29 @@ use App\Http\Controllers\Api\PhoneOtpController;
 // ============================================
 
 // Authentication
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']); // Register new user account
+Route::post('/login', [AuthController::class, 'login']); // User login (returns auth token)
 
-// Public Data
-Route::get('/sectors', [SectorController::class, 'index']);
-Route::get('/grant-types', [GrantTypeController::class, 'index']);
+// Public Data - Available to all users
+Route::get('/sectors', [SectorController::class, 'index']); // Get list of all sectors (agriculture, fishery, etc.)
+Route::get('/grant-types', [GrantTypeController::class, 'index']); // Get list of grant types (cash, rice, etc.)
 
 // ============================================
 // OTP ROUTES (PUBLIC)
 // ============================================
 
-// Email OTP
+// Email OTP - For email verification
 Route::prefix('otp')->group(function () {
-    Route::post('/send', [OtpController::class, 'sendOtp']);
-    Route::post('/verify', [OtpController::class, 'verifyOtp']);
+    Route::post('/send', [OtpController::class, 'sendOtp']); // Send OTP to user's email
+    Route::post('/verify', [OtpController::class, 'verifyOtp']); // Verify email OTP code
 });
 
-// Phone/SMS OTP
+// Phone/SMS OTP - For phone number verification
 Route::prefix('phone/otp')->group(function () {
-    Route::post('/send', [PhoneOtpController::class, 'sendOtp']);
-    Route::post('/verify', [PhoneOtpController::class, 'verifyOtp']);
-    Route::post('/resend', [PhoneOtpController::class, 'resendOtp']);
-    Route::post('/check', [PhoneOtpController::class, 'checkVerification']);
+    Route::post('/send', [PhoneOtpController::class, 'sendOtp']); // Send SMS OTP to phone
+    Route::post('/verify', [PhoneOtpController::class, 'verifyOtp']); // Verify SMS OTP code
+    Route::post('/resend', [PhoneOtpController::class, 'resendOtp']); // Resend OTP if expired
+    Route::post('/check', [PhoneOtpController::class, 'checkVerification']); // Check if phone is verified
 });
 
 // ============================================
@@ -54,91 +54,82 @@ Route::middleware('auth:sanctum')->group(function() {
     // ============================================
     // AUTHENTICATION
     // ============================================
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout']); // User logout (invalidate token)
 
     // ============================================
-    // PROFILE
+    // PROFILE MANAGEMENT
     // ============================================
     Route::prefix('profile')->group(function () {
-        Route::get('/', [ProfileController::class, 'show']);
-        Route::post('/picture', [ProfileController::class, 'updatePicture']);
+        Route::get('/', [ProfileController::class, 'show']); // Get current user profile data
+        Route::post('/picture', [ProfileController::class, 'updatePicture']); // Update profile picture
     });
 
     // ============================================
-    // MEMBERSHIP
+    // MEMBERSHIP APPLICATION
     // ============================================
-    // User: Submit membership application
-    Route::post('/membership-application', [MembershipController::class, 'store']);
+    // User Routes
+    Route::post('/membership-application', [MembershipController::class, 'store']); // Submit new membership application
     
-    // Admin: Approve/Reject membership applications
+    // Admin Routes - Manage membership applications
     Route::prefix('membership-applications')->group(function () {
-        Route::post('/{id}/approve', [MembershipController::class, 'approveMembership']);
-        Route::post('/{id}/reject', [MembershipController::class, 'rejectMembership']);
+        Route::post('/{id}/approve', [MembershipController::class, 'approveMembership']); // Admin: Approve membership
+        Route::post('/{id}/reject', [MembershipController::class, 'rejectMembership']); // Admin: Reject membership
     });
     
     // ============================================
     // CREDIT SCORE
     // ============================================
-    Route::get('/credit-score', [CreditScoreController::class, 'show']);
+    Route::get('/credit-score', [CreditScoreController::class, 'show']); // Get user's credit score details
 
     // ============================================
-    // GRANTS
+    // GRANTS (Browse Available Grants)
     // ============================================
-    Route::get('/grants', [GrantController::class, 'index']);
-    Route::get('/grant-settings', [SettingsController::class, 'getGrantSettings']);
+    Route::get('/grants', [GrantController::class, 'index']); // Get list of all available grants
+    Route::get('/grant-settings', [SettingsController::class, 'getGrantSettings']); // Get grant system settings
 
     // ============================================
-    // GRANT APPLICATIONS
+    // GRANT APPLICATIONS (Old System - Keep for backward compatibility)
     // ============================================
     // ⚠️ IMPORTANT: Specific routes MUST come before generic {id} routes
     
-    // Action routes (specific)
-    Route::post('/grant-applications/{id}/approve', [GrantApplicationController::class, 'approve']);
-    Route::post('/grant-applications/{id}/reject', [GrantApplicationController::class, 'reject']);
-    Route::post('/grant-applications/{id}/complete', [GrantApplicationController::class, 'complete']);
+    // Admin Action Routes (specific endpoints)
+    Route::post('/grant-applications/{id}/approve', [GrantApplicationController::class, 'approve']); // Admin: Approve grant application
+    Route::post('/grant-applications/{id}/reject', [GrantApplicationController::class, 'reject']); // Admin: Reject grant application
+    Route::post('/grant-applications/{id}/complete', [GrantApplicationController::class, 'complete']); // Admin: Mark as complete
     
-    // Single resource route
-    Route::get('/grant-applications/{id}', [GrantApplicationController::class, 'getClaimDetails']);
-    
-    // Collection routes
-    Route::get('/grant-applications', [GrantApplicationController::class, 'index']);
-    Route::post('/grant-applications', [GrantApplicationController::class, 'store']);
+    // User Routes
+    Route::get('/grant-applications/{id}', [ApplicationController::class, 'getGrantApplicationDetails']); // Get claim details (QR code, reference number) for approved grant
+    Route::get('/grant-applications', [GrantApplicationController::class, 'index']); // Get all grant applications (for admin)
+    Route::post('/grant-applications', [GrantApplicationController::class, 'store']); // Submit new grant application
 
     // ============================================
-    // APPLICATIONS (NEW - Includes Grants + Membership)
+    // APPLICATIONS (Unified System - Grants + Membership)
     // ============================================
-    // ✅ Get all user applications (grants + membership)
-    Route::get('/applications', [ApplicationController::class, 'getMyApplications']);
+    // User Application Management
+    Route::get('/applications', [ApplicationController::class, 'getMyApplications']); // Get all user applications (grants + membership)
+    Route::get('/applications/{id}', [ApplicationController::class, 'show']); // Get single application details with status history
     
-    // ✅ Get single application details
-    Route::get('/applications/{id}', [ApplicationController::class, 'show']);
+    // Grant Workflow Actions
+    Route::post('/applications/{id}/claim', [ApplicationController::class, 'claimGrant']); // Claim approved grant (status: approved → claimed)
+    Route::post('/applications/{id}/resubmit', [ApplicationController::class, 'resubmit']); // Resubmit documents for on-hold application
+    Route::post('/applications/{id}/contribute', [ApplicationController::class, 'contribute']); // Submit contribution after claiming grant
     
-    // ✅ Claim approved grant
-    Route::post('/applications/{id}/claim', [ApplicationController::class, 'claimGrant']);
-    
-    // ✅ Resubmit documents for on-hold application
-    Route::post('/applications/{id}/resubmit', [ApplicationController::class, 'resubmit']);
-    
-    // ✅ Submit contribution after claiming
-    Route::post('/applications/{id}/contribute', [ApplicationController::class, 'contribute']);
-    
-    // ✅ Get contributions for specific application
-    Route::get('/applications/{id}/contributions', [ApplicationController::class, 'getContributions']);
+    // Contribution Tracking
+    Route::get('/applications/{id}/contributions', [ApplicationController::class, 'getContributions']); // Get contributions for specific application
 
     // ============================================
     // CONTRIBUTIONS (Global)
     // ============================================
-    // ✅ Get all user contributions (across all applications)
-    Route::get('/contributions', [ApplicationController::class, 'getAllContributions']);
+    Route::get('/contributions', [ApplicationController::class, 'getAllContributions']); // Get all user contributions across all applications
 
     // ============================================
     // DOCUMENT MANAGEMENT
     // ============================================
     Route::prefix('documents')->group(function () {
-        Route::post('/upload', [DocumentController::class, 'upload']);
-        Route::get('/{id}', [DocumentController::class, 'show']);
-        Route::get('/{id}/download', [DocumentController::class, 'download']);
-        Route::delete('/{id}', [DocumentController::class, 'destroy']);
+        Route::post('/upload', [DocumentController::class, 'upload']); // Upload document (ID, proof, etc.)
+        Route::get('/{id}', [DocumentController::class, 'show']); // View document details
+        Route::get('/{id}/download', [DocumentController::class, 'download']); // Download document file
+        Route::delete('/{id}', [DocumentController::class, 'destroy']); // Delete document
     });
 });
 
@@ -146,6 +137,7 @@ Route::middleware('auth:sanctum')->group(function() {
 // DEBUG ROUTES (Remove in Production)
 // ============================================
 if (config('app.debug')) {
+    // System Configuration Check
     Route::get('/check-php-config', function () {
         return response()->json([
             'upload_max_filesize' => ini_get('upload_max_filesize'),
@@ -155,14 +147,15 @@ if (config('app.debug')) {
             'php_version' => PHP_VERSION,
             'laravel_version' => app()->version(),
         ]);
-    });
+    }); // Test endpoint: Check PHP/Laravel configuration
     
+    // SMS Service Testing
     Route::get('/test-sms', function () {
         $result = \App\Services\SMSService::send('09171234567', 'Test message from SwisaAGAP');
         return response()->json($result);
-    });
+    }); // Test endpoint: Send test SMS message
     
-    // ✅ NEW: Test applications endpoint
+    // Application Testing
     Route::get('/test-applications', function() {
         $user = auth()->user();
         if (!$user) {
@@ -183,5 +176,5 @@ if (config('app.debug')) {
                 ];
             }),
         ]);
-    })->middleware('auth:sanctum');
+    })->middleware('auth:sanctum'); // Test endpoint: Check user's applications and counts
 }
