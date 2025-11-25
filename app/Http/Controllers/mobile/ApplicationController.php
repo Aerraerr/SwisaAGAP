@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\mobile;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
@@ -260,7 +260,6 @@ class ApplicationController extends Controller
 
             Log::info('✅ Application found - Status: ' . $application->status->status_name);
 
-            // ✅ Check if application is in 'approved' status
             $currentStatus = $application->status->status_name ?? '';
             if ($currentStatus !== 'approved') {
                 Log::warning('❌ Application not approved - Status: ' . $currentStatus);
@@ -270,10 +269,7 @@ class ApplicationController extends Controller
                 ], 400);
             }
 
-            // ✅ Generate reference number (Format: SWISA-YEAR-00000)
             $referenceNumber = 'SWISA-' . $application->created_at->format('Y') . '-' . str_pad($id, 5, '0', STR_PAD_LEFT);
-
-            // ✅ Generate QR code data (JSON string with application details)
             $qrData = json_encode([
                 'type' => 'grant_claim',
                 'application_id' => $application->id,
@@ -283,9 +279,30 @@ class ApplicationController extends Controller
                 'grant_name' => $application->grant->title ?? $application->grant->grant_name,
                 'timestamp' => now()->toIso8601String(),
             ]);
-
-            // ✅ Valid until date (30 days from now)
             $validUntil = now()->addDays(30);
+
+            // Save to grant_claims table (insert or update)
+            $grantClaim = GrantClaim::where('application_id', $application->id)->first();
+
+            if (!$grantClaim) {
+                $grantClaim = GrantClaim::create([
+                    'application_id'   => $application->id,
+                    'user_id'          => $application->user_id,
+                    'reference_number' => $referenceNumber,
+                    'qr_code'          => $qrData,
+                    'claim_status'     => 'pending',
+                    'valid_until'      => $validUntil,
+                    'claimed_at'       => null,
+                ]);
+                Log::info('✅ GrantClaim INSERTED: ' . $grantClaim->id);
+            } else {
+                $grantClaim->update([
+                    'reference_number' => $referenceNumber,
+                    'qr_code'          => $qrData,
+                    'valid_until'      => $validUntil,
+                ]);
+                Log::info('✅ GrantClaim UPDATED: ' . $grantClaim->id);
+            }
 
             Log::info('✅ Claim details generated successfully');
             Log::info('   Reference: ' . $referenceNumber);

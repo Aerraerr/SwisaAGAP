@@ -1,19 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\DocumentController;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ProfileController;
-use App\Http\Controllers\Api\MembershipController;
-use App\Http\Controllers\Api\CreditScoreController;
-use App\Http\Controllers\Api\GrantController;
-use App\Http\Controllers\Api\GrantApplicationController;
-use App\Http\Controllers\Api\OtpController;
-use App\Http\Controllers\Api\SectorController;
-use App\Http\Controllers\Api\SettingsController; 
-use App\Http\Controllers\Api\ApplicationController;
-use App\Http\Controllers\Api\GrantTypeController;
-use App\Http\Controllers\Api\PhoneOtpController;
+use App\Http\Controllers\mobile\DocumentController;
+use App\Http\Controllers\mobile\AuthController;
+use App\Http\Controllers\mobile\ProfileController;
+use App\Http\Controllers\mobile\MembershipController;
+use App\Http\Controllers\mobile\CreditScoreController;
+use App\Http\Controllers\mobile\GrantController;
+use App\Http\Controllers\mobile\GrantApplicationController;
+use App\Http\Controllers\mobile\OtpController;
+use App\Http\Controllers\mobile\SectorController;
+use App\Http\Controllers\mobile\SettingsController; 
+use App\Http\Controllers\mobile\ApplicationController;
+use App\Http\Controllers\mobile\GrantTypeController;
+use App\Http\Controllers\mobile\PhoneOtpController;
 
 // ============================================
 // PUBLIC ROUTES (No Authentication Required)
