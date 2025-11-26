@@ -8,6 +8,7 @@ use App\Models\Document;
 use App\Models\Contribution;
 use App\Models\ApplicationStatusHistory;
 use App\Models\Status;
+use App\Models\GrantClaim;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -230,6 +231,112 @@ class ApplicationController extends Controller
                 'success' => false,
                 'message' => 'Failed to fetch application',
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * ✅ GET GRANT APPLICATION DETAILS FOR CLAIMING (with QR code and reference number)
+     */
+    public function getGrantApplicationDetails($id)
+    {
+        try {
+            Log::info('🎯 FETCHING GRANT CLAIM DETAILS - Application ID: ' . $id);
+
+            $application = Application::with([
+                'grant.grantType',
+                'status',
+            ])
+            ->where('id', $id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+            if (!$application) {
+                Log::warning('❌ Application not found: ' . $id);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Grant application not found or not claimable.'
+                ], 404);
+            }
+
+            Log::info('✅ Application found - Status: ' . $application->status->status_name);
+
+            $currentStatus = $application->status->status_name ?? '';
+            if ($currentStatus !== 'approved') {
+                Log::warning('❌ Application not approved - Status: ' . $currentStatus);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This application is not approved yet. Current status: ' . $currentStatus
+                ], 400);
+            }
+
+            $referenceNumber = 'SWISA-' . $application->created_at->format('Y') . '-' . str_pad($id, 5, '0', STR_PAD_LEFT);
+            $qrData = json_encode([
+                'type' => 'grant_claim',
+                'application_id' => $application->id,
+                'reference' => $referenceNumber,
+                'user_id' => $application->user_id,
+                'grant_id' => $application->grant_id,
+                'grant_name' => $application->grant->title ?? $application->grant->grant_name,
+                'timestamp' => now()->toIso8601String(),
+            ]);
+            $validUntil = now()->addDays(30);
+
+            // Save to grant_claims table (insert or update)
+            $grantClaim = GrantClaim::where('application_id', $application->id)->first();
+
+            if (!$grantClaim) {
+                $grantClaim = GrantClaim::create([
+                    'application_id'   => $application->id,
+                    'user_id'          => $application->user_id,
+                    'reference_number' => $referenceNumber,
+                    'qr_code'          => $qrData,
+                    'claim_status'     => 'pending',
+                    'valid_until'      => $validUntil,
+                    'claimed_at'       => null,
+                ]);
+                Log::info('✅ GrantClaim INSERTED: ' . $grantClaim->id);
+            } else {
+                $grantClaim->update([
+                    'reference_number' => $referenceNumber,
+                    'qr_code'          => $qrData,
+                    'valid_until'      => $validUntil,
+                ]);
+                Log::info('✅ GrantClaim UPDATED: ' . $grantClaim->id);
+            }
+
+            Log::info('✅ Claim details generated successfully');
+            Log::info('   Reference: ' . $referenceNumber);
+            Log::info('   Valid until: ' . $validUntil->toDateString());
+
+            return response()->json([
+                'success' => true,
+                'application' => [
+                    'id' => $application->id,
+                    'reference_number' => $referenceNumber,
+                    'qr_code' => $qrData,
+                    'valid_until' => $validUntil->toIso8601String(),
+                    'grant' => [
+                        'id' => $application->grant->id,
+                        'name' => $application->grant->title ?? $application->grant->grant_name,
+                        'description' => $application->grant->description,
+                        'grant_type' => [
+                            'id' => $application->grant->grantType->id,
+                            'name' => $application->grant->grantType->grant_type ?? $application->grant->grantType->type_name,
+                        ],
+                    ],
+                    'status' => $application->status->status_name,
+                    'created_at' => $application->created_at->toIso8601String(),
+                ],
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('❌ GET GRANT CLAIM DETAILS ERROR: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching grant claim details: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -617,95 +724,6 @@ class ApplicationController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * ✅ GET GRANT APPLICATION DETAILS FOR CLAIMING (with QR code and reference number)
-     */
-    public function getGrantApplicationDetails($id)
-    {
-        try {
-            Log::info('🎯 FETCHING GRANT CLAIM DETAILS - Application ID: ' . $id);
-
-            $application = Application::with([
-                'grant.grantType',
-                'status',
-            ])
-            ->where('id', $id)
-            ->where('user_id', auth()->id())
-            ->first();
-
-            if (!$application) {
-                Log::warning('❌ Application not found: ' . $id);
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Grant application not found or not claimable.'
-                ], 404);
-            }
-
-            Log::info('✅ Application found - Status: ' . $application->status->status_name);
-
-            // ✅ Check if application is in 'approved' status
-            $currentStatus = $application->status->status_name ?? '';
-            if ($currentStatus !== 'approved') {
-                Log::warning('❌ Application not approved - Status: ' . $currentStatus);
-                return response()->json([
-                    'success' => false,
-                    'message' => 'This application is not approved yet. Current status: ' . $currentStatus
-                ], 400);
-            }
-
-            // ✅ Generate reference number (Format: SWISA-YEAR-00000)
-            $referenceNumber = 'SWISA-' . $application->created_at->format('Y') . '-' . str_pad($id, 5, '0', STR_PAD_LEFT);
-
-            // ✅ Generate QR code data (JSON string with application details)
-            $qrData = json_encode([
-                'type' => 'grant_claim',
-                'application_id' => $application->id,
-                'reference' => $referenceNumber,
-                'user_id' => $application->user_id,
-                'grant_id' => $application->grant_id,
-                'grant_name' => $application->grant->title ?? $application->grant->grant_name,
-                'timestamp' => now()->toIso8601String(),
-            ]);
-
-            // ✅ Valid until date (30 days from now)
-            $validUntil = now()->addDays(30);
-
-            Log::info('✅ Claim details generated successfully');
-            Log::info('   Reference: ' . $referenceNumber);
-            Log::info('   Valid until: ' . $validUntil->toDateString());
-
-            return response()->json([
-                'success' => true,
-                'application' => [
-                    'id' => $application->id,
-                    'reference_number' => $referenceNumber,
-                    'qr_code' => $qrData,
-                    'valid_until' => $validUntil->toIso8601String(),
-                    'grant' => [
-                        'id' => $application->grant->id,
-                        'name' => $application->grant->title ?? $application->grant->grant_name,
-                        'description' => $application->grant->description,
-                        'grant_type' => [
-                            'id' => $application->grant->grantType->id,
-                            'name' => $application->grant->grantType->grant_type ?? $application->grant->grantType->type_name,
-                        ],
-                    ],
-                    'status' => $application->status->status_name,
-                    'created_at' => $application->created_at->toIso8601String(),
-                ],
-            ], 200);
-
-        } catch (\Exception $e) {
-            Log::error('❌ GET GRANT CLAIM DETAILS ERROR: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Error fetching grant claim details: ' . $e->getMessage(),
             ], 500);
         }
     }

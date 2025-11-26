@@ -188,3 +188,18 @@ Route::middleware('auth:sanctum')->prefix('mobile/chat')->group(function () {
     Route::get('/quick-replies/{role_id}', [MobileChatController::class, 'getQuickReplies']);
     Route::post('/mark-read', [MobileChatController::class, 'markAsRead']);
 });
+
+
+// FEEDBACK
+use App\Http\Controllers\mobile\FeedbackController;
+// Feedback Routes -- add before OTP/public data/protected routes!
+Route::post('/feedback', [FeedbackController::class, 'store']);
+Route::get('/feedback', [FeedbackController::class, 'index']); // (optional)
+
+// FOR LOGS
+use App\Http\Controllers\mobile\MobileLogController;
+
+Route::prefix('mobile')->group(function() {
+    Route::post('/login-log', [MobileLogController::class, 'storeLoginLog']);
+    Route::post('/logout-log', [MobileLogController::class, 'storeLogoutLog'])->middleware('auth:sanctum');
+});
