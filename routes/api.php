@@ -14,10 +14,15 @@ use App\Http\Controllers\mobile\SettingsController;
 use App\Http\Controllers\mobile\ApplicationController;
 use App\Http\Controllers\mobile\GrantTypeController;
 use App\Http\Controllers\mobile\PhoneOtpController;
+use App\Http\Controllers\mobile\FeedbackController; // <-- ADD THIS
 
 // ============================================
 // PUBLIC ROUTES (No Authentication Required)
 // ============================================
+
+// Feedback Routes: public, no authentication required
+Route::post('/feedback', [FeedbackController::class, 'store']);
+Route::get('/feedback', [FeedbackController::class, 'index']); // (optional, for admin/analytics)
 
 // Authentication
 Route::post('/register', [AuthController::class, 'register']); // Register new user account
