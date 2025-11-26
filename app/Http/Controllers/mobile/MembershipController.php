@@ -136,7 +136,7 @@ class MembershipController extends Controller
         $application = Application::create([
             'user_id' => $user->id,
             'grant_id' => null,
-            'status_id' => 4, // PENDING STATUS
+            'status_id' => 3, // PENDING STATUS // 3 ang pending
             'application_type' => 'Membership',
             'purpose' => 'Membership Application',
         ]);
@@ -216,7 +216,7 @@ class MembershipController extends Controller
         }
         
         // Change user role to member
-        $user->update(['role_id' => 2]);
+        $user->update(['role_id' => 1]); // 1 ang member nata 2 kinaag mo
         
         return response()->json([
             'success' => true,

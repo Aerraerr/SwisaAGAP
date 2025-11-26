@@ -14,10 +14,11 @@ use App\Http\Controllers\mobile\CreditScoreController;
 use App\Http\Controllers\mobile\DocumentController;
 use App\Http\Controllers\mobile\ProfileController;
 use App\Http\Controllers\mobile\MembershipController;
-use App\Http\Controllers\Api\SettingsController; 
+use App\Http\Controllers\mobile\SettingsController; 
 use App\Http\Controllers\mobile\SectorController;
 use App\Http\Controllers\mobile\GrantController;
-use App\Http\Controllers\Api\ApplicationController;
+use App\Http\Controllers\mobile\GrantTypeController;
+use App\Http\Controllers\mobile\ApplicationController;
 use App\Http\Controllers\mobile\GrantApplicationController;
 use App\Http\Controllers\mobile\OtpController;
 use App\Http\Controllers\mobile\PhoneOtpController;
@@ -41,29 +42,22 @@ Route::prefix('mobile')->group(function (Router $router) {
         });        
         $router->post('/logout', [AuthController::class, 'logout']);
         $router->post('/change-password', [AuthController::class, 'changePassword']);
-
-        
-
-
-        // Contributions 
+ 
         // Contributions
         Route::post('/{applicationId}/contribute', [ApplicationController::class, 'contribute']);
         Route::get('/{applicationId}/contributions', [ApplicationController::class, 'getContributions']);
         Route::post('/{applicationId}/contributions', [ApplicationController::class, 'submitContribution']);
         
-        Route::get('/grant-applications/{id}', [GrantApplicationController::class, 'getClaimDetails']);
-
+         Route::get('/grant-applications/{id}', [ApplicationController::class, 'getGrantApplicationDetails']);
         Route::post('/grant-applications', [GrantApplicationController::class, 'store']);
         Route::get('/grant-applications', [GrantApplicationController::class, 'index']);
-        Route::get('/grant-applications/{id}', [GrantApplicationController::class, 'show']);
          Route::post('/grant-applications/{id}/approve', [GrantApplicationController::class, 'approve']);
         Route::post('/grant-applications/{id}/reject', [GrantApplicationController::class, 'reject']);
         Route::post('/grant-applications/{id}/complete', [GrantApplicationController::class, 'complete']);
 
     // APPLICATIONS (NEW - Includes Grants + Membership)
     // Get all user applications (grants + membership)
-    Route::get('/applications', [ApplicationController::class, 'getMyApplications']);
-    
+    Route::get('/applications', [ApplicationController::class, 'getMyApplications']); 
     // ✅ Get single application details
     Route::get('/applications/{id}', [ApplicationController::class, 'show']);
     
@@ -96,6 +90,7 @@ Route::prefix('phone/otp')->group(function () {
 
 // Member FAQs (public)
 Route::get('/member/faqs', [MemberFaqsController::class, 'index']);
+Route::get('/grant-types', [GrantTypeController::class, 'index']);
 
 // Protected routes requiring authentication
 Route::middleware(['auth:sanctum'])->group(function() {

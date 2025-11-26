@@ -50,10 +50,10 @@ class GrantApplicationController extends Controller
             }
             
             // ✅ VALIDATION 2: Check for duplicate ongoing application
-            // Status IDs: 4=pending, 5=approved, 18=processing_application, 19=waiting_for_approval, 21=on_hold
+            // Status IDs: 3=pending, 4=approved, 15=processing_application, 16=waiting_for_approval, 18=on_hold
             $ongoingApplication = Application::where('user_id', $user->id)
                 ->where('grant_id', $grant->id)
-                ->whereIn('status_id', [4, 5, 18, 19, 21]) // ✅ CORRECTED
+                ->whereIn('status_id', [3, 4, 15, 16, 18]) // ✅ CORRECTED
                 ->exists();
                 
             if ($ongoingApplication) {
@@ -67,11 +67,11 @@ class GrantApplicationController extends Controller
             $quarterStart = Carbon::now()->startOfQuarter();
             $quarterEnd = Carbon::now()->endOfQuarter();
             
-            // Status IDs: 1=claimed, 4=pending, 5=approved, 6=completed, 18=processing, 19=waiting
+            // Status IDs: 1=claimed, 3=pending, 4=approved, 5=completed, 15=processing, 16=waiting
             $quarterlyApplications = Application::where('user_id', $user->id)
                 ->whereBetween('created_at', [$quarterStart, $quarterEnd])
                 ->whereNotNull('grant_id')
-                ->whereIn('status_id', [1, 4, 5, 6, 18, 19]) // ✅ CORRECTED
+                ->whereIn('status_id', [1, 3, 4, 5, 15, 16]) // ✅ CORRECTED
                 ->with('grant.grantType')
                 ->get();
             
@@ -114,7 +114,7 @@ class GrantApplicationController extends Controller
                 $application = Application::create([
                     'user_id' => $user->id,
                     'grant_id' => $request->grant_id,
-                    'status_id' => 4, // ✅ 4 = pending (Flutter: "Application Submitted")
+                    'status_id' => 3, // ✅ 3 = pending (Flutter: "Application Submitted")
                     'application_type' => 'Grant Application',
                     'purpose' => $request->purpose ?? 'Grant assistance request',
                 ]);
@@ -487,4 +487,5 @@ class GrantApplicationController extends Controller
         
         return '0';
     }
+    
 }
