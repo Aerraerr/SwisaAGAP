@@ -12,28 +12,28 @@
                     Manage, track, and update records of active and inactive SWISA members.
                 </p>
             </div>
-            @include('components.UserTab')
         </div>
         
 
-        <!-- Stats Cards -->
+        <!-- Members Quick Stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div class="bg-white rounded-2xl shadow p-4 border-t-4 border-green-600">
-                <h3 class="text-[#2C6E49] font-bold ">Total Members</h3>
-                <p class="text-3xl font-bold text-green-600 mt-2">{{ $totalApplications}}</p>
-                <p class="text-xs text-gray-400 mt-1">All submitted requests</p>
+                <h3 class="text-[#2C6E49] font-bold ">Total members</h3>
+                <p class="text-3xl font-bold text-green-600 mt-2">{{ $totalMembers}}</p>
+                <p class="text-xs text-gray-400 mt-1">All Swisa-Agap members</p>
             </div>
             <div class="bg-white rounded-2xl shadow p-4 border-t-4 border-blue-600">
-                <h3 class="text-[#2C6E49] font-bold ">Approved Applications</h3>
-                <p class="text-3xl font-bold text-blue-600 mt-2">{{ $pendingApplications}}</p>
-                <p class="text-xs text-gray-400 mt-1">66% approval rate</p>
+                <h3 class="text-[#2C6E49] font-bold ">New members this month</h3>
+                <p class="text-3xl font-bold text-blue-600 mt-2">{{ $monthlyMembers}}</p>
+                <p class="text-xs text-gray-400 mt-1">Members this month</p>
             </div>
             <div class="bg-white rounded-2xl shadow p-4 border-t-4 border-yellow-500">
-                <h3 class="text-[#2C6E49] font-bold ">Pending Applicationds</h3>
-                <p class="text-3xl font-bold text-yellow-600 mt-2">{{ $rejectedApplications}}</p>
-                <p class="text-xs text-gray-400 mt-1">Awaiting review</p>
+                <h3 class="text-[#2C6E49] font-bold ">New members today</h3>
+                <p class="text-3xl font-bold text-yellow-600 mt-2">{{ $todayMembers}}</p>
+                <p class="text-xs text-gray-400 mt-1">Today's new members</p>
             </div>
         </div>
+
 
 
         <div class="bg-white p-5 rounded-xl shadow-xl">
@@ -41,7 +41,7 @@
                 <div x-data="{ activeTab: 'grid' }" class="mt-4">
                     @include('components.filters')
 
-                                            <!-- Main Grid Layout -->
+                        <!-- Main Grid Layout -->
                         <div x-show="activeTab === 'grid'" class="grid gap-2 grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 w-full">
                             {{-- Active Members --}}
                             @foreach($members as $member)
@@ -58,7 +58,7 @@
 
                         <!-- for table/list front -->
                         <div x-show="activeTab === 'list'" class="tab-pane border-black">
-                            <div class="overflow-auto h-auto shadow-lg">
+                            <div class="overflow-auto-visible h-auto shadow-lg">
                                 <table class="min-w-full bg-white border-spacing-y-1">
                                 <thead class="bg-snbg border border-gray-100 px-8">
                                     <tr class="text-customIT text-left text-sm font-semibold">
@@ -75,12 +75,8 @@
                                 <tbody>
                                     @foreach($members as $member)
                                         <tr class="border border-gray-300 hover:bg-gray-100">
-                                        <td class="px-4 py-3 text-sm text-gray-700">MEM-{{ $member->id}}</td>
-                                        <td class="flex px-4 py-3 text-sm text-gray-700">
-                                            {{--<img src="{{ asset('images/profile-user.png') }}" alt="Profile"
-                                            class="w-5 h-5 rounded-full shadow-md mr-2"/>--}}
-                                            {{ $member->name}}
-                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->formatted_id}}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->name}}</td>
                                         <td class="px-4 py-3 text-sm text-gray-700">{{ $member->email}}</td>
                                         <td class="px-4 py-3 text-sm text-gray-700">{{ $member->user_info->contact_no ?? '-'}}</td>
                                         <td class="px-4 py-3 text-sm text-gray-700">{{ $member->user_info->sector->sector_name ?? '-'}}</td>

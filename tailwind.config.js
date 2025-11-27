@@ -33,7 +33,7 @@ export default {
             },
             borderColor: {
                 Gborder: '#2C6E49',
-            }
+            }  
             
         },
     },

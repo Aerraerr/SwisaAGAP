@@ -5,10 +5,13 @@ namespace App\Http\Controllers\mobile;
 use App\Http\Controllers\Controller;
 use App\Models\Application;
 use App\Models\Grant;
+use App\Models\GrantClaim;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class GrantApplicationController extends Controller
@@ -34,21 +37,23 @@ class GrantApplicationController extends Controller
             $user = $request->user();
             $grant = Grant::with('grantType')->findOrFail($request->grant_id);
             
-            // ✅ VALIDATION 1: Check credit score sufficiency
-            $currentScore = $user->creditScore->score ?? 0;
+            // ✅ Calculate credit cost
             $creditCost = $this->getCreditCost($grant->grantType->grant_type);
+            $currentScore = $user->creditScore->score ?? 0;
             
-            if ($currentScore - $creditCost < 0) {
+            // ✅ VALIDATION 1: Check credit score sufficiency
+            if ($currentScore < $creditCost) {
                 return response()->json([
                     'success' => false,
-                    'message' => "Insufficient credits. You need at least {$creditCost} credits to apply for this grant. Current balance: {$currentScore} credits."
+                    'message' => "Insufficient credits. You need {$creditCost} credits to apply for this grant. Current balance: {$currentScore} credits."
                 ], 403);
             }
             
             // ✅ VALIDATION 2: Check for duplicate ongoing application
+            // Status IDs: 3=pending, 4=approved, 15=processing_application, 16=waiting_for_approval, 18=on_hold
             $ongoingApplication = Application::where('user_id', $user->id)
                 ->where('grant_id', $grant->id)
-                ->whereIn('status_id', [3, 4, 7])
+                ->whereIn('status_id', [3, 4, 15, 16, 18]) // ✅ CORRECTED
                 ->exists();
                 
             if ($ongoingApplication) {
@@ -62,10 +67,11 @@ class GrantApplicationController extends Controller
             $quarterStart = Carbon::now()->startOfQuarter();
             $quarterEnd = Carbon::now()->endOfQuarter();
             
+            // Status IDs: 1=claimed, 3=pending, 4=approved, 5=completed, 15=processing, 16=waiting
             $quarterlyApplications = Application::where('user_id', $user->id)
                 ->whereBetween('created_at', [$quarterStart, $quarterEnd])
                 ->whereNotNull('grant_id')
-                ->whereIn('status_id', [3, 4, 5, 7])
+                ->whereIn('status_id', [1, 3, 4, 5, 15, 16]) // ✅ CORRECTED
                 ->with('grant.grantType')
                 ->get();
             
@@ -100,23 +106,54 @@ class GrantApplicationController extends Controller
                 }
             }
 
-            // ✅ All validations passed - Create application
-            $application = Application::create([
-                'user_id' => $user->id,
-                'grant_id' => $request->grant_id,
-                'status_id' => 3, // pending
-                'application_type' => 'Grant Application',
-                'purpose' => $request->purpose ?? 'Grant assistance request',
-            ]);
+            // ✅ All validations passed - Use database transaction
+            DB::beginTransaction();
+            
+            try {
+                // ✅ Create application with PENDING status
+                $application = Application::create([
+                    'user_id' => $user->id,
+                    'grant_id' => $request->grant_id,
+                    'status_id' => 3, // ✅ 3 = pending (Flutter: "Application Submitted")
+                    'application_type' => 'Grant Application',
+                    'purpose' => $request->purpose ?? 'Grant assistance request',
+                ]);
 
-            $application->load(['user', 'grant.grantType', 'status']);
+                // ✅ DEDUCT CREDITS IMMEDIATELY
+                $user->creditScore->decrement('score', $creditCost);
+                
+                // ✅ Log credit history
+                $user->creditScoreHistory()->create([
+                    'activity' => 'Grant Application - ' . $grant->grantType->grant_type,
+                    'points' => -$creditCost
+                ]);
+                
+                DB::commit();
+                
+                $application->load(['user', 'grant.grantType', 'status']);
+                
+                $newScore = $user->creditScore->fresh()->score;
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Application submitted successfully',
-                'data' => $application,
-                'credit_cost_on_approval' => $creditCost
-            ], 201);
+                Log::info('Grant application submitted with credit deduction', [
+                    'application_id' => $application->id,
+                    'user_id' => $user->id,
+                    'credits_deducted' => $creditCost,
+                    'previous_score' => $currentScore,
+                    'new_score' => $newScore
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => "Application submitted successfully! {$creditCost} credits have been deducted.",
+                    'data' => $application,
+                    'credits_deducted' => $creditCost,
+                    'remaining_credits' => $newScore
+                ], 201);
+                
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
 
         } catch (\Exception $e) {
             Log::error('Grant application error: ' . $e->getMessage());
@@ -138,100 +175,101 @@ class GrantApplicationController extends Controller
     }
 
     public function approve($applicationId): JsonResponse
-{
-    try {
-        // ✅ Load all necessary relationships
-        $application = Application::with([
-            'grant.grantType',
-            'user.creditScore'
-        ])->findOrFail($applicationId);
-        
-        $user = $application->user;
-        
-        // ✅ Check if user has creditScore relationship
-        if (!$user->creditScore) {
-            Log::error('User has no credit score', ['user_id' => $user->id]);
-            return response()->json([
-                'success' => false,
-                'message' => 'User credit score not found'
-            ], 404);
-        }
-        
-        // ✅ Check if grant has grantType relationship
-        if (!$application->grant || !$application->grant->grantType) {
-            Log::error('Grant or GrantType not found', [
+    {
+        try {
+            $application = Application::with([
+                'grant.grantType',
+                'user.creditScore'
+            ])->findOrFail($applicationId);
+            
+            DB::beginTransaction();
+            
+            try {
+                // ✅ Update application status to APPROVED
+                $application->update(['status_id' => 5]); // ✅ 5 = approved (Flutter: "Ready to Claim")
+                
+                // ✅ Create grant claim record
+                GrantClaim::create([
+                    'application_id' => $application->id,
+                    'user_id' => $application->user_id,
+                    'reference_number' => 'REF-' . strtoupper(Str::random(12)),
+                    'qr_code' => Str::uuid()->toString(),
+                    'claim_status' => 'claimable',
+                    'valid_until' => now()->addDays(30),
+                ]);
+                
+                DB::commit();
+                
+                Log::info('Grant approved and claim created', [
+                    'application_id' => $applicationId,
+                    'user_id' => $application->user->id
+                ]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Grant application approved successfully!'
+                ]);
+                
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('Approve grant error', [
                 'application_id' => $applicationId,
-                'grant_id' => $application->grant_id
+                'error' => $e->getMessage()
             ]);
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Grant information not found'
-            ], 404);
+                'message' => 'Failed to approve application: ' . $e->getMessage()
+            ], 500);
         }
-        
-        $creditCost = $this->getCreditCost($application->grant->grantType->grant_type);
-        
-        Log::info('Approving grant application', [
-            'application_id' => $applicationId,
-            'user_id' => $user->id,
-            'current_credits' => $user->creditScore->score,
-            'credit_cost' => $creditCost,
-            'grant_type' => $application->grant->grantType->grant_type
-        ]);
-        
-        // ✅ Update application status
-        $application->update(['status_id' => 4]);
-        
-        // ✅ Deduct credits
-        $user->creditScore->decrement('score', $creditCost);
-        
-        // ✅ Log credit history
-        $user->creditScoreHistory()->create([
-            'activity' => 'Grant Approved - ' . $application->grant->grantType->grant_type,
-            'points' => -$creditCost
-        ]);
-        
-        // ✅ Get updated credit score
-        $newScore = $user->creditScore->fresh()->score;
-        
-        Log::info('Grant approved successfully', [
-            'application_id' => $applicationId,
-            'credits_deducted' => $creditCost,
-            'new_score' => $newScore
-        ]);
-        
-        return response()->json([
-            'success' => true,
-            'message' => 'Grant application approved successfully!',
-            'credits_deducted' => $creditCost,
-            'remaining_credits' => $newScore
-        ]);
-        
-    } catch (\Exception $e) {
-        Log::error('Approve grant error', [
-            'application_id' => $applicationId,
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-        
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to approve application: ' . $e->getMessage()
-        ], 500);
-    }
     }
 
-    
     public function reject($applicationId): JsonResponse
     {
         try {
-            $application = Application::findOrFail($applicationId);
-            $application->update(['status_id' => 6]);
+            $application = Application::with([
+                'grant.grantType',
+                'user.creditScore'
+            ])->findOrFail($applicationId);
             
-            return response()->json([
-                'success' => true,
-                'message' => 'Grant application rejected.'
-            ]);
+            $creditCost = $this->getCreditCost($application->grant->grantType->grant_type);
+            
+            DB::beginTransaction();
+            
+            try {
+                // ✅ Update status to REJECTED
+                $application->update(['status_id' => 7]); // ✅ 7 = rejected (Flutter: "Rejected")
+                
+                // ✅ REFUND credits since application was rejected
+                $application->user->creditScore->increment('score', $creditCost);
+                
+                // ✅ Log credit refund
+                $application->user->creditScoreHistory()->create([
+                    'activity' => 'Grant Rejected (Refund) - ' . $application->grant->grantType->grant_type,
+                    'points' => $creditCost
+                ]);
+                
+                DB::commit();
+                
+                Log::info('Grant rejected and credits refunded', [
+                    'application_id' => $applicationId,
+                    'credits_refunded' => $creditCost
+                ]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => "Grant application rejected. {$creditCost} credits have been refunded."
+                ]);
+                
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+            
         } catch (\Exception $e) {
             Log::error('Reject grant error: ' . $e->getMessage());
             return response()->json([
@@ -245,7 +283,8 @@ class GrantApplicationController extends Controller
     {
         try {
             $application = Application::findOrFail($applicationId);
-            $application->update(['status_id' => 5]);
+            // ✅ Update to COMPLETED
+            $application->update(['status_id' => 6]); // ✅ 6 = completed (Flutter: "Contribution Completed")
             
             return response()->json([
                 'success' => true,
@@ -260,17 +299,25 @@ class GrantApplicationController extends Controller
         }
     }
 
+    /**
+     * ✅ Get all grant applications with status object and status histories
+     */
     public function index(): JsonResponse
     {
         try {
-            $applications = Application::with(['user', 'grant.grantType', 'status'])
+            $applications = Application::with([
+                'user',
+                'grant.grantType',
+                'grant.grantRequirements',
+                'status',
+                'statusHistories.status'
+            ])
                 ->where('user_id', auth()->id())
-                ->whereNotNull('grant_id') // ✅ Only grant applications
+                ->whereNotNull('grant_id')
                 ->orderBy('created_at', 'desc')
                 ->get();
 
             $transformedApplications = $applications->map(function ($app) {
-                // ✅ Add null safety checks
                 if (!$app->grant || !$app->grant->grantType) {
                     return null;
                 }
@@ -279,7 +326,17 @@ class GrantApplicationController extends Controller
                     'id' => $app->id,
                     'user_id' => $app->user_id,
                     'grant_id' => $app->grant_id,
-                    'status' => $app->status->status_name ?? 'pending',
+                    'status_id' => $app->status_id,
+                    'status' => $app->status,
+                    'status_histories' => $app->statusHistories->map(function($history) {
+                        return [
+                            'id' => $history->id,
+                            'application_id' => $history->application_id,
+                            'status_id' => $history->status_id,
+                            'created_at' => $history->created_at,
+                            'status' => $history->status,
+                        ];
+                    }),
                     'purpose' => $app->purpose,
                     'application_type' => $app->application_type,
                     'created_at' => $app->created_at,
@@ -299,11 +356,11 @@ class GrantApplicationController extends Controller
                         'grant_requirements' => $app->grant->grantRequirements ?? [],
                     ],
                 ];
-            })->filter(); // ✅ Remove null values
+            })->filter();
 
             return response()->json([
                 'success' => true,
-                'data' => $transformedApplications->values() // ✅ Re-index array
+                'data' => $transformedApplications->values()
             ]);
         } catch (\Exception $e) {
             Log::error('Fetch applications error: ' . $e->getMessage());
@@ -340,4 +397,95 @@ class GrantApplicationController extends Controller
             ], 404);
         }
     }
+
+    // ✅ Get grant claim details for Claim screen
+    public function getClaimDetails($id): JsonResponse
+    {
+        try {
+            $claim = GrantClaim::with(['application.grant.grantType', 'user'])
+                ->where('user_id', auth()->id())
+                ->where('application_id', $id)
+                ->where('claim_status', 'claimable')
+                ->firstOrFail();
+
+            return response()->json([
+                'success' => true,
+                'application' => [
+                    'id' => $claim->application->id,
+                    'grant' => [
+                        'name' => $claim->application->grant->title,
+                        'amount' => $this->extractAmount($claim->application->grant->description),
+                    ],
+                    'reference_number' => $claim->reference_number,
+                    'qr_code' => $claim->qr_code,
+                    'valid_until' => $claim->valid_until->format('Y-m-d'),
+                    'grant_status' => $claim->claim_status,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Get claim details error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Grant application not found or not claimable.'
+            ], 404);
+        }
+    }
+
+    // ✅ Mark grant as claimed
+    public function markAsClaimed($applicationId): JsonResponse
+    {
+        try {
+            $claim = GrantClaim::where('application_id', $applicationId)
+                ->where('user_id', auth()->id())
+                ->where('claim_status', 'claimable')
+                ->firstOrFail();
+            
+            DB::beginTransaction();
+            
+            try {
+                $claim->update([
+                    'claim_status' => 'claimed',
+                    'claimed_at' => now(),
+                ]);
+                
+                // ✅ Update application status to CLAIMED
+                $claim->application->update(['status_id' => 1]); // ✅ 1 = claimed (Flutter: "Grant Claimed")
+                
+                DB::commit();
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Grant marked as claimed successfully!'
+                ]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+        } catch (\Exception $e) {
+            Log::error('Mark as claimed error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to mark grant as claimed.'
+            ], 404);
+        }
+    }
+
+    // ✅ Helper method to extract amount from description
+    private function extractAmount($description): string
+    {
+        if (!$description) return '0';
+        
+        // Try to extract PHP amount
+        if (preg_match('/PHP\s*([\d,]+\.?\d*)/', $description, $matches)) {
+            return str_replace(',', '', $matches[1]);
+        }
+        
+        // Try to extract kg amount
+        if (preg_match('/(\d+)\s*kg/', $description, $matches)) {
+            return $matches[1] . ' kg';
+        }
+        
+        return '0';
+    }
+    
 }

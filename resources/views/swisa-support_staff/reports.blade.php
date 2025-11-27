@@ -6,7 +6,6 @@
         <div class="text-customIT flex flex-col">
             <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Equipment Reports</h2>
         </div>
-        @include('components.UserTab')
     </div>
 
     <!-- Stats Cards for Initiatives & Events -->
@@ -62,7 +61,7 @@
 
             <!-- for table/list front -->
             <div x-show="activeTab === 'list'" class="tab-pane">
-                    <div class="overflow-auto h-auto shadow-lg">
+                    <div class="overflow-auto-visible h-auto shadow-lg">
                         <table class="min-w-full bg-white border-spacing-y-1">
                         <thead class="bg-snbg border border-gray-100 px-8">
                             <tr class="text-customIT text-left ">

@@ -16,6 +16,7 @@ class Training extends Model
     protected $fillable = [
         'sector_id',
         'title',
+        'description',
         'date',
         'time',
         'venue',
@@ -42,7 +43,7 @@ class Training extends Model
     //
     public function participants(){
         return $this->belongsToMany(User::class, 'participants')
-                    ->withPivot('qr_scanned')
+                    ->withPivot('qr_scanned', 'check_in_at')
                     ->withTimestamps();
     }
 }

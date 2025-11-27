@@ -129,28 +129,76 @@ class DocumentChecker
         return '';
     }
 
-    public function checkRequirementInFile($filePath, $requirementName)
+    public function verifyDocumentBelongsToUser($filePath, $requirementName, $user)
     {
         $text = strtolower($this->extractText($filePath));
+
+        if (empty(trim($text))) {
+            return 'No Readable Text';
+        }
+
+        // Normalize requirement name and user info
         $requirementName = strtolower($requirementName);
+        $userName = strtolower($user->name ?? '');
+        $userAddress = strtolower(trim("{$user->user_info->barangay} {$user->user_info->city} {$user->user_info->province}"));
 
-        Log::info("Extracted text sample: " . substr($text, 0, 300));
-        Log::info("Searching for '{$requirementName}'");
-
-        // Normalize both strings
+        // Clean multiple spaces
         $text = preg_replace('/\s+/', ' ', $text);
         $requirementName = preg_replace('/\s+/', ' ', $requirementName);
+        $userName = preg_replace('/\s+/', ' ', $userName);
+        $userAddress = preg_replace('/\s+/', ' ', $userAddress);
 
-        // Split requirement into individual words
-        $words = explode(' ', $requirementName);
-
-        // Check if all words exist somewhere in the text
-        foreach ($words as $word) {
+        //Check requirement existence
+        $requirementWords = explode(' ', $requirementName);
+        $requirementFound = true;
+        foreach ($requirementWords as $word) {
             if (!str_contains($text, $word)) {
-                return false;
+                $requirementFound = false;
+                break;
             }
         }
 
-        return true;
+        //Check name loosely (allow partial match)
+        $nameFound = false;
+        if ($userName) {
+            $nameParts = explode(' ', $userName);
+            $matches = 0;
+            foreach ($nameParts as $part) {
+                if (str_contains($text, $part)) {
+                    $matches++;
+                }
+            }
+            // Consider name found if at least half of the parts match
+            $nameFound = ($matches >= ceil(count($nameParts) / 2));
+        }
+
+        //Check address loosely (allow partial match)
+        $addressFound = false;
+        if ($userAddress) {
+            $addressParts = explode(' ', $userAddress);
+            $matches = 0;
+            foreach ($addressParts as $part) {
+            if (str_contains($text, $part)) {
+                $matches++;
+            }
+        }
+        $addressFound = ($matches >= ceil(count($addressParts) / 2));
+        }
+
+        // Logging for debugging
+        Log::info("Checking document for user '{$userName}' and requirement '{$requirementName}'");
+        Log::info("Requirement found: " . ($requirementFound ? 'Yes' : 'No') . 
+                ", Name found: " . ($nameFound ? 'Yes' : 'No') . 
+                ", Address found: " . ($addressFound ? 'Yes' : 'No'));
+
+        // Final result
+        if ($requirementFound && ($nameFound || $addressFound)) {
+            return 'Passed';
+        } elseif ($requirementFound) {
+            return 'Possibly Other Person’s Document';
+        } else {
+            return 'Needs Checking';
+        }
     }
+
 }

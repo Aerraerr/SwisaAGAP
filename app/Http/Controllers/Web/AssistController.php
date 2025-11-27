@@ -4,27 +4,26 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
-use App\Models\Document;
 use App\Models\Grant;
 use App\Models\MembershipRequirement;
-use App\Models\Requirement;
+use App\Models\Notification;
 use App\Models\Sector;
 use App\Models\User;
-use Illuminate\Container\Attributes\Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Services\DocumentChecker;
-use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use App\Services\DocumentChecker;
+use App\Services\SMSService;
 
 class AssistController extends Controller
 {
 
     public function displayMembers(){
         //get only the user who are members and its relations
-        $members = User::with(['documents', 'documents.requirement', 'user_info', 'applications.grant'])->where('role_id', 1)->paginate(10);
+        $members = User::with(['documents', 'documents.requirement', 'user_info', 'applications.grant'])->where('role_id', 1)->get();
         $sectors = Sector::all();
         $grants  = Grant::with('grant_requirements.requirement')->get();
         $membershipRequirements = MembershipRequirement::with('requirement')
@@ -37,11 +36,10 @@ class AssistController extends Controller
         });
 
         foreach ($members as $member) {
-            // Split name (your existing logic)
-            $parts = explode(' ', $member->name);
-            $member->first_name = $parts[0] ?? '';
-            $member->middle_name = $parts[1] ?? '';
-            $member->last_name = isset($parts[2]) ? implode(' ', array_slice($parts, 2)) : '';
+            $member->first_name  = $member->first_name ?? '';
+            $member->middle_name = $member->middle_name ?? '';
+            $member->last_name   = $member->last_name ?? '';
+            $member->suffix      = $member->suffix ?? '';
         }
 
         return view('swisa-support_staff.assisted-creation', compact('members', 'sectors', 'grants', 'membershipRequirements'));
@@ -53,17 +51,37 @@ class AssistController extends Controller
         try{
             //validate inputs
             $request->validate([
-                'name'     => 'required|string|max:50',
+                'first_name'     => 'required|string|max:50',
+                'middle_name'     => 'nullable|string|max:50',
+                'last_name'     => 'required|string|max:50',
+                'suffix'     => 'nullable|string|max:50',
                 'email' => 'required|string|lowercase|email|max:50|unique:users,email',
                 'password' => 'required|confirmed',
             ]);
 
             // Create user using same Breeze logic
-            User::create([
-                'name'     => $request->name,
+            $createdUser = User::create([
+                'first_name'     => $request->first_name,
+                'middle_name'     => $request->middle_name,
+                'last_name'     => $request->last_name,
+                'suffix'     => $request->suffix,
+                'name' => implode(' ', array_filter([
+                    $request->first_name,
+                    $request->middle_name,
+                    $request->last_name,
+                    $request->suffix
+                ])),
                 'email'    => $request->email,
                 'password' => Hash::make($request->password),
                 'role_id'  => 1, //  created by staff is a member role
+            ]);
+
+
+            //create notification of the action
+            Notification::create([ 
+                'user_id' => Auth::id(),
+                'message' => 'You have successfully created account ' .$createdUser->formatted_id. '!' ,
+                'sent_at' => now(),
             ]);
 
             return redirect()->back()->with('success', 'User account created successfully.');
@@ -128,7 +146,12 @@ class AssistController extends Controller
             // Update primary info
             $membership->update([
                 'name' => $request->fname . ' ' . ($request->mname ?? '') . ' ' . $request->lname,
+                'first_name' => $request->fname,
+                'middle_name' => $request->mname,
+                'last_name' => $request->lname,
+                'suffix' => $request->suffix,
                 'email' => $request->email,
+                'phone_number' => $request->phone,
             ]);
 
             //Update or create related user_info
@@ -177,20 +200,39 @@ class AssistController extends Controller
                 'purpose'          => $request->purpose ?? $request->other_purpose,
             ]);
 
-            // Handle file uploads
+            // Handle file uploads and auto check it after uploading
             if ($request->hasFile('documents')) {
+                $documentChecker = new DocumentChecker();
+
                 foreach ($request->file('documents') as $requirementId => $file) {
                     $filename = time() . '_' . $file->getClientOriginalName();
                     $path = $file->storeAs('application/membership', $filename, 'public');
 
-                    $application->documents()->create([
+                    $document = $application->documents()->create([
                         'file_name'                 => $filename,
                         'file_path'                 => $path,
                         'membership_requirement_id' => $requirementId,
                     ]);
+
+                    // Get requirement name
+                    $requirementName = \App\Models\MembershipRequirement::find($requirementId)?->requirement?->requirement_name;
+
+                    if ($requirementName) {
+
+                        $result = $documentChecker->verifyDocumentBelongsToUser(
+                            storage_path('app/public/' . $path),
+                            $requirementName,
+                            $membership // the user who owns the membership
+                        );
+
+                        $document->update([
+                            'check_result' => $result
+                        ]);
+                    }
                 }
             }
 
+            //create pdf file of the application form
             $application->load(['documents', 'status', 'user.user_info']);
             $pdf = Pdf::loadView('pdf.membership_application_form', ['application' => $application]);
 
@@ -200,7 +242,23 @@ class AssistController extends Controller
             Storage::disk('public')->put($filePath, $pdf->output());
             $application->update(['form_img' => $filePath]);
 
-            return redirect()->back()->with('success', 'Membership application successfully updated.');
+            //store a confirmation message to table
+            Notification::create([ 
+                'user_id' => Auth::id(),
+                'message' => 'You successfully assisted '.$membership->name .' application for Membership and waiting for approval.' ,
+                'sent_at' => now(),
+            ]);
+
+            /*send sms of the application
+            if ($membership && $membership->phone_number) {
+                
+                $number = $membership->phone_number;
+                $message = '[SWISA-AGAP] Your Membership Application is created and pending for approval.';
+
+                SMSService::send($number, $message);
+            }*/
+
+            return redirect()->back()->with('success', 'Membership application success!');
         }catch(\Exception $error) {
             Log::error('Membership Application Error: ' . $error->getMessage());
             return redirect()->back()->with('error', 'Something went wrong while submitting your membership application.');
@@ -260,10 +318,25 @@ class AssistController extends Controller
             $member = User::findOrFail($id);
             $grant  = Grant::with('requirements')->findOrFail($request->grant_id);
 
+            //Check if member already applied for this grant
+            $existingApplication = Application::where('user_id', $member->id)
+                ->where('grant_id', $grant->id)
+                ->where('application_type', 'grant_request')
+                ->exists();
+
+            if ($existingApplication) {
+                return redirect()->back()->with('error', 'This member already has an existing application for this grant.');
+            }
+
             // Update primary info
             $member->update([
                 'name' => $request->fname . ' ' . ($request->mname ?? '') . ' ' . $request->lname,
+                'first_name' => $request->fname,
+                'middle_name' => $request->mname,
+                'last_name' => $request->lname,
+                'suffix' => $request->suffix,
                 'email' => $request->email,
+                'phone_number' => $request->phone,
             ]);
 
             //Update or create related user_info
@@ -313,20 +386,37 @@ class AssistController extends Controller
                 'purpose'          => $request->purpose,
             ]);
 
-            //Handle file uploads
+            //Handle file uploads and auto checked documents once its uploaded
             if ($request->hasFile('documents')) {
+                $documentChecker = new DocumentChecker();
                 foreach ($request->file('documents') as $grantRequirementId  => $file) {
                     $filename = time() . '_' . $file->getClientOriginalName();
                     $path = $file->storeAs('application/grants', $filename, 'public');
 
-                    $application->documents()->create([
+                    $document = $application->documents()->create([
                         'file_name' => $filename,
                         'file_path' => $path,
                         'grant_requirement_id' => $grantRequirementId ,
                     ]);
+
+                    //Run DocumentChecker
+                   $requirementName = $grant->grant_requirements->find($grantRequirementId)?->requirement?->requirement_name;
+
+                    if ($requirementName) {
+                        $checkResult = $documentChecker->verifyDocumentBelongsToUser(
+                            storage_path('app/public/' . $path),
+                            $requirementName,
+                            $application->user // The user name of the applicant
+                        );
+
+                        $document->update([
+                            'check_result' => $checkResult
+                        ]);
+                    }
                 }
             }
 
+            //create pdf file of the form application
             $application->load(['documents', 'status', 'user.user_info']);
             $pdf = Pdf::loadView('pdf.membership_application_form', ['application' => $application]);
 
@@ -335,6 +425,22 @@ class AssistController extends Controller
 
             Storage::disk('public')->put($filePath, $pdf->output());
             $application->update(['form_img' => $filePath]);
+
+            //store a confirmation message to table
+            Notification::create([ 
+                'user_id' => Auth::id(),
+                'message' => 'You successfully assisted '.$member->name .' application for grant' .$grant->title . 'and waiting for approval.' ,
+                'sent_at' => now(),
+            ]);
+
+            /*send sms of the application
+            if ($member && $member->phone_number) {
+                
+                $number = $member->phone_number;
+                $message = '[SWISA-AGAP] Your application for grant' .$grant->title . 'is created and pending for approval.';
+
+                SMSService::send($number, $message);
+            }*/
 
             return redirect()->back()->with('success', 'Grant application success!.');
         }catch (\Exception $error) {

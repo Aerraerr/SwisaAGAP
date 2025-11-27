@@ -12,7 +12,6 @@
                 <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Reports</h2>
                 <p class="text-sm text-gray-600">Generate detailed insights and summaries of SWISA-AGAP activities.</p>
             </div>
-            @include('components.UserTab')
         </div>
 
         <!-- Tabs + Filters in One Row -->
@@ -36,7 +35,7 @@
                     <input type="date" class="border rounded-lg px-3 py-2 text-sm">
                     <input type="date" class="border rounded-lg px-3 py-2 text-sm">
                 </div>
-                <select class="w-60 border rounded-lg px-2 py-2 text-sm">
+                <select class="w-[200px] border rounded-lg px-2 py-2 text-sm">
                     <option>All Categories</option>
                     <option>Farming</option>
                     <option>Fishing</option>

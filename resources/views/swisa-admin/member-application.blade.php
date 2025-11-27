@@ -9,9 +9,6 @@
                 <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Member Application Management</h2>
                 <p class="text-sm text-gray-600">Manage, and monitor the member application of SWISA members.</p>
             </div>
-            
-            <!-- Right side -->
-            @include('components.UserTab')
         </div>
 
         <!-- quick stats -->
@@ -111,22 +108,20 @@
                                     @click="selectedUser = { 
                                         id: '{{ $app->id ?? '-'}}', 
                                         name: '{{ $app->user->name ?? '-'}}', 
-                                        date: '{{ $app->created_at->format('F d Y') ?? '-'}}',
-                                        updated: '{{ $app->updated_at->format('F d Y') ?? '-'}}', 
+                                        date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}',
+                                        updated: '{{ $app->updated_at->format('F d, Y h:i A') ?? '-'}}', 
                                         status: '{{ ucfirst($app->status?->status_name ?? '-') }}',
                                         number: '{{ $app->user->user_info->contact_no ?? '-'}}',
                                         email: '{{ $app->user->email ?? '-'}}',
                                         reason: '{{ $app->rejection_reason ?? '-'}}',
                                         documents: @js($app->documents),
-                                        form_img: '{{ $app->form_img ?? '-'}}' 
-                                        
-                                    }"
-                                >
-                                    <td class="px-4 py-3 text-xs text-gray-700">APP-{{ $app->id ?? '-'}}</td>
+                                        form_img: '{{ $app->form_img ?? '-'}}'
+                                    }">
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d, Y') ?? '-'}}</td>
                                     <td class="px-4 py-3">
                                         <span class="inline-block text-xs font-medium text-white px-3 py-1 rounded-full 
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
@@ -244,24 +239,22 @@
 
                                     @include('components.modals.requirement-view')
                                     
-                                    <div class="text-xs font-medium">
-                                        <!-- Pending -->
-                                        <template x-if="selectedUser.status === 'Pending'">
-                                            <p class="text-gray-500 italic">*Pending for the Support Staff to double check on it.</p>
-                                        </template>
-
-                                        <!-- Approved -->
-                                        <template  x-if="selectedUser.status === 'Approved'">
-                                            <p class="text-gray-500 italic">*Checked by the Support Staff on <span x-text="selectedUser.updated"></span></p>
-                                        </template>
-
-                                        <!-- Rejected -->
-                                        <template x-if="selectedUser.status === 'Rejected'">
-                                            <p class="text-gray-500 italic">*Checked by the Support Staff and it's rejected.</p>
-                                            <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected"></span></p>
-                                        </template>
-                                    </div>
                                 </div>
+
+                                <!-- Approved text -->
+                                <template x-if="selectedUser.status === 'Approved'">
+                                    <div class="text-xs text-approved font-medium">
+                                        <p class="text-gray-500 italic">*Approved by the Admin on <span class="font-medium text-customIT" x-text="selectedUser.updated"></span></p>
+                                    </div>
+                                </template>
+
+                                <!-- Rejected text-->
+                                <template x-if="selectedUser.status === 'Rejected'">
+                                    <div class="text-xs font-medium">
+                                        <p class="text-gray-500 italic">*Rejected at <span class="font-medium text-rejected" x-text="selectedUser.updated"></span>.</p>
+                                        <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected"></span></p>
+                                    </div>
+                                </template>
 
                                 <!-- Verification Note -->
                                 <template x-if="selectedUser.status === 'Pending'">
@@ -281,7 +274,7 @@
                                         </button>
                                     </div>
                                 </template>
-                                @include('components.modals.approved-modal', ['modalId' => 'approvedModalAll'])
+                                @include('components.modals.approved-membership-modal', ['modalId' => 'approvedModalAll'])
                             </div>
                         </template>
                     </div>
@@ -324,7 +317,7 @@
                                             form_img: '{{ $app->form_img ?? '-'}}' 
                                         }"
                                     >
-                                        <td class="px-4 py-3 text-xs text-gray-700">APP-{{ $app->id ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
@@ -442,9 +435,6 @@
                                         </template>
                                     </div>
                                     @include('components.modals.requirement-view')
-                                    <div class="text-xs text-approved font-medium">
-                                        <p class="text-gray-500 italic">*Pending for the Support Staff to double checked on it.</p>
-                                    </div>
                                 </div>
 
                                 <!-- Verification Note -->
@@ -461,7 +451,7 @@
                                         Approve
                                     </button>
                                 </div>
-                                @include('components.modals.approved-modal', ['modalId' => 'approvedModalPending'])
+                                @include('components.modals.approved-membership-modal', ['modalId' => 'approvedModalPending'])
                             </div>
                         </template>
                     </div>
@@ -497,10 +487,10 @@
                                             'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
                                         }"
                                         @click="selectedUser = { 
-                                            id: 'APP-{{ $app->id ?? '-'}}', 
+                                            id: '{{ $app->id ?? '-'}}', 
                                             name: '{{ $app->user->name ?? '-'}}', 
-                                            date: '{{ $app->created_at->format('F d Y') ?? '-'}}',
-                                            updated: '{{ $app->updated_at->format('F d Y') ?? '-'}}', 
+                                            date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}',
+                                            updated: '{{ $app->updated_at->format('F d, Y h:i A') ?? '-'}}', 
                                             status: '{{ ucfirst($app->status?->status_name ?? '-') }}',
                                             number: '{{ $app->user->user_info->contact_no ?? '-'}}',
                                             email: '{{ $app->user->email ?? '-'}}',
@@ -508,7 +498,7 @@
                                             form_img: '{{ $app->form_img ?? '-'}}'  
                                         }"
                                     >
-                                        <td class="px-4 py-3 text-xs text-gray-700">APP-{{ $app->id ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
@@ -615,9 +605,10 @@
                                         </template>
                                     </div>
                                     @include('components.modals.requirement-view')
-                                    <div class="text-xs text-approved font-medium">
-                                        <p class="text-gray-500 italic">*Checked by the Support Staff on <span x-text="selectedUser.updated"></span></p>
-                                    </div>
+                                </div>
+                                <!-- Approved text -->
+                                <div class="text-xs text-approved font-medium">
+                                    <p class="text-gray-500 italic">*Approved by the Admin on <span class="font-medium text-customIT" x-text="selectedUser.updated"></span></p>
                                 </div>
                             </div>
                         </template>
@@ -654,9 +645,10 @@
                                             'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
                                         }"
                                         @click="selectedUser = { 
-                                            id: 'APP-{{ $app->id ?? '-'}}', 
+                                            id: '{{ $app->id ?? '-'}}', 
                                             name: '{{ $app->user->name ?? '-'}}', 
-                                            date: '{{ $app->created_at->format('F d Y') ?? '-'}}', 
+                                            date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}', 
+                                            updated: '{{ $app->updated_at->format('F d, Y h:i A') ?? '-'}}',  
                                             status: '{{ ucfirst($app->status?->status_name ?? '-') }}',
                                             number: '{{ $app->user->user_info->contact_no ?? '-'}}',
                                             email: '{{ $app->user->email ?? '-'}}',
@@ -665,11 +657,11 @@
                                             form_img: '{{ $app->form_img ?? '-'}}'  
                                         }"
                                     >
-                                        <td class="px-4 py-3 text-xs text-gray-700">APP-{{ $app->id ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d, Y') ?? '-'}}</td>
                                         <td class="px-4 py-3">
                                             <span class="inline-block text-xs font-medium bg-rejected text-white px-3 py-1 rounded-full">
                                                 {{ ucfirst($app->status->status_name) ?? '-'}}
@@ -772,10 +764,11 @@
                                         </template>
                                     </div>
                                     @include('components.modals.requirement-view')
-                                    <div class="text-xs font-medium">
-                                        <p class="text-gray-500 italic">*Checked by the Support Staff and it's rejected.</p>
-                                        <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected italic"></span> </p>
-                                    </div>
+                                </div>
+                                <!-- Rejected text-->
+                                <div class="text-xs font-medium">
+                                    <p class="text-gray-500 italic">*Rejected at <span class="font-medium text-rejected" x-text="selectedUser.updated"></span>.</p>
+                                    <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected"></span></p>
                                 </div>
                             </div>
                         </template>

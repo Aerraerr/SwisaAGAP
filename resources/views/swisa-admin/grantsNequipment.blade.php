@@ -10,8 +10,9 @@
                     Manage, track, and monitor the availability of grants and equipment for SWISA members.
                 </p>
             </div>
-            @include('components.UserTab')
         </div>
+@include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
+
 
         
         <!-- Stats Cards -->
@@ -60,7 +61,7 @@
 
                     <!-- for table/list front -->
                     <div x-show="activeTab === 'list'" class="tab-pane">
-                            <div class="overflow-auto h-auto shadow-lg">
+                            <div class="overflow-auto-visible h-auto shadow-lg">
                                 <table class="min-w-full bg-white border-spacing-y-1">
                                 <thead class="bg-snbg border border-gray-100 px-8">
                                     <tr class="text-customIT text-left ">

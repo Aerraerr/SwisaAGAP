@@ -24,7 +24,7 @@
             </div>
         </div>
         <!-- modal footer -->
-        <form :action="`{{ route('member-application.update', '') }}/${selectedUser.id}`" method="POST" class="space-y-4">
+        <form :action="`/grant-application/${selectedUser.id}/approved`" method="POST" class="space-y-4">
         @csrf
         @method('PATCH')
             <div class="text-right px-4 py-3">
@@ -38,6 +38,6 @@
                 </button>
             </div>
         </form>
-        @include('components.modals.reject-reason', ['modalId' => 'rejectReasonModal'])
+        @include('components.modals.reject-grant', ['modalId' => 'rejectReasonModal'])
     </div>
 </div>

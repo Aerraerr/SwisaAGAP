@@ -5,81 +5,149 @@ namespace App\Http\Controllers\mobile;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
-
+use Illuminate\Support\Facades\Mail;
+use App\Services\SMSService;
 class AuthController extends Controller
 {
     // --- 1. REGISTER: Creates user in DB with hashed password ---
     public function register(Request $request)
     {
-        // Validation should cover all fields collected in Step 1, plus the future fields.
-        $request->validate([
+        // ✅ UPDATED: Added password strength validation
+        $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => [
-            'required',
-            'string',
-            'min:8',              // Minimum 8 characters
-            'confirmed',          // Must match password_confirmation
-            'regex:/[a-z]/',      // Must contain lowercase
-            'regex:/[A-Z]/',      // Must contain uppercase
-            'regex:/[0-9]/',      // Must contain number
-        ],
-            
-            // These fields are validated as nullable, so we safely use them below.
             'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
             'suffix' => 'nullable|string|max:10',
-            'phone_number' => 'nullable|string|max:20|unique:users,phone_number',
-            'mpin' => 'nullable|digits:4',
+            'email' => 'nullable|string|email|max:255|unique:users',
+            'phone_number' => 'nullable|string|max:15|unique:users',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/[a-z]/',      // Must contain lowercase
+                'regex:/[A-Z]/',      // Must contain uppercase
+                'regex:/[0-9]/',      // Must contain number
+            ],
+            'mpin' => 'required|string|size:4|regex:/^[0-9]{4}$/', // Must be 4 digits
+            'login_method' => 'nullable|string|in:email,phone', // Optional field
+        ], [
+            // Custom error messages
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, and one number.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'mpin.size' => 'MPIN must be exactly 4 digits.',
+            'mpin.regex' => 'MPIN must contain only numbers.',
         ]);
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'middle_name' => $request->middle_name,
-            'suffix' => $request->suffix,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            
-            // FIX: Use request()->input() helper for nullable fields, 
-            // ensuring we grab the value if it exists, otherwise it defaults to null.
-            // MPIN should also be hashed if it is present.
-            'phone_number' => $request->input('phone_number'), 
-            'mpin' => $request->mpin ? Hash::make($request->mpin) : null,
-        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-        return response()->json([
-            'message' => 'Registration successful.',
-            'user' => $user,
-        ], 201);
+        // ✅ Validate: Must have either email OR phone
+        if (!$request->email && !$request->phone_number) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Either email or phone number is required'
+            ], 422);
+        }
+
+        try {
+            // ✅ Determine login method if not provided
+            $loginMethod = $request->login_method ?? ($request->email ? 'email' : 'phone');
+
+            // ✅ Create user with ALL fields
+            $user = User::create([
+                'first_name' => $request->first_name,
+                'middle_name' => $request->middle_name,
+                'last_name' => $request->last_name,
+                'suffix' => $request->suffix ?? 'N/A',
+                'email' => $request->email,
+                'phone_number' => $request->phone_number,
+                'password' => Hash::make($request->password),
+                'mpin' => Hash::make($request->mpin),
+                'login_method' => $loginMethod,
+                'email_verified_at' => $request->email ? now() : null,
+                'phone_verified_at' => $request->phone_number ? now() : null,
+            ]);
+
+            // Generate token
+            $token = $user->createToken('SwisaAGAP')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Registration successful',
+                'token' => $token,
+                'user' => [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'middle_name' => $user->middle_name,
+                    'last_name' => $user->last_name,
+                    'suffix' => $user->suffix,
+                    'email' => $user->email,
+                    'phone_number' => $user->phone_number,
+                    'login_method' => $user->login_method,
+                ]
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
     
     // --- 2. LOGIN: Authenticates user and generates Sanctum token ---
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-            'device_name' => 'required|string', // Sanctum requirement
+        $validator = Validator::make($request->all(), [
+            'identifier' => 'required', // Can be email or phone
+            'password' => 'required',
         ]);
 
-        $credentials = $request->only('email', 'password');
-
-        if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Invalid email or password.'], 401);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $user = Auth::user();
+        // ✅ Auto-detect if email or phone
+        $field = filter_var($request->identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number';
+        
+        $user = User::where($field, $request->identifier)->first();
 
-        // Generates the plainTextToken
-        $token = $user->createToken($request->device_name)->plainTextToken;
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        // ✅ Generate token
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
+            'success' => true,
+            'message' => 'Login successful',
             'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'middle_name' => $user->middle_name,
+                'last_name' => $user->last_name,
+                'suffix' => $user->suffix,
+                'email' => $user->email,
+                'phone_number' => $user->phone_number,
+                'login_method' => $user->login_method,
+            ]
         ]);
     }
     
@@ -87,7 +155,11 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Successfully logged out']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logged out successfully'
+        ]);
     }
 
     // Change Password
@@ -161,9 +233,114 @@ class AuthController extends Controller
     // CLEAR RATE LIMIT ON SUCCESS
     RateLimiter::clear($key);
 
+   if ($user) {
+    // Send SMS if phone number exists
+    if ($user->phone_number) {
+        $number = preg_replace('/^0/', '63', $user->phone_number);
+        $smsMessage = "[SWISA-AGAP]\nHello {$user->first_name}, your password was changed successfully on " . now()->toDateTimeString() . ".";
+        SMSService::send($number, $smsMessage);
+    }
+
+    // Send email if email exists
+    if ($user->email) {
+        $emailMessage = "Hello {$user->first_name},\n\nYour password for SwisaAGAP was changed successfully on " . now()->toDateTimeString() . ".\nIf you did not request this change, please contact our support immediately.\n\nThank you,\nSwisaAGAP Team";
+        Mail::raw($emailMessage, function ($mail) use ($user) {
+            $mail->to($user->email)
+                 ->subject('SwisaAGAP - Password Changed')
+                 ->replyTo('noreply@yourdomain.com', 'No Reply');
+        });
+    }
+}
+
     return response()->json([
         'message' => 'Password changed successfully. Please log in again.',
         'force_logout' => true,
     ], 200);
   }
+
+    // API route: POST /api/reset-password
+   public function resetPassword(Request $request)
+{
+    $request->validate([
+        'email' => 'nullable|string|email|exists:users,email',
+        'phone' => 'nullable|string|exists:users,phone_number',
+        'new_password' => [
+            'required', 'string', 'min:8', 'confirmed',
+            'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/'
+        ]
+    ]);
+    if (!$request->email && !$request->phone) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Either email or phone is required.'
+        ], 422);
+    }
+    $user = null;
+    if ($request->email) {
+        $user = User::where('email', $request->email)->first();
+    } elseif ($request->phone) {
+        $user = User::where('phone_number', $request->phone)->first();
+    }
+    if (!$user) {
+        return response()->json([
+            'success' => false,
+            'message' => 'User not found.'
+        ], 404);
+    }
+
+    $user->password = Hash::make($request->new_password);
+    $user->save();
+
+    if ($user->email) {
+        $message = "Hello {$user->first_name},\n\n";
+        $message .= "Your password for SwisaAGAP was changed successfully on " . now()->toDateTimeString() . ".\n";
+        $message .= "If you did not request this change, please contact our support immediately.\n\n";
+        $message .= "Thank you,\nSwisaAGAP Team";
+        Mail::raw($message, function ($mail) use ($user) {
+            $mail->to($user->email)
+                ->subject('SwisaAGAP - Password Changed')
+                ->replyTo('noreply@yourdomain.com', 'No Reply');
+        });
+    }
+
+    if ($user->phone_number) {
+        $number = preg_replace('/^0/', '63', $user->phone_number);
+        $smsMessage = "[SWISA-AGAP]\nHello {$user->first_name}, your password was changed successfully on " . now()->toDateTimeString() . ". If this wasn't you, contact support.";
+        SMSService::send($number, $smsMessage);
+    }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Password reset successful.'
+    ]);
+}
+
+ public function verifyMpin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'mpin' => 'required|string|size:4',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        if (!Hash::check($request->mpin, $user->mpin)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid MPIN'
+            ], 401);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'MPIN verified successfully'
+        ]);
+    }
+
 }

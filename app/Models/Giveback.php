@@ -13,7 +13,9 @@ class Giveback extends Model
         'application_id',
         'user_id',
         'status_id',
+        'type',
         'quantity',
+        'image_path',
         'notes',
     ];
 
@@ -29,10 +31,5 @@ class Giveback extends Model
     // belongs to a status
     public function status(){
         return $this->belongsTo(Status::class);
-    }
-
-    //
-    public function documents(){
-        return $this->morphMany(Document::class, 'documentable');
     }
 }

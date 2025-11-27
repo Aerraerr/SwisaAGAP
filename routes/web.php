@@ -10,7 +10,11 @@ use App\Http\Controllers\Web\GrantController;
 use App\Http\Controllers\Web\GrantReportController;
 use App\Http\Controllers\Web\MemberController;
 use App\Http\Controllers\Web\TrainingController;
+use App\Http\Controllers\QuickRepliesController;
+use App\Http\Controllers\Web\UserManagementController;
+use App\Http\Controllers\Web\FaqsController;
 use Illuminate\Support\Facades\Route;
+use App\Services\SMSService;
 
 //
 Route::get('/', function () {
@@ -25,8 +29,13 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-
-
+//sms testing
+Route::get('/test-sms', function () {
+    $number = '09943801688'; // your phone number
+    $message = 'Hello from vakla SWISA-AGAP (IPROG Test)!';
+    $response = SMSService::send($number, $message);
+    return $response;
+});
 
 
 //-------------ANNOUNCEMENT ROUTES------------
@@ -74,8 +83,11 @@ Route::delete('view-training/{id}/delete-event', [TrainingController::class, 'de
 Route::get('/grant-request', [GrantRequestController::class, 'displayApplications'] )
 ->middleware(['auth', 'verified'])->name('grant-request'); 
 
-Route::patch('/member-application/{id}', [GrantRequestController::class, 'approvedApplication'])
-->middleware(['auth', 'verified'])->name('member-application.update');
+Route::patch('/grant-application/{id}/checked', [GrantRequestController::class, 'markAsChecked'])
+->middleware(['auth', 'verified'])->name('checked-grant-application.update');
+
+Route::patch('/grant-application/{id}/approved', [GrantRequestController::class, 'approvedApplication'])
+->middleware(['auth', 'verified'])->name('approved-grant-application.update'); 
 
 //------------APPLICATION ROUTE------------------
 
@@ -94,13 +106,15 @@ Route::get('/logs', function () {
     return view('swisa-admin.logs');
 })->middleware(['auth', 'verified'])->name('logs');
 
-Route::get('/messages', function () {
-    return view('swisa-admin.messages');
-})->middleware(['auth', 'verified'])->name('messages');
+
+Route::get('/faqs', function () {
+    return view('swisa-admin.faqs');
+})->middleware(['auth', 'verified'])->name('faqs');
 
 
 
-Route::middleware(['role:3', 'throttle:3,1'])->group(function () {
+
+Route::middleware(['role:3'])->group(function () {
 
     //-----------ADMIN-REPORTS ROUTES----------------
 
@@ -138,7 +152,7 @@ Route::middleware(['role:3', 'throttle:3,1'])->group(function () {
 });
 
 // SWISA STAFF: Main pages
-Route::middleware(['role:2', 'throttle:3,1'])->group(function () {
+Route::middleware(['role:2'])->group(function () {
     // ----- for giveback -------------
     Route::get('/giveback', [GivebackController::class, 'displayGivebacks'])->name('giveback');
 
@@ -174,6 +188,58 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
+
+
+
+// FAQS
+// Display FAQs
+Route::get('/faqs', [FaqsController::class, 'index'])->name('faqs.index');
+// Add new FAQ
+Route::post('/faqs', [FaqsController::class, 'store'])->name('faqs.store');
+// Delete FAQ
+Route::delete('/faq/{id}', [FaqsController::class, 'destroy'])->name('faq.destroy');
+// Optional: Edit/Update FAQ
+Route::put('/faq/{faq}', [FaqsController::class, 'update'])->name('faq.update');
+
+// CHATS
+use App\Http\Controllers\ChatController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/messages/{chat}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{chat}/message', [ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::get('/chat/{chat}/poll', [ChatController::class, 'poll'])->name('chat.poll');
+    Route::get('/chat/{userId}/load', [ChatController::class, 'load'])->name('chat.load'); // ✅ Add this
+    Route::get('/chat/unread-check', [ChatController::class, 'checkUnread']);
+    Route::post('/chat/{chatId}/mark-as-read', [ChatController::class, 'markAsRead']);
+
+
+    
+});
+
+// SETTINGS
+//================================================
+
+// CHAT SETTINGS
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/quickreplies/manage', [QuickRepliesController::class, 'index'])->name('quickreplies.manage');
+    Route::post('/settings/chat/quick-replies', [QuickRepliesController::class, 'store'])->name('quickreplies.store');
+    Route::put('/settings/chat/quick-replies/{quickReply}', [QuickRepliesController::class, 'update'])->name('quickreplies.update');
+    Route::delete('/settings/chat/quick-replies/{quickReply}', [QuickRepliesController::class, 'destroy'])->name('quickreplies.destroy');
+});
+
+// USER MANAGEMENT
+
+Route::get('/settings', [UserManagementController::class, 'index'])->name('settings');
+Route::post('/settings/users/store', [UserManagementController::class, 'store'])->name('admin.users.store');
+Route::delete('/settings/users/{id}', [UserManagementController::class, 'destroy'])->name('admin.users.destroy');
+
+
+
+
 
 require __DIR__.'/auth.php';
 

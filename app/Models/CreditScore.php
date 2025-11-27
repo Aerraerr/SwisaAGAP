@@ -8,10 +8,10 @@ class CreditScore extends Model
 {
     protected $fillable = ['user_id', 'score'];
 
-    // Set default value at model level
-    protected $attributes = [
-        'score' => 20,
-    ];
+    public function setScoreAttribute($value)
+    {
+         $this->attributes['score'] = max(0, min($value, 50));
+    }
 
     public function user()
     {

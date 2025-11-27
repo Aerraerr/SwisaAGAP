@@ -1,7 +1,18 @@
 import './bootstrap';
-
 import Alpine from 'alpinejs';
 
-window.Alpine = Alpine;
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
 
+window.Alpine = Alpine;
 Alpine.start();
+
+// Setup Echo with Pusher
+window.Pusher = Pusher;
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'mt1',
+    forceTLS: true,
+});

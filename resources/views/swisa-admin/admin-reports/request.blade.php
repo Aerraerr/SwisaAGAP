@@ -1,7 +1,5 @@
 <section id="requests" class="report-section hidden ">
 
-
-
     <!-- Header with Export Options -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
         <div>

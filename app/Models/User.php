@@ -13,10 +13,12 @@ use App\Models\Document;
 use App\Models\Notification;
 use App\Models\Training;
 use App\Models\UserInfo;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\CreditScore;
 use App\Models\CreditScoreHistory;
+use App\Models\PhoneOtp;
 
 class User extends Authenticatable
 {
@@ -37,7 +39,10 @@ class User extends Authenticatable
         'password',
         'phone_number',
         'mpin',
+        'login_method',
         'role_id',
+        'email_verified_at',
+        'phone_verified_at',
     ];
 
     /**
@@ -60,10 +65,14 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+             'phone_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
 
+    public function getFormattedIdAttribute(){
+        return 'MEM-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+    }
 
     //RELATIONSHIP TO USERS\
 
@@ -112,30 +121,72 @@ class User extends Authenticatable
         return $this->hasMany(CreditScoreHistory::class)->latest();
     }
 
-     /*Adjust the user's credit score and log it in history*/
-    public function adjustCreditScore(int $points, string $activity)
+    /**
+     * Get phone OTP records for this user
+     */
+    public function phoneOtps()
     {
-        // Get or create credit score
-        $creditScore = $this->creditScore()->firstOrCreate(
-            ['user_id' => $this->id],
-            ['score' => 20]
-        );
+        return $this->hasMany(PhoneOtp::class, 'phone_number', 'phone_number');
+    }
 
-        // Update the score
-        $newScore = $creditScore->score + $points;
-        
-        // Don't let score go below 0
-        $newScore = max(0, $newScore);
-        
-        $creditScore->update(['score' => $newScore]);
+    /**
+     * Get latest phone OTP
+     */
+    public function latestPhoneOtp()
+    {
+        return $this->hasOne(PhoneOtp::class, 'phone_number', 'phone_number')
+            ->latestOfMany();
+    }
 
-        // Log in history
-        CreditScoreHistory::create([
-            'user_id' => $this->id,
-            'activity' => $activity,
-            'points' => $points,
-        ]);
+    /**
+     * Check if user's phone is verified
+     */
+    public function isPhoneVerified(): bool
+    {
+        return $this->phone_verified_at !== null;
+    }
 
-        return $newScore;
+    /**
+     * Check if user's email is verified
+     */
+    public function isEmailVerified(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+
+    /**
+     * Get user's full name
+     */
+    public function getFullNameAttribute(): string
+    {
+        $name = trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+        if ($this->suffix && $this->suffix !== 'N/A') {
+            $name .= " {$this->suffix}";
+        }
+        return $name;
+    }
+
+    /**
+     * Get user's identifier (email or phone)
+     */
+    public function getIdentifierAttribute(): string
+    {
+        return $this->email ?? $this->phone_number ?? 'Unknown';
+    }
+
+    /**
+     * Check if user registered with email
+     */
+    public function isEmailUser(): bool
+    {
+        return $this->login_method === 'email' || !empty($this->email);
+    }
+
+    /**
+     * Check if user registered with phone
+     */
+    public function isPhoneUser(): bool
+    {
+        return $this->login_method === 'phone' || !empty($this->phone_number);
     }
 }

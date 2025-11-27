@@ -6,7 +6,6 @@
         <div class="text-customIT flex flex-col">
             <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Assist Member</h2>
         </div>
-        @include('components.UserTab')
     </div>
 
     <div class="grid grid-cols-12 py-4 gap-2">
@@ -67,7 +66,7 @@
                     <tbody>
                         @forelse($members as $member)
                             <tr class="border border-gray-300 hover:bg-gray-100">
-                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->id}}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->formatted_id}}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $member->name}}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $member->user_info->contact_no ?? '-'}}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $member->email}}</td>
@@ -143,8 +142,6 @@
                                     </div>
                                 </td>
                             </tr>
-                        @include('components.modals.assist-membership')
-                        @include('components.modals.assist-grant-request')
                         @empty
                             <tr>
                                 <td colspan="8" class="text-center py-8 text-gray-500 text-sm">
@@ -160,6 +157,10 @@
         @include('components.pagination')
         </div>
     </div>
+    @foreach($members as $member)
+        @include('components.modals.assist-membership')
+        @include('components.modals.assist-grant-request')
+    @endforeach
     @include('components.modals.assist-register')
 </div>
 </div>

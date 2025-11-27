@@ -25,7 +25,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label for="fname" class="block text-sm font-medium text-gray-700">First Name</label>
-              <input type="text" name="fname" value="{{ old('first_name', $member->first_name ?? 'first name') }}" class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-btncolor focus:border-btncolor focus:ring-opacity-30" required>
+              <input type="text" name="fname" value="{{ old('first_name', $member->first_name ?? 'first name')}}" class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-btncolor focus:border-btncolor focus:ring-opacity-30" required>
             </div>
             <div>
               <label for="mname" class="block text-sm font-medium text-gray-700">Middle Name</label>

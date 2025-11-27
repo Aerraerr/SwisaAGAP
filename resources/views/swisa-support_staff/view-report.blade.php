@@ -6,7 +6,6 @@
             <div class="text-customIT flex flex-col">
                 <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">View Report</h2>
             </div>
-            @include('components.UserTab')
         </div>
     </div>
 

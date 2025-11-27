@@ -14,7 +14,7 @@ class MembershipController extends Controller
 {
     public function displayApplications(){
         // initialized the DocumentChecker service
-        $checker = new DocumentChecker();
+        //$checker = new DocumentChecker();
 
         $applications = [
             'all' => Application::with(['user.user_info', 'status', 'documents.membershipRequirement.requirement'])->where('application_type', 'membership')->get(),
@@ -29,7 +29,7 @@ class MembershipController extends Controller
                 })->get(),
         ];
 
-        foreach ($applications['pending'] as $app) {
+        /*foreach ($applications['pending'] as $app) {
             foreach ($app->documents as $document) {
                 // Construct file path
                 $filePath = storage_path('app/public/' . $document->file_path);
@@ -39,8 +39,11 @@ class MembershipController extends Controller
 
                 // Check if file exists and has a matching requirement
                 if (file_exists($filePath) && $requirementName) {
-                    $isMatch = $checker->checkRequirementInFile($filePath, $requirementName);
-                    $document->check_result = $isMatch ? 'Passed' : 'Needs Checking';
+                    $document->check_result = $checker->checkRequirementInFile(
+                        $filePath,
+                        $requirementName,
+                        $app->user
+                    );
                 } else {
                     $document->check_result = 'Missing';
                 }
@@ -62,7 +65,7 @@ class MembershipController extends Controller
                     }
                 }
             }
-        }
+        }*/
 
         $membershipRequirements = DB::table('membership_requirements')
         ->join('requirements', 'membership_requirements.requirement_id', '=', 'requirements.id')
@@ -89,10 +92,10 @@ class MembershipController extends Controller
 
             $application->save();
 
-            return redirect()->back()->with('success', 'Application ' . strtolower($request->action) . 'd successfully!');
+            return redirect()->back()->with('success', 'Membership application ' . strtolower($request->action) . 'd successfully!');
         }catch(\Exception $error){
             Log::error('Membership Application Update Error: ' . $error->getMessage());
-            return redirect()->back()->with('error', 'Something went wrong while creating a user.');
+            return redirect()->back()->with('error', 'Something went wrong updating membership application.');
         }
     }
 

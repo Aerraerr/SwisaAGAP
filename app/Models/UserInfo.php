@@ -15,6 +15,7 @@ class UserInfo extends Model
     protected $table = 'user_info';
 
     protected $fillable = [
+        //user info
         'user_id',
         'sector_id',
         'fname',
@@ -33,9 +34,13 @@ class UserInfo extends Model
         'barangay',
         'zone',
         'profile_img',
+
+        //additional info
         'farm_location',
         'land_size',
         'water_source',
+
+        //second contact info
         'sc_fname',
         'sc_mname',
         'sc_lname',
@@ -57,6 +62,7 @@ class UserInfo extends Model
     const Suffix = ['Jr', 'Sr', 'I', 'II', 'III', 'IV', 'V'];
     const Relation = ['Parent', 'Sibling', 'Spouse', 'Child', 'Friend', 'Guardian', 'Relative'];
     const Cvl_Stats = ['Single', 'Married', 'Widowed','Separated'];
+
     //RELATIONSHIPS
 
     // user_info belongs to one user
@@ -67,5 +73,10 @@ class UserInfo extends Model
     // user_info belongs to a sector
     public function sector(){
         return $this->belongsTo(Sector::class);
+    }
+
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
     }
 }

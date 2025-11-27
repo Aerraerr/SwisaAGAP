@@ -11,7 +11,6 @@
                     Organize, monitor, and showcase SWISA initiatives, programs, and community events.
                 </p>
             </div>
-            @include('components.UserTab')
         </div>
     </div>
 
@@ -39,12 +38,13 @@
         </div>
     </div>
 
-    <div class="bg-white  p-5 rounded-xl shadow-xl">
+    <div class="bg-white  p-5 rounded-xl shadow-xl border border-gray-300">
         <div x-data="{ activeTab: 'grid' }" class="mt-4">
+            
             <x-filters modalId="addTrainingModal" />
             
             <!-- Example of using the reusable component -->
-            <div x-show="activeTab === 'grid'" class="pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            <div x-show="activeTab === 'grid'" class="pt-2  grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 <!-- Card with specific data -->
                 @foreach($trainings as $training)
                     <x-cards.training-card
@@ -61,7 +61,7 @@
                 @endforeach
             </div>
             <div x-show="activeTab === 'list'" class="tab-pane rounded-lg">
-                    <div class="overflow-auto h-auto shadow-lg">
+                    <div class="overflow-auto-visible h-auto shadow-lg">
                         <table class="min-w-full bg-white border-spacing-y-1">
                         <thead class="bg-snbg border border-black-100 px-8">
                             <tr class="text-customIT text-left ">

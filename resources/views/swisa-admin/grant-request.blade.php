@@ -9,9 +9,6 @@
                 <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Request Management</h2>
                 <p class="text-sm text-gray-600">insert text here.</p>
             </div>
-            
-            <!-- Right side -->
-            @include('components.UserTab')
         </div>
         <!-- Stats Cards for Initiatives & Events -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -89,7 +86,7 @@
                 </div>
                 <div class="overflow-auto h-[80vh]">
                     <table class="table table-hover min-w-full border-spacing-y-1">
-                        <thead class="bg-snbg border-black-800 sticky top-0 z-10">
+                        <thead class="bg-snbg border-black-800 sticky top-0 ">
                             <tr class="text-customIT text-left text-xs font-semibold">
                                 <th class="px-4 py-3 rounded-tl-md">REQUEST ID</th>
                                 <th class="px-4 py-3">MEMBER</th>
@@ -107,8 +104,8 @@
                                         name: '{{ $app->user->name ?? '-'}}', 
                                         item: '{{ $app->grant->title ?? '-'}}',
                                         type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
-                                        date: '{{ $app->created_at->format('F d Y') ?? '-'}}',
-                                        updated: '{{ $app->updated_at->format('F d Y') ?? '-'}}',  
+                                        date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}',
+                                        updated: '{{ $app->updated_at->format('F d, Y h:i A') ?? '-'}}',  
                                         status: '{{ ucfirst($app->status?->status_name ?? '-')}}',
                                         phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
                                         email: '{{ $app->user->email ?? '-'}}',
@@ -121,13 +118,15 @@
                                                 'grant_requirement_id' => $gr->id,
                                                 'requirement_name' => $gr->requirement->requirement_name
                                             ];
-                                        })) 
+                                        })), 
+                                        is_checked_by_staff: {{ $app->is_checked_by_staff ? 'true' : 'false' }}, 
+                                        checked_by_staff_at: '{{ $app->checked_by_staff_at?->format('F d, Y h:i A') ?? '-'}}'
                                     }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d, Y') ?? '-'}}</td>
                                     <td class="px-4 py-3">
                                         <div class="inline-block text-xs font-medium text-white text-center px-3 py-1 rounded-full
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
@@ -163,7 +162,7 @@
 
                     <!-- Show selected user details -->
                     <template x-if="selectedUser">
-                         <div class="flex flex-col items-stretch text-left space-y-2">
+                        <div class="flex flex-col items-stretch text-left space-y-2">
 
                             <!-- Header -->
                             <div class="flex justify-between items-center">
@@ -237,14 +236,7 @@
                                             </span>
 
                                             <!-- display 'Passed or Needs Checking' depending on the result of the documentChecker -->
-                                            <span 
-                                                x-text="selectedUser.documents.find(d => d.grant_requirement_id === req.grant_requirement_id)?.check_result || 'Uploaded'"
-                                                :class="{
-                                                    'text-green-500 font-semibold': $el.textContent === 'Passed',
-                                                    'text-red-500 italic': $el.textContent === 'Needs Checking'
-                                                }"
-                                                class="text-xs"
-                                            ></span>
+                                            <span x-text="selectedUser.documents.find(d => d.grant_requirement_id === req.grant_requirement_id)?.check_result" class="text-xs"></span> 
                                         </li>
                                     </template>
                                 </ul>
@@ -264,39 +256,92 @@
 
                                 @include('components.modals.requirement-view')
 
-                                <div class="text-xs font-medium">
-                                    <!-- Pending -->
-                                    <template x-if="selectedUser.status === 'Pending'">
-                                        <p class="text-gray-500 italic">*Pending for the Support Staff to double check on it.</p>
+                            </div>
+
+                            <!-- For Staff conditions -->
+                            <template x-if="{{ auth()->user()->role_id }} === 2 && selectedUser.status === 'Pending'">
+                                <div>
+                                    <!-- If already checked -->
+                                    <template x-if="selectedUser.is_checked_by_staff === true">
+                                        <p class="text-xs text-gray-500 italic">
+                                            *Requirements have already been reviewed and verified by Support Staff on 
+                                            <span class="font-medium text-customIT" x-text="selectedUser.checked_by_staff_at"></span>.
+                                        </p>
                                     </template>
 
-                                    <!-- Approved -->
-                                    <template  x-if="selectedUser.status === 'Approved'">
-                                        <p class="text-gray-500 italic">*Checked by the Support Staff on <span x-text="selectedUser.updated"></span></p>
-                                    </template>
-
-                                    <!-- Rejected -->
-                                    <template x-if="selectedUser.status === 'Rejected'">
-                                        <p class="text-gray-500 italic">*Checked by the Support Staff and it's rejected.</p>
-                                        <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected"></span></p>
+                                    <!-- If not checked -->
+                                    <template x-if="selectedUser.is_checked_by_staff === false">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" x-model="verified" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
+                                            <p class="text-xs text-bsctxt ml-2">All requirements have been reviewed and verified</p>
+                                        </div>
                                     </template>
                                 </div>
-                            </div>
+                            </template>
 
-                            <!-- Verification Note -->
-                            <div class="flex items-center">
-                                <input type="checkbox" x-model="verified" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
-                                <p class="text-xs text-bsctxt ml-2">All requirements have been reviewed and verified.</p>
-                            </div>
+                            <!-- For Admin conditions -->
+                            <template x-if="{{ auth()->user()->role_id }} === 3 && selectedUser.status === 'Pending'">
+                                <div>
+                                    <!-- If checked -->
+                                    <template x-if="selectedUser.is_checked_by_staff === true">
+                                        <p class="text-xs text-gray-500 italic">
+                                            Requirements have already been reviewed and verified by Support Staff on 
+                                            <span class="font-medium text-customIT" x-text="selectedUser.checked_by_staff_at"></span>.
+                                        </p>
+                                    </template>
+                                    <template x-if="selectedUser.is_checked_by_staff === true">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" x-model="verified" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
+                                            <p class="text-xs text-bsctxt ml-2">All requirements have been reviewed and verified</p>
+                                        </div>
+                                    </template>
+
+                                    <!-- If not checked -->
+                                    <template x-if="selectedUser.is_checked_by_staff === false">
+                                        <p class="text-xs text-gray-500 italic">
+                                            Waiting for Support Staff to review the requirements.
+                                        </p>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Approved text -->
+                            <template x-if="selectedUser.status === 'Approved'">
+                                <div class="text-xs text-approved font-medium">
+                                    <p class="text-gray-500 italic">*Approved by the Admin on <span class="font-medium text-customIT" x-text="selectedUser.updated"></span></p>
+                                </div>
+                            </template>
+
+                            <!-- Rejected text-->
+                            <template x-if="selectedUser.status === 'Rejected'">
+                                 <div class="text-xs font-medium">
+                                    <p class="text-gray-500 italic">*Rejected at <span class="font-medium text-rejected" x-text="selectedUser.updated"></span>.</p>
+                                    <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected"></span></p>
+                                </div>
+                            </template>
+
+                            <!-- Checked Button -->
+                            <template x-if="selectedUser.status === 'Pending' && selectedUser.is_checked_by_staff === false && {{ auth()->user()->role_id }} === 2">
+                                <div class="grid grid-cols-2 pt-4">
+                                    <button onclick="openModal('markReqCheckedAll')" 
+                                        class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                        :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'">
+                                        Mark as Checked
+                                    </button>
+                                </div>
+                            </template>
 
                             <!-- Approve Button -->
-                            <div class="grid grid-cols-2 pt-4">
-                                <button onclick="openModal('approvedModalAll')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
-                                    :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
-                                    :disabled="!verified">
-                                    Approve
-                                </button>
-                            </div>
+                            <template x-if="selectedUser.status === 'Pending' && selectedUser.is_checked_by_staff === true && {{ auth()->user()->role_id }} === 3">
+                                <div class="grid grid-cols-2 pt-4">
+                                    <button onclick="openModal('approvedModalAll')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                        :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
+                                        :disabled="!verified">
+                                        Approve
+                                    </button>
+                                </div>
+                            </template>
+                            @include('components.modals.mark-req-checked', ['modalId' => 'markReqCheckedAll'])
                             @include('components.modals.approved-modal', ['modalId' => 'approvedModalAll'])
                         </div>
                     </template>
@@ -329,11 +374,11 @@
                             @forelse($applications['pending'] as $app)
                                 <tr class="border border-gray-300 hover:bg-gray-100"
                                     @click="selectedUser = {
-                                        id: '{{ $app->id ?? '-'}}', 
+                                        id: '{{ $app->id  ?? '-'}}', 
                                         name: '{{ $app->user->name ?? '-'}}', 
                                         item: '{{ $app->grant->title ?? '-'}}',
                                         type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
-                                        date: '{{ $app->created_at->format('F d Y') ?? '-'}}', 
+                                        date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}', 
                                         status: '{{ $app->status->status_name ?? '-'}}',
                                         phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
                                         email: '{{ $app->user->email ?? '-'}}',
@@ -345,13 +390,15 @@
                                                 'grant_requirement_id' => $gr->id,
                                                 'requirement_name' => $gr->requirement->requirement_name
                                             ];
-                                        })) 
+                                        })),
+                                        is_checked_by_staff: {{ $app->is_checked_by_staff ? 'true' : 'false' }}, 
+                                        checked_by_staff_at: '{{ $app->checked_by_staff_at?->format('F d, Y h:i A') ?? '-'}}'
                                     }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id  ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}</td>
                                     <td class="px-4 py-3">
                                         <div class="inline-block text-xs font-medium text-white text-center px-3 py-1 rounded-full
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
@@ -458,14 +505,7 @@
                                             </span>
 
                                             <!-- display 'Passed or Needs Checking' depending on the result of the documentChecker -->
-                                            <span 
-                                                x-text="selectedUser.documents.find(d => d.grant_requirement_id === req.grant_requirement_id)?.check_result || 'Missing'"
-                                                :class="{
-                                                    'text-green-500 font-semibold': $el.textContent === 'Passed',
-                                                    'text-red-500 italic': $el.textContent === 'Needs Checking'
-                                                }"
-                                                class="text-xs"
-                                            ></span>
+                                            <span x-text="selectedUser.documents.find(d => d.grant_requirement_id === req.grant_requirement_id)?.check_result" class="text-xs"></span> 
                                         </li>
                                     </template>
                                 </ul>
@@ -484,27 +524,78 @@
                                 </div>
 
                                 @include('components.modals.requirement-view')
+                            </div>
 
-                                <div class="text-xs text-approved font-medium">
-                                    <p class="text-gray-500 italic">*Pending for the Support Staff to double checked on it.</p>
+                            <!-- For Staff conditions -->
+                            <template x-if="{{ auth()->user()->role_id }} === 2">
+                                <div>
+                                    <!-- If already checked -->
+                                    <template x-if="selectedUser.is_checked_by_staff === true">
+                                        <p class="text-xs text-gray-500 italic">
+                                            *Requirements have already been reviewed and verified by Support Staff on 
+                                            <span class="font-medium text-customIT" x-text="selectedUser.checked_by_staff_at"></span>.
+                                        </p>
+                                    </template>
+
+                                    <!-- If not checked -->
+                                    <template x-if="selectedUser.is_checked_by_staff === false">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" x-model="verified" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
+                                            <p class="text-xs text-bsctxt ml-2">All requirements have been reviewed and verified</p>
+                                        </div>
+                                    </template>
                                 </div>
-                            </div>
+                            </template>
 
-                            <!-- Verification Note -->
-                            <div class="flex items-center">
-                                <input type="checkbox" x-model="verified" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
-                                <p class="text-xs text-bsctxt ml-2">All requirements have been reviewed and verified.</p>
-                            </div>
+                            <!-- For Admin conditions -->
+                            <template x-if="{{ auth()->user()->role_id }} === 3">
+                                <div>
+                                    <!-- If checked -->
+                                    <template x-if="selectedUser.is_checked_by_staff === true">
+                                        <p class="text-xs text-gray-500 italic">
+                                            Requirements have already been reviewed and verified by Support Staff on 
+                                            <span class="font-medium text-customIT" x-text="selectedUser.checked_by_staff_at"></span>.
+                                        </p>
+                                    </template>
+                                    <template x-if="selectedUser.is_checked_by_staff === true">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" x-model="verified" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
+                                            <p class="text-xs text-bsctxt ml-2">All requirements have been reviewed and verified</p>
+                                        </div>
+                                    </template>
+
+                                    <!-- If not checked -->
+                                    <template x-if="selectedUser.is_checked_by_staff === false">
+                                        <p class="text-xs text-gray-500 italic">
+                                            Waiting for Support Staff to review the requirements.
+                                        </p>
+                                    </template>
+                                </div>
+                            </template>
+
+                             <!-- Checked Button -->
+                            <template x-if="selectedUser.is_checked_by_staff === false && {{ auth()->user()->role_id }} === 2"> 
+                                <div class="grid grid-cols-2 pt-4">
+                                    <button onclick="openModal('markReqCheckedPending')" 
+                                        class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                        :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'">
+                                        Mark as Checked
+                                    </button>
+                                </div>
+                            </template>
 
                             <!-- Approve Button -->
-                            <div class="grid grid-cols-2 pt-4">
-                                <button onclick="openModal('approvedModalPending')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
-                                    :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
-                                    :disabled="!verified">
-                                    Approve
-                                </button>
-                            </div>
+                            <template x-if="selectedUser.is_checked_by_staff === true && {{ auth()->user()->role_id }} === 3"> 
+                                <div class="grid grid-cols-2 pt-4">
+                                    <button onclick="openModal('approvedModalPending')" class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                        :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'"
+                                        :disabled="!verified">
+                                        Approve
+                                    </button>
+                                </div>
+                            </template>
                             @include('components.modals.approved-modal', ['modalId' => 'approvedModalPending'])
+                            @include('components.modals.mark-req-checked', ['modalId' => 'markReqCheckedPending'])
                         </div>
                     </template>
                 </div>
@@ -540,8 +631,8 @@
                                         name: '{{ $app->user->name ?? '-'}}', 
                                         item: '{{ $app->grant->title ?? '-'}}',
                                         type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
-                                        date: '{{ $app->created_at->format('F d Y') ?? '-'}}',
-                                        updated: '{{ $app->updated_at->format('F d Y') ?? '-'}}',  
+                                        date: '{{ $app->created_at->format('F d Y h:i A') ?? '-'}}',
+                                        updated: '{{ $app->updated_at->format('F d Y h:i A') ?? '-'}}',  
                                         status: '{{ $app->status->status_name ?? '-'}}',
                                         phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
                                         email: '{{ $app->user->email ?? '-'}}',
@@ -553,9 +644,11 @@
                                                 'grant_requirement_id' => $gr->id,
                                                 'requirement_name' => $gr->requirement->requirement_name
                                             ];
-                                        }))  
+                                        })),
+                                        is_checked_by_staff: {{ $app->is_checked_by_staff ? 'true' : 'false' }}, 
+                                        checked_by_staff_at: '{{ $app->checked_by_staff_at?->format('F d Y h:i A') ?? '-'}}' 
                                     }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
@@ -666,7 +759,7 @@
                                             </span>
                                             
                                             <!-- display Passed for approve applications-->
-                                            <span class="text-xs">Uploaded</span>
+                                            <span x-text="selectedUser.documents.find(d => d.grant_requirement_id === req.grant_requirement_id)?.check_result" class="text-xs"></span> 
                                         </li>
                                     </template>
                                 </ul>
@@ -687,9 +780,9 @@
                                 
                                 @include('components.modals.requirement-view')
 
-                                <div class="text-xs text-approved font-medium">
-                                    <p class="text-gray-500 italic">*Checked by the Support Staff on <span x-text="selectedUser.updated"></span></p>
-                                </div>
+                            </div>
+                            <div class="text-xs text-approved font-medium">
+                                <p class="text-gray-500 italic">*Approved by the Admin on <span class="font-medium text-customIT" x-text="selectedUser.updated"></span></p>
                             </div>
                         </div>
                     </template>
@@ -726,7 +819,8 @@
                                         name: '{{ $app->user->name ?? '-'}}', 
                                         item: '{{ $app->grant->title ?? '-'}}',
                                         type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
-                                        date: '{{ $app->created_at->format('F d Y') ?? '-'}}', 
+                                        date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}',
+                                        updated: '{{ $app->updated_at->format('F d, Y h:i A') ?? '-'}}',  
                                         status: '{{ $app->status->status_name ?? '-'}}',
                                         phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
                                         email: '{{ $app->user->email ?? '-'}}',
@@ -741,11 +835,11 @@
                                             ];
                                         }))  
                                     }">
-                                    <td class="px-4 py-3 text-xs text-gray-700">REQ-{{ $app->id ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}</td>
                                     <td class="px-4 py-3">
                                         <div class="inline-block text-xs font-medium text-white text-center px-3 py-1 rounded-full
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
@@ -854,7 +948,7 @@
                                             </span>
                                             
                                             <!-- display 'Passed or Needs Checking' depending on the result of the documentChecker -->
-                                            <span class="text-xs">Uploaded</span>
+                                            <span x-text="selectedUser.documents.find(d => d.grant_requirement_id === req.grant_requirement_id)?.check_result" class="text-xs"></span> 
                                         </li>
                                     </template>
                                 </ul>
@@ -874,10 +968,10 @@
 
                                 @include('components.modals.requirement-view')
 
-                                <div class="text-xs font-medium">
-                                    <p class="text-gray-500 italic">*Checked by the Support Staff and it's rejected.</p>
-                                    <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected"></span></p>
-                                </div>
+                            </div>
+                            <div class="text-xs font-medium">
+                                <p class="text-gray-500 italic">*Rejected at <span class="font-medium text-rejected" x-text="selectedUser.updated"></span>.</p>
+                                <p class="text-gray-500 italic">Reason: <span x-text="selectedUser.reason" class="text-rejected"></span></p>
                             </div>
                         </div>
                     </template>

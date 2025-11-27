@@ -17,17 +17,27 @@
         <link rel="stylesheet" href="{{ asset('css/global.css') }}">
         <link rel="stylesheet" href="{{ asset('css/forsidebar.css') }}">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
         <script src="//unpkg.com/alpinejs" defer></script>
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+        <!-- QR Scanner Library -->
+        <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+        <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+        
     </head>
     
-    <body class="font-poppins bg-gray-100">
+    <body class="font-poppins bg-gray-100 ">
         <div class="w-full min-h-screen flex">
-            <!-- Sidebar -->
+
+
             @include('layouts.sidebar')
+                        @include('layouts.topbar')
+
+            <!-- Sidebar -->
 
             <!-- Page Content -->
             <div class="main-content flex-1 bg-mainbg">

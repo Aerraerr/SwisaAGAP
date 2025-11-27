@@ -19,10 +19,17 @@ class Document extends Model
         'status_id',
         'file_path',
         'file_name',
+        'check_result',
+        'is_verified',
         'documentable_id',
         'documentable_type',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+    
     //RELATIONSHIPS
 
     public function requirement(){

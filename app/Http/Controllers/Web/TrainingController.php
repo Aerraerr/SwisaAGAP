@@ -9,6 +9,7 @@ use App\Models\Training;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class TrainingController extends Controller
 {
@@ -76,11 +77,11 @@ class TrainingController extends Controller
     //function to show specific data viewed in training
     public function viewTrainingDetails($id){
         $training = Training::with(['sector', 'documents', 'participants'])->findOrFail($id);
-
+        $isFinished = now()->greaterThan($training->date);
         $sectors = Sector::all();      
         $participants = Participant::all();
 
-        return view('swisa-admin.view-training', compact('training', 'sectors', 'participants'));
+        return view('swisa-admin.view-training', compact('training', 'sectors', 'participants', 'isFinished'));
     }
 
     //function to edit info of the grant

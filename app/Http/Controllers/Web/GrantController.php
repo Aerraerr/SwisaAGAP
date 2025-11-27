@@ -89,7 +89,7 @@ class GrantController extends Controller
 
     //function to show specific data viewed in grants
     public function viewGrantDetails($id){
-        $grant = Grant::with(['grant_type', 'documents', 'applications', 'requirements'])->findOrFail($id);
+        $grant = Grant::with(['grant_type', 'documents', 'applications.user', 'applications.user.user_info', 'requirements'])->findOrFail($id);
 
         $grantTypes = GrantType::all();      
         $requirements = Requirement::all();

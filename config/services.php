@@ -31,4 +31,8 @@ return [
         ],
     ],
 
+    'iprog' => [
+        'api_token' => env('IPROG_API_TOKEN'),
+    ],
+
 ];
