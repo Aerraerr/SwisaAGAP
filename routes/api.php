@@ -14,7 +14,7 @@ use App\Http\Controllers\mobile\SettingsController;
 use App\Http\Controllers\mobile\ApplicationController;
 use App\Http\Controllers\mobile\GrantTypeController;
 use App\Http\Controllers\mobile\PhoneOtpController;
-use App\Http\Controllers\mobile\FeedbackController; // <-- ADD THIS
+use App\Http\Controllers\mobile\FeedbackController;
 
 // ============================================
 // PUBLIC ROUTES (No Authentication Required)
@@ -112,20 +112,48 @@ Route::middleware('auth:sanctum')->group(function() {
     // ============================================
     // User Application Management
     Route::get('/applications', [ApplicationController::class, 'getMyApplications']); // Get all user applications (grants + membership)
-    Route::get('/applications/{id}', [ApplicationController::class, 'show']); // Get single application details with status history
+    Route::get('/applications/{id}', [ApplicationController::class, 'show']); // Get single application details with status history (NO contributions)
     
     // Grant Workflow Actions
     Route::post('/applications/{id}/claim', [ApplicationController::class, 'claimGrant']); // Claim approved grant (status: approved → claimed)
     Route::post('/applications/{id}/resubmit', [ApplicationController::class, 'resubmit']); // Resubmit documents for on-hold application
-    Route::post('/applications/{id}/contribute', [ApplicationController::class, 'contribute']); // Submit contribution after claiming grant
+    Route::post('/applications/{id}/contribute', [ApplicationController::class, 'contribute']); // Submit contribution after claiming grant (status: claimed → completed)
     
-    // Contribution Tracking
-    Route::get('/applications/{id}/contributions', [ApplicationController::class, 'getContributions']); // Get contributions for specific application
+    // ❌ REMOVED: Contributions are no longer shown per application in View Status
+    // Route::get('/applications/{id}/contributions', [ApplicationController::class, 'getContributions']);
 
     // ============================================
-    // CONTRIBUTIONS (Global)
+    // CONTRIBUTIONS (Global Contribution History)
     // ============================================
-    Route::get('/contributions', [ApplicationController::class, 'getAllContributions']); // Get all user contributions across all applications
+    /**
+     * ✅ GET ALL USER CONTRIBUTIONS WITH STATUS
+     * 
+     * Returns ALL contributions (pending + approved) for the authenticated user
+     * with status column shown in Contribution History screen
+     * 
+     * Response format:
+     * {
+     *   "success": true,
+     *   "contributions": [
+     *     {
+     *       "id": 1,
+     *       "application_id": 5,
+     *       "type": "Rice",
+     *       "quantity": 50,
+     *       "quantity_unit": "kg",
+     *       "image_path": "https://example.com/storage/contributions/image.jpg",
+     *       "notes": "Harvested from own farm",
+     *       "status": "pending",  // ⭐ Status shown (pending/approved)
+     *       "created_at": "2025-11-27T16:37:58.000000Z",
+     *       "application": {
+     *         "id": 5,
+     *         "grant_name": "Rice Subsidy Program"
+     *       }
+     *     }
+     *   ]
+     * }
+     */
+    Route::get('/contributions', [ApplicationController::class, 'getAllContributions']); // Get ALL user contributions with status (for Contribution History screen)
 
     // ============================================
     // DOCUMENT MANAGEMENT
@@ -182,4 +210,36 @@ if (config('app.debug')) {
             }),
         ]);
     })->middleware('auth:sanctum'); // Test endpoint: Check user's applications and counts
+    
+    // ✅ Test Contributions Endpoint
+    Route::get('/test-contributions', function() {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Not authenticated'], 401);
+        }
+        
+        $contributions = \App\Models\Contribution::where('user_id', $user->id)
+            ->with(['status', 'application.grant'])
+            ->get()
+            ->map(function($c) {
+                return [
+                    'id' => $c->id,
+                    'application_id' => $c->application_id,
+                    'type' => $c->type,
+                    'quantity' => $c->quantity,
+                    'quantity_unit' => $c->quantity_unit,
+                    'status' => $c->status->status_name ?? 'unknown',
+                    'grant_name' => $c->application->grant->grant_name ?? 'N/A',
+                    'created_at' => $c->created_at->toIso8601String(),
+                ];
+            });
+        
+        return response()->json([
+            'user_id' => $user->id,
+            'total_contributions' => $contributions->count(),
+            'pending_contributions' => $contributions->where('status', 'pending')->count(),
+            'approved_contributions' => $contributions->where('status', 'approved')->count(),
+            'contributions' => $contributions,
+        ]);
+    })->middleware('auth:sanctum'); // Test endpoint: Check user's contributions with status
 }
