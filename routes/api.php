@@ -15,6 +15,8 @@ use App\Http\Controllers\mobile\ApplicationController;
 use App\Http\Controllers\mobile\GrantTypeController;
 use App\Http\Controllers\mobile\PhoneOtpController;
 use App\Http\Controllers\mobile\FeedbackController;
+use App\Http\Controllers\mobile\ActivityController;
+
 
 // ============================================
 // PUBLIC ROUTES (No Authentication Required)
@@ -118,6 +120,11 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/applications/{id}/claim', [ApplicationController::class, 'claimGrant']); // Claim approved grant (status: approved → claimed)
     Route::post('/applications/{id}/resubmit', [ApplicationController::class, 'resubmit']); // Resubmit documents for on-hold application
     Route::post('/applications/{id}/contribute', [ApplicationController::class, 'contribute']); // Submit contribution after claiming grant (status: claimed → completed)
+    
+    //Activity History
+    Route::get('/activities', [ActivityController::class, 'index']);
+
+
     
     // ❌ REMOVED: Contributions are no longer shown per application in View Status
     // Route::get('/applications/{id}/contributions', [ApplicationController::class, 'getContributions']);
