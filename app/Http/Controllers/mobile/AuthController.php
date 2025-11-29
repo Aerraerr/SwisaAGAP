@@ -147,6 +147,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'phone_number' => $user->phone_number,
                 'login_method' => $user->login_method,
+                'role_id'      => $user->role_id,  
             ]
         ]);
     }
@@ -237,7 +238,7 @@ class AuthController extends Controller
     // Send SMS if phone number exists
     if ($user->phone_number) {
         $number = preg_replace('/^0/', '63', $user->phone_number);
-        $smsMessage = "[SWISA-AGAP]\nHello {$user->first_name}, your password was changed successfully on " . now()->toDateTimeString() . ".";
+        $smsMessage = "[SWISA-AGAP]\nHello {$user->first_name}, your password was changed successfully on " . now()->toDateTimeString() . ".\nIf you did not request this change, please contact our support immediately.\n\nThank you,\nSwisaAGAP Team";
         SMSService::send($number, $smsMessage);
     }
 

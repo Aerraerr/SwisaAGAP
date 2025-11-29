@@ -71,7 +71,7 @@ class GrantApplicationController extends Controller
             $quarterlyApplications = Application::where('user_id', $user->id)
                 ->whereBetween('created_at', [$quarterStart, $quarterEnd])
                 ->whereNotNull('grant_id')
-                ->whereIn('status_id', [1, 3, 4, 5, 15, 16]) // ✅ CORRECTED
+                ->whereIn('status_id', [14, 3, 4, 5, 15, 16]) // ✅ CORRECTED
                 ->with('grant.grantType')
                 ->get();
             
@@ -242,7 +242,7 @@ class GrantApplicationController extends Controller
             
             try {
                 // ✅ Update status to REJECTED
-                $application->update(['status_id' => 7]); // ✅ 7 = rejected (Flutter: "Rejected")
+                $application->update(['status_id' => 6]); // ✅ 6 = rejected (Flutter: "Rejected")
                 
                 // ✅ REFUND credits since application was rejected
                 $application->user->creditScore->increment('score', $creditCost);
@@ -284,7 +284,7 @@ class GrantApplicationController extends Controller
         try {
             $application = Application::findOrFail($applicationId);
             // ✅ Update to COMPLETED
-            $application->update(['status_id' => 6]); // ✅ 6 = completed (Flutter: "Contribution Completed")
+            $application->update(['status_id' => 5]); // 5 = completed (Flutter: "Contribution Completed")
             
             return response()->json([
                 'success' => true,
@@ -449,7 +449,7 @@ class GrantApplicationController extends Controller
                 ]);
                 
                 // ✅ Update application status to CLAIMED
-                $claim->application->update(['status_id' => 1]); // ✅ 1 = claimed (Flutter: "Grant Claimed")
+                $claim->application->update(['status_id' => 14]); // ✅ 14 = claimed (Flutter: "Grant Claimed")
                 
                 DB::commit();
                 

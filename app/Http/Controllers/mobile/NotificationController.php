@@ -17,7 +17,7 @@ class NotificationController extends Controller
         return response()->json([], 401);
     }
 
-    $limit = $request->query('limit', 10);
+    $limit = $request->query('limit', 6);
 
     $notifications = Notification::where('user_id', $user->id)
           ->orderBy('sent_at', 'desc')

@@ -148,7 +148,7 @@ class MembershipController extends Controller
             
             Document::create([
                 'grant_requirement_id' => null,
-                'status_id' => 4, // PENDING STATUS
+                'status_id' => 3, // PENDING STATUS
                 'file_path' => $path,
                 'file_name' => $file->getClientOriginalName(),
                 'documentable_type' => 'App\Models\Application',
@@ -180,7 +180,7 @@ class MembershipController extends Controller
         }
         
         // Check if already approved
-        if ($application->status_id == 5) {
+        if ($application->status_id == 4) {
             return response()->json([
                 'success' => false,
                 'message' => 'Application already approved.'
@@ -191,10 +191,10 @@ class MembershipController extends Controller
         $userInfo = $user->userInfo;
         
         // Update application status to APPROVED
-        $application->update(['status_id' => 5]); // 5 = Approved
+        $application->update(['status_id' => 4]); // 4 = Approved
         
         // Update document status to APPROVED
-        $application->documents()->update(['status_id' => 5]);
+        $application->documents()->update(['status_id' => 4]);
         
         // Generate QR code
         if (!$userInfo->qr_code) {
@@ -245,7 +245,7 @@ class MembershipController extends Controller
         }
         
         // Check if already rejected
-        if ($application->status_id == 7) {
+        if ($application->status_id == 6) {
             return response()->json([
                 'success' => false,
                 'message' => 'Application already rejected.'
@@ -254,12 +254,12 @@ class MembershipController extends Controller
         
         // Update application status to REJECTED
         $application->update([
-            'status_id' => 7, // 7 = Rejected
+            'status_id' => 6, // 6 = Rejected
             'rejection_reason' => $request->input('reason'),
         ]);
         
         // Update document status to REJECTED
-        $application->documents()->update(['status_id' => 7]);
+        $application->documents()->update(['status_id' => 6]);
         
         return response()->json([
             'success' => true,
