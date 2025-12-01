@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Mail;
 use App\Services\SMSService;
+use Illuminate\Support\Facades\DB;
 class AuthController extends Controller
 {
     // --- 1. REGISTER: Creates user in DB with hashed password ---
@@ -105,53 +106,75 @@ class AuthController extends Controller
     }
     
     // --- 2. LOGIN: Authenticates user and generates Sanctum token ---
-    public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'identifier' => 'required', // Can be email or phone
-            'password' => 'required',
-        ]);
+   public function login(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'identifier' => 'required', // Can be email or phone
+        'password'   => 'required',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'errors'  => $validator->errors(),
+        ], 422);
+    }
+
+    // Auto-detect if email or phone
+    $field = filter_var($request->identifier, FILTER_VALIDATE_EMAIL)
+        ? 'email'
+        : 'phone_number';
+
+    $user = User::where($field, $request->identifier)->first();
+
+    // Failed login
+    if (!$user || !Hash::check($request->password, $user->password)) {
+
+        if ($user) {
+            DB::table('activity_history')->insert([
+                'user_id'    => $user->id,
+                'type'       => 'Login Failed',
+                'message'    => 'Failed login attempt.',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
-
-        // ✅ Auto-detect if email or phone
-        $field = filter_var($request->identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number';
-        
-        $user = User::where($field, $request->identifier)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid credentials'
-            ], 401);
-        }
-
-        // ✅ Generate token
-        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'success' => true,
-            'message' => 'Login successful',
-            'token' => $token,
-            'user' => [
-                'id' => $user->id,
-                'first_name' => $user->first_name,
-                'middle_name' => $user->middle_name,
-                'last_name' => $user->last_name,
-                'suffix' => $user->suffix,
-                'email' => $user->email,
-                'phone_number' => $user->phone_number,
-                'login_method' => $user->login_method,
-                'role_id'      => $user->role_id,  
-            ]
-        ]);
+            'success' => false,
+            'message' => 'Invalid credentials',
+        ], 401);
     }
-    
+
+    // Successful login
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    DB::table('activity_history')->insert([
+        'user_id'    => $user->id,
+        'type'       => 'Login Success',
+        'message'    => 'User logged in via mobile app.',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Login successful',
+        'token'   => $token,
+        'user'    => [
+            'id'           => $user->id,
+            'first_name'   => $user->first_name,
+            'middle_name'  => $user->middle_name,
+            'last_name'    => $user->last_name,
+            'suffix'       => $user->suffix,
+            'email'        => $user->email,
+            'phone_number' => $user->phone_number,
+            'login_method' => $user->login_method,
+            'role_id'      => $user->role_id,
+        ],
+    ]);
+}
+
     // --- 3. LOGOUT ---
     public function logout(Request $request)
     {
@@ -189,7 +212,6 @@ class AuthController extends Controller
         'regex:/[0-9]/',      // Must contain number
          ],
     ]);
-
 
     $user = $request->user();
 
@@ -233,6 +255,15 @@ class AuthController extends Controller
 
     // CLEAR RATE LIMIT ON SUCCESS
     RateLimiter::clear($key);
+
+     //  Create activity history entry
+    DB::table('activity_history')->insert([
+    'user_id'    => $user->id,
+    'type'       => 'Change Password', 
+    'message'    => "You Changed your password.",
+    'created_at' => now(),
+    'updated_at' => now(),
+    ]);
 
    if ($user) {
     // Send SMS if phone number exists

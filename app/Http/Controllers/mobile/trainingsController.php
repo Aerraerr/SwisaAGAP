@@ -76,13 +76,13 @@ public function attend(Request $request, $trainingId)
     // Consume one attempt
     RateLimiter::hit($key, 60); 
 
-      // Only members (role_id = 1) can attend
+      /* Only members (role_id = 1) can attend
     if ($user->role_id !== 1) {
         return response()->json([
             'success' => false,
             'message' => 'Only members can attend trainings.',
         ], 403);
-    }
+    } */
 
     //  Check if user already attending
     $exists = DB::table('participants')
@@ -108,6 +108,15 @@ public function attend(Request $request, $trainingId)
         'sent_at' => now(),
         'created_at' => now(),
         'updated_at' => now(),
+    ]);
+
+    //  Create activity history entry
+    DB::table('activity_history')->insert([
+    'user_id'    => $userId,
+    'type'       => 'Training Attending', // or just 'training'
+    'message'    => "You are now attending '{$training->title}' on {$training->date} at {$training->venue}.",
+    'created_at' => now(),
+    'updated_at' => now(),
     ]);
 
     RateLimiter::clear($key);
@@ -220,6 +229,13 @@ public function cancelAttendance(Request $request, $trainingId)
     'message' => "You have cancelled your attendance for '{$training->title}'.",
     'is_read' => false,
     'sent_at' => now(),
+    'created_at' => now(),
+    'updated_at' => now(),
+    ]);
+    DB::table('activity_history')->insert([
+    'user_id'    => $userId,
+    'type'       => 'Training Cancelled',
+    'message'    => "You have cancelled your attendance for '{$training->title}'.",
     'created_at' => now(),
     'updated_at' => now(),
     ]);

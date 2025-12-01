@@ -150,7 +150,7 @@ class MembershipController extends Controller
                 'grant_requirement_id' => null,
                 'status_id' => 3, // PENDING STATUS
                 'file_path' => $path,
-                'file_name' => $file->getClientOriginalName(),
+                'file_name' => $file->getClientOriginalName(),  
                 'documentable_type' => 'App\Models\Application',
                 'documentable_id' => $application->id,
             ]);

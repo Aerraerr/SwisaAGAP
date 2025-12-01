@@ -129,6 +129,15 @@ class GrantApplicationController extends Controller
                 ]);
                 
                 DB::commit();
+
+                 // NEW: activity log
+        DB::table('activity_history')->insert([
+        'user_id'    => $user->id,
+        'type'       => 'Grant Application',
+        'message'    => 'Submitted grant application for ' . $grant->title . '.',
+        'created_at' => now(),
+        'updated_at' => now(),
+        ]);
                 
                 $application->load(['user', 'grant.grantType', 'status']);
                 

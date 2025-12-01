@@ -8,133 +8,63 @@ use Illuminate\Support\Facades\DB;
 
 class ActivityController extends Controller
 {
-    public function index(Request $request)
-    {
-        $userId = $request->user()->id;
+public function index(Request $request)
+{
+    $userId = $request->user()->id;
 
-        // Application statuses to show in activity history
-        $finalStatuses = ['pending', 'approved', 'claimed', 'completed'];
+    $activities = DB::table('activity_history')
+        ->where('user_id', $userId)
+        ->whereNull('deleted_at')
+        ->orderByDesc('created_at')
+        ->paginate(10);
 
-        /*
-         * 1) MEMBERSHIP APPLICATIONS
-         * applications.grant_id IS NULL  → membership
-         */
-        $membershipActivities = DB::table('applications')
-            ->join('statuses', 'applications.status_id', '=', 'statuses.id')
-            ->where('applications.user_id', $userId)
-            ->whereIn('statuses.status_name', $finalStatuses)
-            ->whereNull('applications.grant_id')
-            ->select(
-                'applications.id',
-                DB::raw("'membership' as activity_type"),
-                'statuses.status_name as status',
-                DB::raw("
-                    CASE 
-                        WHEN statuses.status_name = 'pending'
-                            THEN 'You submitted your membership application.'
-                        WHEN statuses.status_name = 'approved'
-                            THEN 'Your membership application has been approved. You can now access grants and benefits.'
-                        WHEN statuses.status_name = 'claimed'
-                            THEN 'Your membership has been fully activated.'
-                        WHEN statuses.status_name = 'completed'
-                            THEN 'Your membership application is completed.'
-                        ELSE 'Your membership application has been updated.'
-                    END as message
-                "),
-                'applications.created_at as timestamp',
-                'applications.created_at'
-            );
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'items'        => $activities->items(),
+            'total'        => $activities->total(),
+            'current_page' => $activities->currentPage(),
+            'last_page'    => $activities->lastPage(),
+        ],
+    ]);
+}
 
-        /*
-         * 2) GRANT APPLICATIONS
-         * applications.grant_id IS NOT NULL  → grant
-         * grants.title is the grant name
-         */
-        $grantActivities = DB::table('applications')
-            ->join('statuses', 'applications.status_id', '=', 'statuses.id')
-            ->join('grants', 'applications.grant_id', '=', 'grants.id')
-            ->where('applications.user_id', $userId)
-            ->whereIn('statuses.status_name', $finalStatuses)
-            ->whereNotNull('applications.grant_id')
-            ->select(
-                'applications.id',
-                DB::raw("'grant' as activity_type"),
-                'statuses.status_name as status',
-                DB::raw("
-                    CASE 
-                        WHEN statuses.status_name = 'pending'
-                            THEN CONCAT('You applied to ', grants.title, '.')
-                        WHEN statuses.status_name = 'approved'
-                            THEN CONCAT('You have been approved for ', grants.title, '. You can now claim.')
-                        WHEN statuses.status_name = 'claimed'
-                            THEN CONCAT('You have claimed your ', grants.title, '.')
-                        WHEN statuses.status_name = 'completed'
-                            THEN CONCAT('Your application for ', grants.title, ' is completed.')
-                        ELSE CONCAT('Your application for ', grants.title, ' has been updated.')
-                    END as message
-                "),
-                'applications.created_at as timestamp',
-                'applications.created_at'
-            );
+public function clear(Request $request)
+{
+    $userId = $request->user()->id;
 
-        /*
-         * 3) CONTRIBUTIONS
-         * Show pending + approved contributions
-         */
-        $contributionActivities = DB::table('contributions')
-            ->join('statuses', 'contributions.status_id', '=', 'statuses.id')
-            ->where('contributions.user_id', $userId)
-            ->whereIn('statuses.status_name', ['pending', 'approved'])
-            ->select(
-                'contributions.id',
-                DB::raw("'contribution' as activity_type"),
-                'statuses.status_name as status',
-                DB::raw("
-                    CASE 
-                        WHEN statuses.status_name = 'approved'
-                            THEN 'You have successfully contributed. Your contribution is now recorded. Thank you.'
-                        WHEN statuses.status_name = 'pending'
-                            THEN 'You have submitted a contribution. Your contribution is now recorded. Thank you.'
-                        ELSE 'Your contribution has been updated.'
-                    END as message
-                "),
-                'contributions.created_at as timestamp',
-                'contributions.created_at'
-            );
+    DB::table('activity_history')
+        ->where('user_id', $userId)
+        ->whereNull('deleted_at')
+        ->update(['deleted_at' => now()]);
 
-            $trainingActivities = DB::table('participants')
-    ->join('trainings', 'participants.training_id', '=', 'trainings.id')
-    ->where('participants.user_id', $userId)
-    ->select(
-        'participants.id',
-        DB::raw("'training' as activity_type"),
-        DB::raw("'attending' as status"),
-        DB::raw("
-            CONCAT(
-                'You are attending \"',
-                trainings.title,
-                '\" on ',
-                trainings.date,
-                ' at ',
-                trainings.venue,
-                '.'
-            ) as message
-        "),
-        'participants.created_at as timestamp',
-        'participants.created_at'
-    );
+    return response()->json([
+        'success' => true,
+        'message' => 'Activity history cleared.',
+    ]);
+}
 
-        // UNION all and sort by timestamp DESC
-        $activities = $membershipActivities
-            ->unionAll($grantActivities)
-            ->unionAll($contributionActivities)
-            ->unionAll($trainingActivities)
-            ->orderBy('timestamp', 'desc')
-            ->get();
+public function destroy(Request $request, $id)
+{
+    $userId = $request->user()->id;
 
+    $updated = DB::table('activity_history')
+        ->where('id', $id)
+        ->where('user_id', $userId)
+        ->whereNull('deleted_at')
+        ->update(['deleted_at' => now()]);
+
+    if (!$updated) {
         return response()->json([
-            'data'  => $activities,
-            'total' => $activities->count(),
-        ], 200);
+            'success' => false,
+            'message' => 'Activity not found.',
+        ], 404);
     }
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Activity removed.',
+    ]);
+}
+
 }

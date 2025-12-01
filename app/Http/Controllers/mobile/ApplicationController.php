@@ -611,6 +611,16 @@ class ApplicationController extends Controller
 
             Log::info('✅ CONTRIBUTION SUBMITTED - Application marked as completed');
 
+            
+    // Activity log
+    DB::table('activity_history')->insert([
+    'user_id'    => auth()->id(),
+    'type'       => 'Contribution',
+    'message'    => 'Submitted a contribution ('.$contribution->type.' - '.$contribution->quantity.' '.$contribution->quantity_unit.').',
+    'created_at' => now(),
+    'updated_at' => now(),
+    ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Contribution submitted successfully!',

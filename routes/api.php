@@ -23,6 +23,8 @@ use App\Http\Controllers\mobile\GrantApplicationController;
 use App\Http\Controllers\mobile\OtpController;
 use App\Http\Controllers\mobile\PhoneOtpController;
 use App\Http\Controllers\mobile\ActivityController;
+use App\Http\Controllers\mobile\FeedbackController;
+
 
 Route::post('/mobile/login', [AuthController::class, 'login'])
      ->middleware('throttle:5,1');
@@ -40,6 +42,10 @@ Route::prefix('mobile')->group(function (Router $router) {
 
     // PROTECTED ROUTES (Requires Sanctum token)
     $router->middleware('auth:sanctum')->group(function () use ($router) {
+
+        // Feedback Routes -- add before OTP/public data/protected routes!
+    Route::post('/feedback', [FeedbackController::class, 'store']);
+    Route::get('/feedback', [FeedbackController::class, 'index']); // (optional)
         // Test route to get the authenticated user
         $router->get('/user', function (Request $request) {
             return $request->user();
@@ -129,6 +135,8 @@ Route::middleware(['auth:sanctum'])->group(function() {
 
     // Acvity History
      Route::get('/activities', [ActivityController::class, 'index']);
+     Route::delete('/activities/clear', [ActivityController::class, 'clear']);
+     Route::delete('/activities/{id}', [ActivityController::class, 'destroy']);
 
 });
 
@@ -194,11 +202,7 @@ Route::middleware('auth:sanctum')->prefix('mobile/chat')->group(function () {
 });
 
 
-// FEEDBACK
-use App\Http\Controllers\mobile\FeedbackController;
-// Feedback Routes -- add before OTP/public data/protected routes!
-Route::post('/feedback', [FeedbackController::class, 'store']);
-Route::get('/feedback', [FeedbackController::class, 'index']); // (optional)
+
 
 // FOR LOGS
 use App\Http\Controllers\mobile\MobileLogController;
