@@ -8,8 +8,14 @@ use App\Models\UserInfo;
 use App\Models\Application;
 use App\Models\Document;
 use Illuminate\Support\Str;
+use App\Services\DocumentChecker;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use App\Models\CreditScore;
 use App\Models\CreditScoreHistory;
+use App\Services\SMSService;
+use App\Models\Notification;
 
 class MembershipController extends Controller
 {
@@ -19,7 +25,7 @@ class MembershipController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'farmer_type' => 'required|string|max:255',
+            'farmer_type' => 'required|integer',
             'fname' => 'required|string',
             'mname' => 'nullable|string',
             'lname' => 'required|string',
@@ -92,7 +98,7 @@ class MembershipController extends Controller
             'fname' => $validatedData['fname'],
             'mname' => $validatedData['mname'],
             'lname' => $validatedData['lname'],
-            'name' => $validatedData['fname'] . ' ' . $validatedData['lname'],
+            'name' => $validatedData['fname'] . ' ' .($validatedData['mname'] ?? ' '). ' ' .$validatedData['lname'],
             'suffix' => $validatedData['suffix'],
             'birthdate' => $validatedData['birthdate'],
             'civil_status' => $validatedData['civil_status'],
@@ -143,17 +149,73 @@ class MembershipController extends Controller
 
         // Store Valid ID document
         if ($request->hasFile('valid_id')) {
+
             $file = $request->file('valid_id');
-            $path = $file->store('membership_documents', 'public');
-            
-            Document::create([
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('application/membership', $filename, 'public');
+
+            // CREATE DOCUMENT ENTRY
+            $document = Document::create([
                 'grant_requirement_id' => null,
-                'status_id' => 4, // PENDING STATUS
+                'membership_requirement_id' => 1, // ⚠️ SET THE VALID ID REQUIREMENT ID HERE
+                'status_id' => 3, // PENDING STATUS
                 'file_path' => $path,
-                'file_name' => $file->getClientOriginalName(),
+                'file_name' => $filename,
                 'documentable_type' => 'App\Models\Application',
                 'documentable_id' => $application->id,
             ]);
+
+            // Initialize checker
+            $checker = new DocumentChecker();
+
+            // Get requirement name (example: "Valid ID")
+            $requirement = \App\Models\MembershipRequirement::find(1); // SAME ID AS ABOVE
+            $requirementName = $requirement?->requirement?->requirement_name;
+
+            if ($requirementName) {
+
+                // RUN AUTO CHECKER (same as web)
+                $result = $checker->verifyDocumentBelongsToUser(
+                    storage_path('app/public/' . $path),
+                    $requirementName,
+                    $userInfo // same membership owner
+                );
+
+                // UPDATE DOCUMENT WITH RESULT
+                $document->update([
+                    'check_result' => $result
+                ]);
+            }
+        }
+
+        //create pdf file of the application form
+        $application->load(['documents', 'status', 'user.user_info']);
+        $pdf = Pdf::loadView('pdf.membership_application_form', ['application' => $application]);
+
+        $fileName = $request->lname . '_membership_application_form_' . $application->id . '.pdf';
+        $filePath = 'applications/' . $fileName;
+
+        Storage::disk('public')->put($filePath, $pdf->output());
+        $application->update(['form_img' => $filePath]);
+
+        //store a confirmation message to table
+        Notification::create([ 
+            'user_id' => Auth::id(),
+            'message' => 'Your membership application was submitted successfully and is now pending approval.' ,
+            'sent_at' => now(),
+        ]);
+
+        // Send SMS to applicant
+        if ($userInfo && $userInfo->phone_no) {
+
+            $number = $userInfo->phone_no;
+
+            // Convert "09..." to "639..."
+            $number = preg_replace('/^0/', '63', $number);
+
+            $message = '[SWISA-AGAP] Your membership application was submitted successfully and is now pending approval.';
+
+            SMSService::send($number, $message);
         }
 
         return response()->json([
@@ -180,7 +242,7 @@ class MembershipController extends Controller
         }
         
         // Check if already approved
-        if ($application->status_id == 5) {
+        if ($application->status_id == 4) {
             return response()->json([
                 'success' => false,
                 'message' => 'Application already approved.'
@@ -188,19 +250,19 @@ class MembershipController extends Controller
         }
         
         $user = $application->user;
-        $userInfo = $user->userInfo;
+        //$userInfo = $user->userInfo;
         
         // Update application status to APPROVED
-        $application->update(['status_id' => 5]); // 5 = Approved
+        $application->update(['status_id' => 4]); // 4 = Approved
         
         // Update document status to APPROVED
-        $application->documents()->update(['status_id' => 5]);
+        $application->documents()->update(['status_id' => 4]);
         
         // Generate QR code
-        if (!$userInfo->qr_code) {
+        /*if (!$userInfo->qr_code) {
             $userInfo->qr_code = Str::uuid()->toString();
             $userInfo->save();
-        }
+        }*/
         
         // Assign initial credit score (if not exists)
         if (!$user->creditScore) {
@@ -245,7 +307,7 @@ class MembershipController extends Controller
         }
         
         // Check if already rejected
-        if ($application->status_id == 7) {
+        if ($application->status_id == 6) {
             return response()->json([
                 'success' => false,
                 'message' => 'Application already rejected.'
@@ -254,12 +316,12 @@ class MembershipController extends Controller
         
         // Update application status to REJECTED
         $application->update([
-            'status_id' => 7, // 7 = Rejected
+            'status_id' => 6, // 6 = Rejected
             'rejection_reason' => $request->input('reason'),
         ]);
         
         // Update document status to REJECTED
-        $application->documents()->update(['status_id' => 7]);
+        $application->documents()->update(['status_id' => 6]);
         
         return response()->json([
             'success' => true,

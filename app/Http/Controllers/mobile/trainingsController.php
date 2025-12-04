@@ -4,6 +4,7 @@ namespace App\Http\Controllers\mobile;
 
 use App\Http\Controllers\Controller;
 use App\Models\Training;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -57,7 +58,31 @@ public function attend(Request $request, $trainingId)
 {
     
     //  Get the authenticated user
-    $userId = $request->user()->id;
+    $user = $request->user();     
+    $userId = $user->id;
+
+    // rate limit 5 attempts per minute for every user
+        $key = 'attend-training:' . $userId;
+
+     if (RateLimiter::tooManyAttempts($key, 5)) {
+        $seconds = RateLimiter::availableIn($key);
+
+        return response()->json([
+            'success' => false,
+            'message' => "Too many attend attempts. Please try again in {$seconds} seconds.",
+        ], 429);
+    }
+
+    // Consume one attempt
+    RateLimiter::hit($key, 60); 
+
+      /* Only members (role_id = 1) can attend
+    if ($user->role_id !== 1) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Only members can attend trainings.',
+        ], 403);
+    } */
 
     //  Check if user already attending
     $exists = DB::table('participants')
@@ -85,6 +110,17 @@ public function attend(Request $request, $trainingId)
         'updated_at' => now(),
     ]);
 
+    //  Create activity history entry
+    DB::table('activity_history')->insert([
+    'user_id'    => $userId,
+    'type'       => 'Training Attending', // or just 'training'
+    'message'    => "You are now attending '{$training->title}' on {$training->date} at {$training->venue}.",
+    'created_at' => now(),
+    'updated_at' => now(),
+    ]);
+
+    RateLimiter::clear($key);
+
     return response()->json([
     'success' => true,
     'message' => 'You are now attending this training',
@@ -92,8 +128,6 @@ public function attend(Request $request, $trainingId)
     ]);
 
 }
-
-
 
 // Get all trainings the user attends
 public function myEvents(Request $request)
@@ -198,10 +232,16 @@ public function cancelAttendance(Request $request, $trainingId)
     'created_at' => now(),
     'updated_at' => now(),
     ]);
+    DB::table('activity_history')->insert([
+    'user_id'    => $userId,
+    'type'       => 'Training Cancelled',
+    'message'    => "You have cancelled your attendance for '{$training->title}'.",
+    'created_at' => now(),
+    'updated_at' => now(),
+    ]);
 
     return response()->json(['message' => 'Attendance cancelled successfully', 'training' => $training]);
 
 }
     
 }
-

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Contribution extends Model
 {
-    protected $table = 'contributions'; // ✅ Matches your migration
+    protected $table = 'contributions'; // Matches your migration
     
     protected $fillable = [
         'application_id',
@@ -18,7 +18,7 @@ class Contribution extends Model
         'notes',
     ];
 
-    // ✅ RELATIONSHIPS
+    // RELATIONSHIPS
     public function application()
     {
         return $this->belongsTo(Application::class);

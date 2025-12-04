@@ -291,7 +291,7 @@ class ApplicationController extends Controller
                     'user_id'          => $application->user_id,
                     'reference_number' => $referenceNumber,
                     'qr_code'          => $qrData,
-                    'claim_status'     => 'pending',
+                    'claim_status'     => 'claimable',
                     'valid_until'      => $validUntil,
                     'claimed_at'       => null,
                 ]);
@@ -524,9 +524,11 @@ class ApplicationController extends Controller
             ], 500);
         }
     }
-
-    /**
+ 
+   /**
      * ✅ SUBMIT CONTRIBUTION
+     * Application becomes "completed" immediately when contribution is submitted
+     * Contribution status is "pending" until admin approves it
      */
     public function contribute(Request $request, $id)
     {
@@ -564,6 +566,7 @@ class ApplicationController extends Controller
             $imagePath = $request->file('image')->store('contributions', 'public');
             Log::info('✅ Step 5: Image uploaded - Path: ' . $imagePath);
 
+            // Get pending status for contribution
             $pendingStatus = Status::where('status_name', 'pending')->first();
             if (!$pendingStatus) {
                 Log::error('❌ Step 6: Pending status not found');
@@ -571,6 +574,7 @@ class ApplicationController extends Controller
             }
             Log::info('✅ Step 6: Pending status found - ID: ' . $pendingStatus->id);
 
+            // Create contribution with pending status
             $contribution = new Contribution();
             $contribution->application_id = $id;
             $contribution->user_id = auth()->id();
@@ -579,11 +583,12 @@ class ApplicationController extends Controller
             $contribution->quantity_unit = $validated['quantity_unit'];
             $contribution->image_path = $imagePath;
             $contribution->notes = $validated['notes'] ?? null;
-            $contribution->status_id = $pendingStatus->id;
+            $contribution->status_id = $pendingStatus->id; // Contribution is pending
             $contribution->save();
             
             Log::info('✅ Step 7: Contribution created with pending status - ID: ' . $contribution->id);
 
+            // ✅ UPDATE APPLICATION STATUS TO COMPLETED IMMEDIATELY
             $completedStatus = Status::where('status_name', 'completed')->first();
             if ($completedStatus) {
                 $now = now();
@@ -604,17 +609,29 @@ class ApplicationController extends Controller
                 Log::warning('⚠️ Step 8: Completed status not found');
             }
 
+            Log::info('✅ CONTRIBUTION SUBMITTED - Application marked as completed');
+
+            
+    // Activity log
+    DB::table('activity_history')->insert([
+    'user_id'    => auth()->id(),
+    'type'       => 'Contribution',
+    'message'    => 'Submitted a contribution ('.$contribution->type.' - '.$contribution->quantity.' '.$contribution->quantity_unit.').',
+    'created_at' => now(),
+    'updated_at' => now(),
+    ]);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Contribution submitted successfully! Awaiting admin review.',
+                'message' => 'Contribution submitted successfully!',
                 'data' => [
                     'contribution_id' => $contribution->id,
                     'type' => $contribution->type,
                     'quantity' => $contribution->quantity,
                     'quantity_unit' => $contribution->quantity_unit,
                     'image_path' => $imagePath,
-                    'contribution_status' => 'pending',
-                    'application_status' => 'completed',
+                    'contribution_status' => 'pending', // Contribution status
+                    'application_status' => 'completed', // ⭐ Application is now completed
                     'timestamp' => $contribution->created_at->toIso8601String(),
                 ]
             ], 200);
@@ -639,63 +656,23 @@ class ApplicationController extends Controller
     }
 
     /**
-     * ✅ GET USER CONTRIBUTIONS - WITH FULL IMAGE URL
+     * ❌ REMOVED - Contributions are no longer shown in View Status screen
+     * This method is no longer needed
      */
-    public function getContributions($id)
-    {
-        try {
-            Log::info('📋 FETCHING CONTRIBUTIONS - Application ID: ' . $id);
-
-            $app = Application::findOrFail($id);
-
-            if ($app->user_id !== auth()->id()) {
-                Log::error('❌ Unauthorized access attempt');
-                return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
-            }
-
-            $contributions = Contribution::where('application_id', $id)
-                ->with('status')
-                ->orderBy('created_at', 'desc')
-                ->get()
-                ->map(function ($contribution) {
-                    return [
-                        'id' => $contribution->id,
-                        'type' => $contribution->type,
-                        'quantity' => $contribution->quantity,
-                        'quantity_unit' => $contribution->quantity_unit ?? 'PHP',
-                        'image_path' => url('storage/' . $contribution->image_path),
-                        'notes' => $contribution->notes,
-                        'status' => $contribution->status->status_name ?? 'pending',
-                        'created_at' => $contribution->created_at->toIso8601String(),
-                    ];
-                });
-
-            Log::info('✅ Contributions fetched: ' . $contributions->count());
-
-            return response()->json([
-                'success' => true,
-                'contributions' => $contributions
-            ], 200);
-
-        } catch (\Exception $e) {
-            Log::error('❌ FETCH CONTRIBUTIONS ERROR: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),
-            ], 500);
-        }
-    }
+    // public function getContributions($id) { ... }
 
     /**
-     * ✅ GET ALL USER CONTRIBUTIONS (WITHOUT APPLICATION ID FILTER)
+     * ✅ GET ALL CONTRIBUTIONS WITH STATUS (FOR CONTRIBUTION HISTORY)
+     * Returns ALL contributions (pending + approved) with status column
      */
     public function getAllContributions()
     {
         try {
-            Log::info('📋 FETCHING ALL CONTRIBUTIONS FOR USER: ' . auth()->id());
+            Log::info('📋 FETCHING ALL CONTRIBUTIONS WITH STATUS - User: ' . auth()->id());
 
+            // ✅ Return ALL contributions with their status
             $contributions = Contribution::where('user_id', auth()->id())
-                ->with('status')
+                ->with(['status', 'application.grant'])
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($contribution) {
@@ -707,12 +684,16 @@ class ApplicationController extends Controller
                         'quantity_unit' => $contribution->quantity_unit ?? 'PHP',
                         'image_path' => url('storage/' . $contribution->image_path),
                         'notes' => $contribution->notes,
-                        'status' => $contribution->status->status_name ?? 'pending',
+                        'status' => $contribution->status->status_name ?? 'unknown', // ⭐ Status shown
                         'created_at' => $contribution->created_at->toIso8601String(),
+                        'application' => [
+                            'id' => $contribution->application->id ?? null,
+                            'grant_name' => $contribution->application->grant->grant_name ?? 'N/A',
+                        ],
                     ];
                 });
 
-            Log::info('✅ All contributions fetched: ' . $contributions->count());
+            Log::info('✅ Contributions fetched: ' . $contributions->count());
 
             return response()->json([
                 'success' => true,

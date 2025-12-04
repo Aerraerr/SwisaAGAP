@@ -16,14 +16,14 @@
             <!-- Settings Content -->
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 text-medium">
                 <!-- Sidebar -->
-                <aside class="bg-white rounded-xl shadow p-4 h-[500px] overflow-y-">
+                <aside class="bg-white rounded-xl shadow p-4 h-auto md:max-h-[600px] lg:max-h-[300px] overflow-y-">
                     <ul class="space-y-1">
-                        <li>
+                        {{--<li>
                             <button onclick="showSection('general', this)" 
                                 class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition">
                                 General
                             </button>
-                        </li>
+                        </li>--}}
                         <li>
                             <button onclick="showSection('users', this)" 
                                 class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition">
@@ -31,6 +31,18 @@
                             </button>
                         </li>
                         <li>
+                            <button onclick="showSection('grant-config', this)" 
+                                class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition">
+                                Grant Configurations
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="showSection('membership-config', this)" 
+                                class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition">
+                                Membership Configurations
+                            </button>
+                        </li>
+                        {{--<li>
                             <button onclick="showSection('notifications', this)" 
                                 class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition">
                                 Notifications
@@ -47,14 +59,14 @@
                                 class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition">
                                 SWISA Organization
                             </button>
-                        </li>
+                        </li>--}}
                         <li>
                             <button onclick="showSection('chat', this)" 
                                 class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition">
                                 Chat Settings
                             </button>
                         </li>
-                        <li>
+                        {{--<li>
                             <button onclick="showSection('modules', this)" 
                                 class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition">
                                 Modules Control
@@ -78,7 +90,7 @@
                                 class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition text-red-500">
                                 Security
                             </button>
-                        </li>
+                        </li>--}}
                     </ul>
                 </aside>
 
@@ -131,6 +143,116 @@
                     <!-- USER MANAGEMENT -->
                     @include('swisa-admin.settings.user-management', ['users' => $users])
 
+
+                    <!-- GRANT CONFIGURATION -->
+                    <div id="grant-config-section" class="settings-section hidden">
+
+                        <h3 class="text-xl font-semibold text-[#2C6E49] mb-4">Grant Configurations</h3>
+                        <p class="text-gray-600 text-sm mb-6">Manage grants requirement, sectors, and types.</p>
+
+                        <!-- REQUIREMENT MANAGEMENT -->
+                        <div class="mb-8 p-5 border rounded-xl shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-semibold text-lg text-gray-800">Requirement Management</h4>
+                                <button onclick="openModal('addRequirementModal')" class="px-4 py-2 bg-white rounded-lg shadow hover:bg-btncolor hover:text-white">
+                                    Add New
+                                </button>
+                            </div>
+
+                            <div class="space-y-2">
+                                @forelse($requirements as $req)
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                        <span>{{ $req->requirement_name ?? '-'}}</span>
+                                        <button onclick="openModal('deleteRequirementModal-{{ $req->id }}')" class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600">Delete</button>
+                                        @include('components.modals.delete-requirement')
+                                    </div>
+                                @empty
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                        <span>No requirement listed.</span>
+                                    </div>
+                                @endempty
+                            </div>
+                        </div>
+
+                        <!-- SECTOR MANAGEMENT -->
+                        <div class="mb-8 p-5 border rounded-xl shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-semibold text-lg text-gray-800">Sector Management</h4>
+                                <button onclick="openModal('addSectorModal')" class="px-4 py-2 bg-white rounded-lg shadow hover:bg-btncolor hover:text-white">
+                                    Add New
+                                </button>
+                            </div>
+
+                            <div class="space-y-2">
+                                @forelse($sectors as $sector)
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                        <span>{{ $sector->sector_name ?? '-'}}</span>
+                                        <button onclick="openModal('deleteSectorModal-{{ $sector->id }}')" class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600">Delete</button>
+                                        @include('components.modals.delete-sector')
+                                    </div>
+                                @empty
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                        <span>No sector listed.</span>
+                                    </div>
+                                @endforelse
+                            </div>
+                        </div>
+
+                        <!-- GRANT TYPE MANAGEMENT -->
+                        <div class="mb-8 p-5 border rounded-xl shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-semibold text-lg text-gray-800">Grant Type Management</h4>
+                                <button onclick="openModal('addGrantTypeModal')" class="px-4 py-2 bg-white rounded-lg shadow hover:bg-btncolor hover:text-white">
+                                    Add New
+                                </button>
+                            </div>
+
+                            <div class="space-y-2">
+                                @forelse($grantTypes as $type)
+                                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                    <span>{{ $type->grant_type ?? '-'}}</span>
+                                    <button onclick="openModal('deleteGrantTypeModal-{{ $type->id }}')" class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600">Delete</button>
+                                    @include('components.modals.delete-grant_type')
+                                </div>
+                                @empty
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                        <span>No Grant type listed.</span>
+                                    </div>                                   
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MEMBERSHIP CONFIGURATION -->
+                    <div id="membership-config-section" class="settings-section hidden">
+
+                        <h3 class="text-xl font-semibold text-[#2C6E49] mb-4">Membership Configurations</h3>
+                        <p class="text-gray-600 text-sm mb-6">Manage Membership requirement.</p>
+
+                        <!-- MEMBERSHIP MANAGEMENT -->
+                        <div class="mb-8 p-5 border rounded-xl shadow-sm">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-semibold text-lg text-gray-800">Requirement Management</h4>
+                                <button onclick="openModal('addMemReqModal')" class="px-4 py-2 bg-white rounded-lg shadow hover:bg-btncolor hover:text-white">
+                                    Add New
+                                </button>
+                            </div>
+
+                            <div class="space-y-2">
+                                @forelse($membershipReqs as $memReq)
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                        <span>{{ $memReq->requirement->requirement_name ?? '-'}}</span>
+                                        <button onclick="openModal('deleteMemReqModal-{{ $memReq->id }}')" class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600">Delete</button>
+                                        @include('components.modals.delete-membership_requirement')
+                                    </div>
+                                @empty
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                        <span>No membership requirement listed.</span>
+                                    </div>
+                                @endempty
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Notifications -->
                     <div id="notifications-section" class="settings-section hidden">
@@ -257,7 +379,10 @@
             </div>
         </div>
     </div>
-
+    @include('components.modals.add-requirement')
+    @include('components.modals.add-sector')
+    @include('components.modals.add-grant_type')
+    @include('components.modals.add-membership_requirement')
 
     <script>
     function showSection(section, btn) {

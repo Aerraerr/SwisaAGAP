@@ -2,7 +2,7 @@
 <div id="users-section" class="settings-section hidden">
 
     <!-- Header with Search & Filter -->
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-3 md:space-y-0">
+    <div class="flex flex-col md:flex-row justify-between z-20 items-center mb-6 space-y-3 md:space-y-0">
         <h3 class="text-xl font-semibold text-[#2C6E49]">User Management</h3>
 
         <div class="flex items-center space-x-3">
@@ -96,13 +96,13 @@
                     </p>
                 </div>
                 <div class="flex items-center space-x-2 mt-2 md:mt-0">
-                    <button class="p-2 border rounded-full hover:bg-gray-100 transition">
+                   {{--<button class="p-2 border rounded-full hover:bg-gray-100 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
-                    </button>
+                    </button>--}}
                     <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
                         onsubmit="return confirm('Are you sure you want to delete this user?');">
                         @csrf
@@ -128,7 +128,7 @@
     </div>
 
 <!-- Add User Modal -->
-<div id="addUserModal" class="fixed z-1000 inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
+<div id="addUserModal" class="fixed z-20 inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
     <div class="bg-white w-full max-w-2xl rounded-xl shadow-lg p-8 relative">
 
         <h2 class="text-2xl font-semibold text-[#2C6E49] mb-6">Add New User</h2>

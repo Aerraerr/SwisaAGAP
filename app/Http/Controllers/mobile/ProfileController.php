@@ -25,6 +25,7 @@ class ProfileController extends Controller
                 'email' => $user->email,
                 'phone_number' => $user->phone_number, // ✅ ADD THIS LINE
                 'role_id' => $user->role_id,
+                'qr_code' => $user->qr_code,
                 
                 // Basic info from users table
                 'first_name' => $user->first_name,
@@ -56,7 +57,7 @@ class ProfileController extends Controller
                     'barangay' => $user->userInfo->barangay,
                     'zone' => $user->userInfo->zone,
                     'profile_img' => $user->userInfo->profile_img,
-                    'qr_code' => $user->userInfo->qr_code,
+                    //'qr_code' => $user->userInfo->qr_code,
                     'farmer_type' => $user->userInfo->farmer_type,
                     'farm_location' => $user->userInfo->farm_location,
                     'land_size' => $user->userInfo->land_size,

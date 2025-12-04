@@ -41,10 +41,10 @@
         </div>
 
         <div class="text-sm mb-3">
-            <p class="font-medium text-sm">Date: <span class="text-gray-600 ml-1">{{ $date }}</span></p>
-            <p class="font-medium text-sm">Time: <span class="text-gray-600 ml-1">{{ $time }}</span></p>
-            <p class="font-medium text-sm">Venue: <span class="text-gray-600 ml-1">{{ $venue }}</span></p>
-            <p class="font-medium text-sm">Participants: <span class="text-gray-600 ml-1">{{ $participants }}</span></p>
+            <p class="font-medium ml-2 text-sm">Date: <span class="text-gray-600 ml-1">{{ $date }}</span></p>
+            <p class="font-medium ml-2 text-sm">Time: <span class="text-gray-600 ml-1">{{ $time }}</span></p>
+            <p class="font-medium ml-2 text-sm">Venue: <span class="text-gray-600 ml-1">{{ $venue }}</span></p>
+            <p class="font-medium ml-2 text-sm">Participants: <span class="text-gray-600 ml-1">{{ $participants }}</span></p>
         </div>
 
         <!-- View Button Section -->

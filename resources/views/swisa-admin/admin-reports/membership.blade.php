@@ -1,21 +1,39 @@
-<!-- Membership -->
+<!-- resources/views/swisa-admin/admin-reports/membership.blade.php -->
+
+@php
+    $totalMembers = $totalMembers ?? 0;
+    $newMembers = $newMembers ?? 0;
+    $activeMembers = $activeMembers ?? 0;
+    $members = $members ?? collect();
+
+        $malePercent = $malePercent ?? 0;
+    $femalePercent = $femalePercent ?? 0;
+    $age18_25_percent = $age18_25_percent ?? 0;
+    $age26_30_percent = $age26_30_percent ?? 0;
+    $age30plus_percent = $age30plus_percent ?? 0;
+@endphp
+
 <section id="membership" class="report-section block">
     <!-- Header with Export Options -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
         <div>
             <h2 class="text-2xl font-bold text-[#2C6E49]">Membership Reports</h2>
-            <p class="text-gray-500 text-sm">Overview of members, registrations, and activity</p>
+            <p class="text-gray-500 text-sm">Overview of registered members, and demographics</p>
         </div>
         <div class="flex gap-2">
-            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-1">
-                <i class="material-icons text-sm">file_download</i> Export CSV
-            </button>
-            <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-1">
+            <a href="{{ route('membership.export.csv') }}" 
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-1">
+            <i class="material-icons text-sm">file_download</i> Export CSV
+            </a>
+
+            <a href="{{ route('membership.export.excel') }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-1">
                 <i class="material-icons text-sm">file_download</i> Export Excel
-            </button>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-1">
+            </a>
+
+            <a href="{{ route('membership.export.pdf') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm shadow flex items-center gap-1">
                 <i class="material-icons text-sm">picture_as_pdf</i> Export PDF
-            </button>
+            </a>
+
         </div>
     </div>
 
@@ -23,25 +41,35 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="bg-white rounded-xl shadow p-4 border-t-4 border-green-600">
             <h3 class="text-[#2C6E49] font-bold ">Total Members</h3>
-            <p class="text-3xl font-bold text-green-600 mt-2">1,540</p>
+            <p class="text-3xl font-bold text-green-600 mt-2">{{ $totalMembers }}</p>
             <p class="text-xs text-gray-400 mt-1">All registered members</p>
         </div>
-        <div class="bg-white rounded-xl shadow p-4 border-t-4 border-yellow-500">
+        <div class="bg-white rounded-xl shadow p-4 border-t-4 border-green-600">
             <h3 class="text-[#2C6E49] font-bold ">New Members (This Month)</h3>
-            <p class="text-3xl font-bold text-yellow-600 mt-2">35</p>
-            <p class="text-xs text-gray-400 mt-1">Compared to last month: +12%</p>
+            <p class="text-3xl font-bold text-green-600 mt-2">{{ $newMembers }}</p>
+            <p class="text-xs text-gray-400 mt-1">
+                As of {{ \Carbon\Carbon::now()->format('F Y') }}
+            </p>
         </div>
-        <div class="bg-white rounded-xl shadow p-4 border-t-4 border-blue-600">
+        @php
+        $activeData = app('App\Http\Controllers\ReportMembershipController')->activeMembers();
+        @endphp
+
+        <div class="bg-white rounded-xl shadow p-4 border-t-4 border-green-600">
             <h3 class="text-[#2C6E49] font-bold ">Active Members</h3>
-            <p class="text-3xl font-bold text-blue-600 mt-2">85%</p>
+            <p class="text-3xl font-bold text-green-600 mt-2">{{ $activeData['activeMembersPercent'] }}%</p>
             <p class="text-xs text-gray-400 mt-1">Based on logins and activity</p>
         </div>
+
     </div>
-    <!-- Charts Row -->
+
+    <!-- Charts Row (optional) -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-        @include('charts.member-type-breakdown2')
-        @include('charts.member-demographics')
+        @includeIf('charts.member-type-breakdown2')
+        @includeIf('charts.member-demographics')
+    
     </div>
+
     <!-- Members Table -->
     <div class="bg-white rounded-2xl shadow p-4">
         <div class="flex justify-between items-center mb-4">
@@ -52,45 +80,41 @@
             <table class="w-full text-sm border-collapse">
                 <thead>
                     <tr class="bg-snbg text-[#2C6E49]">
+                        <th class="text-left p-5">ID Number</th>
                         <th class="text-left p-5">Name</th>
-                        <th class="text-left p-5">Barangay</th>
+                        <th class="text-left p-5">Address</th>
                         <th class="text-left p-5">Email</th>
                         <th class="text-left p-5">Contact Number</th>
                         <th class="text-left p-5">Type</th>
-                        <th class="text-left p-5">ID Number</th>
                         <th class="text-left p-5">Registered Since</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="border-t hover:bg-gray-50">
-                        <td class="p-5">Juan Dela Cruz</td>
-                        <td class="p-5">Barangay 1</td>
-                        <td class="p-5">juan@email.com</td>
-                        <td class="p-5">09123456789</td>
-                        <td class="p-5">Farming</td>
-                        <td class="p-5">MEM-10234</td>
-                        <td class="p-5">2023-01-15</td>
-                    </tr>
-                    <tr class="border-t hover:bg-gray-50">
-                        <td class="p-5">Maria Santos</td>
-                        <td class="p-5">Barangay 2</td>
-                        <td class="p-5">maria@email.com</td>
-                        <td class="p-5">09129876543</td>
-                        <td class="p-5">Fishing</td>
-                        <td class="p-5">MEM-20452</td>
-                        <td class="p-5">2023-02-20</td>
-                    </tr>
-                        <tr class="border-t hover:bg-gray-50">
-                        <td class="p-5">Maria Santos</td>
-                        <td class="p-5">Barangay 2</td>
-                        <td class="p-5">maria@email.com</td>
-                        <td class="p-5">09129876543</td>
-                        <td class="p-5">Fishing</td>
-                        <td class="p-5">MEM-20452</td>
-                        <td class="p-5">2023-02-20</td>
-                    </tr>
+                    @forelse ($members as $member)
+                            <tr class="border-t hover:bg-gray-50">
+                                <td class="p-5">{{ $member->user->formatted_id ?? '-' }}</td>
+                                <td class="p-5">{{ $member->name ?? trim($member->fname . ' ' . $member->mname . ' ' . $member->lname) ?: '-' }}</td>
+                                <td class="p-5">
+                                    {{ $member->barangay ?? '-' }}
+                                    {{ $member->city ? ', ' . $member->city : '' }}
+                                    {{ $member->zone ? ', Zone ' . $member->zone : '' }}
+                                    {{ $member->house_no ? ', #' . $member->house_no : '' }}
+                                </td>
+
+                                <td class="p-5">{{ $member->email ?? '-' }}</td>
+                                <td class="p-5">{{ $member->phone_no?? '-' }}</td>
+                                <td class="p-5">{{ $member->farmer_type ?? '-' }}</td>
+
+                                <td class="p-5">{{ optional($member->created_at)->format('F d, Y') ?? '-' }}</td>
+                            </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="p-5 text-center text-gray-500">No members found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 </section>
+

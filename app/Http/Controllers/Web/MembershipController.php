@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
+use App\Models\CreditScore;
+use App\Models\Notification;
 use App\Models\Requirement;
 use App\Services\DocumentChecker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\SMSService;
 
 class MembershipController extends Controller
 {
@@ -81,16 +84,58 @@ class MembershipController extends Controller
     public function approvedApplication(Request $request, $id){
 
         try{
-            $application = Application::findOrFail($id);
+            $application = Application::with('user')->findOrFail($id);
 
             if ($request->action === 'approve') {
-                $application->status_id = 33; //Approved id
+                $application->status_id = 4; //Approved id
+                
+                // Update the user's role to 'member' (1)
+                if ($application->user) {
+                    $application->user->role_id = 1; // Member role
+                    $application->user->save();
+
+                    // 1. Check if a CreditScore record already exists for this user.
+                    $existingScore = CreditScore::where('user_id', $application->user->id)->first();
+
+                    if (!$existingScore) {
+                        // 2. If no score exists, create a new one with a default score (max 50)
+                        CreditScore::create([
+                            'user_id' => $application->user->id,
+                            'score' => 20, // Default starting score for new members
+                        ]);
+                        // logging for audit purposes
+                        Log::info('Credit Score (50) created for new member User ID: ' . $application->user->id);
+                    }
+
+                    $notifMessage = "Congratulations! Your application for the grant '{$application->grant->title}' has been APPROVED.";
+                    $smsMessage = "[SWISA-AGAP] Congratulations! Your application for the grant '{$application->grant->title}' has been APPROVED.";
+                }
+
             } elseif ($request->action === 'reject') {
-                $application->status_id = 35; //Rejected id
+                $application->status_id = 6; //Rejected id
                 $application->rejection_reason = $request->input('rejection_reason');
+
+                $notifMessage = "Your application for the grant '{$application->grant->title}' has been REJECTED. Reason: {$application->rejection_reason}";
+                $smsMessage = "[SWISA-AGAP] Your application for the grant '{$application->grant->title}' has been REJECTED. Reason: {$application->rejection_reason}";
             }
 
             $application->save();
+
+            //store a confirmation message to table
+            Notification::create([ 
+                'user_id' => $application->user->id,
+                'message' => $notifMessage,
+                'sent_at' => now(),
+            ]);
+
+            //end sms of the application
+            if (!empty($application->user->phone_number)) {
+                
+                $number = $application->user->phone_number;
+                $message = $smsMessage;
+
+                SMSService::send($number, $message);
+            }
 
             return redirect()->back()->with('success', 'Membership application ' . strtolower($request->action) . 'd successfully!');
         }catch(\Exception $error){

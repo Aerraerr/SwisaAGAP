@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon; 
 use App\Models\Grant;
 use App\Models\GrantType;
 use App\Models\Requirement;
@@ -21,7 +22,10 @@ class GrantController extends Controller
 
     //show grants with documents (if any)
     public function showGrants(){
-        return Grant::with('documents')->get();
+        return Grant::with('documents')->where('end_at', '>=', Carbon::today())
+        //Order by the nearest date_end
+        ->orderBy('end_at', 'asc')
+        ->get();
     }
     
     public function showRequirements(){
@@ -38,6 +42,7 @@ class GrantController extends Controller
                 'description' => 'nullable|string',
                 'quantity' => 'required|numeric|min:1',
                 'unit_per_request' =>  'required|numeric|min:1',
+                'amount_per_quantity' => 'required|numeric|min:1',
                 'requirements' => 'array', // multi requirements
                 'requirements.*' => 'exists:requirements,id',
                 'start_date' => 'required|date',
@@ -51,6 +56,7 @@ class GrantController extends Controller
                 'description'   => $request->description,
                 'total_quantity' => $request->quantity,
                 'unit_per_request' =>  $request->unit_per_request,
+                'amount_per_quantity' => $request->amount_per_quantity,
                 'available_at' => $request->start_date,
                 'end_at' => $request->end_date,
             ]);
@@ -91,10 +97,12 @@ class GrantController extends Controller
     public function viewGrantDetails($id){
         $grant = Grant::with(['grant_type', 'documents', 'applications.user', 'applications.user.user_info', 'requirements'])->findOrFail($id);
 
+        $totalAmount = $grant->total_quantity * $grant->amount_per_quantity;
+
         $grantTypes = GrantType::all();      
         $requirements = Requirement::all();
     
-        return view('swisa-admin.view-grant', compact('grant', 'grantTypes', 'requirements'));
+        return view('swisa-admin.view-grant', compact('grant', 'grantTypes', 'requirements', 'totalAmount'));
     }
 
     //function for adding stock grant

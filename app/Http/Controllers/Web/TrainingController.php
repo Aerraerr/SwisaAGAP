@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TrainingController extends Controller
 {
@@ -140,6 +141,15 @@ class TrainingController extends Controller
     public function deleteTraining($id){
         try{
             $training = Training::findOrFail($id);
+
+            // delete files in storage + document rows
+            foreach ($training->documents as $document) {
+                if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+                    Storage::disk('public')->delete($document->file_path);
+                }
+
+                $document->delete();
+            }
 
             $training->delete();
 

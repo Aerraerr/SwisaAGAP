@@ -3,7 +3,7 @@
         <!-- Modal Header -->
         <div class="flex items-center justify-between pb-2">
             <div class="items-center">
-                <h2 class="text-3xl font-bold text-customIT">Create Account</h2>
+                <h2 class="text-3xl font-bold text-customIT">Create Grant</h2>
             </div>
             <div>
                 <button onclick="closeModal('addGrantModal')" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
@@ -82,7 +82,13 @@
                         <label class="block text-sm font-medium text-gray-700">Unit per Request</label>
                         <input type="number" name="unit_per_request" min="1" 
                                class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-btncolor focus:border-btncolor focus:ring-opacity-30"
-                               placeholder="Enter amount" required>
+                               placeholder="Enter unit per request" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Amount per Request</label>
+                        <input type="number" name="amount_per_quantity" min="1" 
+                               class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-btncolor focus:border-btncolor focus:ring-opacity-30"
+                               placeholder="Enter amount per request" required>
                     </div>
                 </div>
 

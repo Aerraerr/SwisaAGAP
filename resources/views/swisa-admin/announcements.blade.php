@@ -35,10 +35,10 @@
                         <textarea name="announcement_content" id="announcement_content" rows="4" placeholder="Write your message here..." class="w-full border rounded-md px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-customIT focus:border-transparent" required></textarea>
                     </div>
 
-                    <div class="mb-4">
+                    {{--<div class="mb-4">
                         <label for="announcement_files" class="text-sm font-medium text-gray-700">Attach Files / Images</label>
                         <input type="file" name="announcement_files" id="announcement_files" class="block w-full text-sm mt-1 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-customIT file:text-white hover:file:bg-customIT/90" />
-                    </div>
+                    </div>--}}
 
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>

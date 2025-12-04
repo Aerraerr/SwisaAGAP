@@ -352,12 +352,6 @@
         @endif
 
         @if(Auth::user()->role_id == 2)
-            <a class="menu-item {{ request()->routeIs('report') ? 'active' : '' }}" 
-            href="{{ route('report') }}">
-            <i class="material-icons">inventory</i>
-            <span class="menu-text">Grant Reports</span>
-            </a>
-
             <a class="menu-item {{ request()->routeIs('giveback') ? 'active' : '' }}" 
             href="{{ route('giveback') }}">
             <i class="material-icons">inventory</i>
@@ -404,10 +398,11 @@
             <span class="menu-text">Applications</span>
           </a>
           
-            <a class="menu-item {{ request()->routeIs('logs') ? 'active' : '' }}" 
-            href="{{ route('logs') }}">
-            <i class="material-icons">history</i>
-            <span class="menu-text">Activity Logs</span>
+           
+            <a class="menu-item {{ request()->routeIs('logs.index') ? 'active' : '' }}" 
+              href="{{ route('logs.index') }}">
+                <i class="material-icons">history</i>
+                <span class="menu-text">Activity Logs</span>
             </a>
 
             <a class="menu-item {{ request()->routeIs('admin-reports') ? 'active' : '' }}" 
@@ -445,16 +440,6 @@
         <div class="admin-role menu-text text-xs text-gray-500">Admin Acc</div>
     </div>
 </div>
-<!--for modal -->
-<script>
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.remove('hidden');
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
-    }
-</script>
 <script>
 function toggleSidebar() {
     const sidebar = document.getElementById("sidebar");

@@ -90,7 +90,7 @@
               </div>
               <div>
                 <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
-                <input type="text" name="phone" placeholder="09XXXXXXXXX" value="{{ $member->user_info->contact_no ?? 'contact no'}}" pattern="09[0-9]{9}" title="Phone number must start with 09 and be 11 digits long" class="peer invalid:[&:not(:placeholder-shown):not(:focus)]:border-red-500 w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-btncolor focus:border-btncolor focus:ring-opacity-30" required>
+                <input type="text" name="phone" placeholder="09XXXXXXXXX" value="{{ $member->user_info->phone_no ?? 'contact no'}}" pattern="09[0-9]{9}" title="Phone number must start with 09 and be 11 digits long" class="peer invalid:[&:not(:placeholder-shown):not(:focus)]:border-red-500 w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-btncolor focus:border-btncolor focus:ring-opacity-30" required>
                 <span class="mt-2 hidden text-sm text-red-500 peer-[&:not(:placeholder-shown):not(:focus):invalid]:block">
                   Please enter a valid phone number (starts with 09, 11 digits total).
                 </span>
@@ -151,7 +151,7 @@
               </div>
               <div>
                 <label for="sc_phone" class="block text-sm font-medium text-gray-700">Phone</label>
-                <input type="text" name="sc_phone" placeholder="09XXXXXXXXX" value="{{ $member->user_info->sc_contact_no ?? 'contact no'}}" pattern="09[0-9]{9}" title="Phone number must start with 09 and be 11 digits long" class="peer invalid:[&:not(:placeholder-shown):not(:focus)]:border-red-500 w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-btncolor focus:border-btncolor focus:ring-opacity-30" required>
+                <input type="text" name="sc_phone" placeholder="09XXXXXXXXX" value="{{ $member->user_info->sc_phone_no ?? 'contact no'}}" pattern="09[0-9]{9}" title="Phone number must start with 09 and be 11 digits long" class="peer invalid:[&:not(:placeholder-shown):not(:focus)]:border-red-500 w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-btncolor focus:border-btncolor focus:ring-opacity-30" required>
                 <span class="mt-2 hidden text-sm text-red-500 peer-[&:not(:placeholder-shown):not(:focus):invalid]:block">
                   Please enter a valid phone number (starts with 09, 11 digits total).
                 </span>

@@ -1,6 +1,6 @@
 <!-- FAQ Management Controls -->
 
-<div class="mb-4 pb-4 border-b border-gray-100">
+<div class="mb-4 pb-4 border-b Z-20 border-gray-100">
     <div class="flex justify-end items-center gap-3">
 
         <!-- Search Bar -->

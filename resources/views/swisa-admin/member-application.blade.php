@@ -82,7 +82,7 @@
 
                 <!-- Search -->
                 <div class="flex justify-end mb-2">
-                    <input type="text" placeholder="Search here" 
+                    <input type="text" placeholder="Search here"  id="searchAll"
                         class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border border-gray-300 rounded-md 
                                 focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] focus:border-[var(--accent-green)]">
                 </div>
@@ -100,26 +100,25 @@
                                 <th class="px-4 py-3">STATUS</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbodyAll">
                             @forelse($applications['all'] as $app)
                                 <tr 
                                     class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
-                                    
                                     @click="selectedUser = { 
                                         id: '{{ $app->id ?? '-'}}', 
-                                        name: '{{ $app->user->name ?? '-'}}', 
+                                        name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                         date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}',
                                         updated: '{{ $app->updated_at->format('F d, Y h:i A') ?? '-'}}', 
                                         status: '{{ ucfirst($app->status?->status_name ?? '-') }}',
-                                        number: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                        number: '{{ $app->user->user_info->phone_no ?? '-'}}',
                                         email: '{{ $app->user->email ?? '-'}}',
                                         reason: '{{ $app->rejection_reason ?? '-'}}',
                                         documents: @js($app->documents),
                                         form_img: '{{ $app->form_img ?? '-'}}'
                                     }">
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->phone_no ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d, Y') ?? '-'}}</td>
                                     <td class="px-4 py-3">
@@ -127,6 +126,7 @@
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
                                         {{ $app->status->status_name === 'pending' ? 'bg-pending text-white' : '' }}
                                         {{ $app->status->status_name === 'rejected' ? 'bg-rejected text-white' : '' }}
+                                        {{ $app->status->status_name === 'completed' ? 'bg-approved text-white' : '' }}
                                         ">
                                             {{ ucfirst($app->status->status_name) ?? '-'}}
                                         </span>
@@ -288,7 +288,7 @@
                         <p class="text-customIT text-lg font-bold">Pending Membership List</p>
                     </div>
                     <div class="flex justify-end mb-2">
-                        <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
+                        <input type="text" id="searchPending" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
                     </div>
                     <div class="overflow-auto h-[80vh]">
                         <table class="min-w-full border-collapse">
@@ -302,24 +302,24 @@
                                     <th class="px-4 py-3 rounded-tr-md">STATUS</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="tbodyPending">
                                 @forelse($applications['pending'] as $app)
                                     <tr 
                                         class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
                                         @click="selectedUser = { 
                                             id: '{{ $app->id ?? '-'}}', 
-                                            name: '{{ $app->user->name ?? '-'}}', 
+                                            name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                             date: '{{ $app->created_at->format('F d Y') ?? '-'}}', 
                                             status: '{{ ucfirst($app->status?->status_name ?? '-') }}',
-                                            number: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                            number: '{{ $app->user->user_info->phone_no ?? '-'}}',
                                             email: '{{ $app->user->email ?? '-'}}', 
                                             documents: @js($app->documents),
                                             form_img: '{{ $app->form_img ?? '-'}}' 
                                         }"
                                     >
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->phone_no ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
                                         <td class="px-4 py-3">
@@ -410,14 +410,7 @@
                                                 </span>
 
                                                 <!-- display 'Passed or Needs Checking' depending on the result of the documentChecker -->
-                                                <span 
-                                                    x-text="selectedUser.documents.find(d => d.membership_requirement_id === req.membership_requirement_id)?.check_result || 'Missing'"
-                                                    :class="{
-                                                        'text-green-500 font-semibold': $el.textContent === 'Passed',
-                                                        'text-red-500 italic': $el.textContent === 'Needs Checking'
-                                                    }"
-                                                    class="text-xs"
-                                                ></span>
+                                                <span x-text="selectedUser.documents.find(d => d.membership_requirement_id === req.membership_requirement_id)?.check_result "class="text-xs"></span>
                                             </li>
                                         </template>
                                     </ul>
@@ -465,7 +458,7 @@
                         <p class="text-customIT text-lg font-bold">Approved Membership List</p>
                     </div>
                     <div class="flex justify-end mb-2">
-                        <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
+                        <input type="text"  id="searchApproved" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
                     </div>
                     <div class="overflow-auto h-[80vh]">
                         <table class="table table-hover min-w-full border-spacing-y-1">
@@ -479,7 +472,7 @@
                                     <th class="px-4 py-3 rounded-tr-md">STATUS</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="tbodyApproved">
                                 @forelse($applications['approved'] as $app)
                                     <tr 
                                         class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
@@ -488,19 +481,19 @@
                                         }"
                                         @click="selectedUser = { 
                                             id: '{{ $app->id ?? '-'}}', 
-                                            name: '{{ $app->user->name ?? '-'}}', 
+                                            name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                             date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}',
                                             updated: '{{ $app->updated_at->format('F d, Y h:i A') ?? '-'}}', 
                                             status: '{{ ucfirst($app->status?->status_name ?? '-') }}',
-                                            number: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                            number: '{{ $app->user->user_info->phone_no ?? '-'}}',
                                             email: '{{ $app->user->email ?? '-'}}',
                                             documents: @js($app->documents),
                                             form_img: '{{ $app->form_img ?? '-'}}'  
                                         }"
                                     >
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->phone_no ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
                                         <td class="px-4 py-3">
@@ -586,8 +579,8 @@
                                                     </span>
                                                 </span>
 
-                                                <!-- display Uploaded when approved or rejected -->
-                                                <span class="text-xs">Uploaded</span>
+                                                <!-- display 'Passed or Needs Checking' depending on the result of the documentChecker -->
+                                                <span x-text="selectedUser.documents.find(d => d.membership_requirement_id === req.membership_requirement_id)?.check_result "class="text-xs"></span>
                                             </li>
                                         </template>
                                     </ul>
@@ -623,7 +616,7 @@
                         <p class="text-customIT text-lg font-bold">Rejected Membership List</p>
                     </div>
                     <div class="flex justify-end mb-2">
-                        <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
+                        <input type="text" placeholder="Search here" id="searchRejected" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
                     </div>
                     <div class="overflow-auto h-[80vh]">
                         <table class="table table-hover min-w-full border-spacing-y-1">
@@ -637,7 +630,7 @@
                                     <th class="px-4 py-3 rounded-tr-md">STATUS</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="tbodyRejected">
                                 @forelse($applications['rejected'] as $app)
                                     <tr 
                                         class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
@@ -646,11 +639,11 @@
                                         }"
                                         @click="selectedUser = { 
                                             id: '{{ $app->id ?? '-'}}', 
-                                            name: '{{ $app->user->name ?? '-'}}', 
+                                            name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                             date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}', 
                                             updated: '{{ $app->updated_at->format('F d, Y h:i A') ?? '-'}}',  
                                             status: '{{ ucfirst($app->status?->status_name ?? '-') }}',
-                                            number: '{{ $app->user->user_info->contact_no ?? '-'}}',
+                                            number: '{{ $app->user->user_info->phone_no ?? '-'}}',
                                             email: '{{ $app->user->email ?? '-'}}',
                                             reason: '{{ $app->rejection_reason ?? '-'}}',
                                             documents: @js($app->documents),
@@ -658,8 +651,8 @@
                                         }"
                                     >
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
-                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->contact_no ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->phone_no ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->email ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d, Y') ?? '-'}}</td>
                                         <td class="px-4 py-3">
@@ -745,8 +738,8 @@
                                                     </span>
                                                 </span>
 
-                                                <!-- display Uploaded when approved or rejected -->
-                                                <span class="text-xs">Uploaded</span>
+                                                <!-- display 'Passed or Needs Checking' depending on the result of the documentChecker -->
+                                                <span x-text="selectedUser.documents.find(d => d.membership_requirement_id === req.membership_requirement_id)?.check_result "class="text-xs"></span>
                                             </li>
                                         </template>
                                     </ul>
@@ -777,4 +770,52 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Define the IDs for all tabs' search input and table bodies
+        const tabConfigs = [
+            { searchId: 'searchAll', tbodyId: 'tbodyAll' },
+            { searchId: 'searchPending', tbodyId: 'tbodyPending' },
+            { searchId: 'searchApproved', tbodyId: 'tbodyApproved' },
+            { searchId: 'searchRejected', tbodyId: 'tbodyRejected' },
+        ];
+
+        // Function to perform the filtering on a specific table
+        const filterTable = (searchInputId, tbodyId) => {
+            const searchInput = document.getElementById(searchInputId);
+            const tbody = document.getElementById(tbodyId);
+
+            if (!searchInput || !tbody) {
+                // console.warn(`Missing element for configuration: Input ID: ${searchInputId}, TBody ID: ${tbodyId}`);
+                return; // Exit if elements aren't found (e.g., if a tab isn't active on load)
+            }
+            
+            // Get all rows once
+            const tableRows = tbody.querySelectorAll("tr");
+
+            searchInput.addEventListener("input", () => {
+                const term = searchInput.value.toLowerCase().trim();
+
+                tableRows.forEach(row => {
+                    // Check if the row is the 'No applications.' message row (to exclude it from filtering)
+                    if (row.querySelector('td[colspan="6"]')) {
+                        return;
+                    }
+
+                    const rowText = row.textContent.toLowerCase();
+                    
+                    // Show or hide the row based on the search term
+                    row.style.display = rowText.includes(term) ? "" : "none";
+                });
+            });
+        };
+
+        // Initialize filtering for all tabs
+        tabConfigs.forEach(config => {
+            // Use a short delay (setTimeout) to ensure all tabs' contents are rendered in the DOM, 
+            // even if they are initially hidden by x-show.
+            setTimeout(() => filterTable(config.searchId, config.tbodyId), 50);
+        });
+    });
+</script>
 @endsection

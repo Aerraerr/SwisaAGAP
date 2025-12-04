@@ -22,11 +22,16 @@ use App\Http\Controllers\mobile\ApplicationController;
 use App\Http\Controllers\mobile\GrantApplicationController;
 use App\Http\Controllers\mobile\OtpController;
 use App\Http\Controllers\mobile\PhoneOtpController;
+use App\Http\Controllers\mobile\ActivityController;
+use App\Http\Controllers\mobile\FeedbackController;
+
+Route::post('/mobile/login', [AuthController::class, 'login'])
+     ->middleware('throttle:5,1');
 // Public routes
 Route::prefix('mobile')->group(function (Router $router) {
     // PUBLIC AUTH ROUTES
     $router->post('/register', [AuthController::class, 'register']);
-    $router->post('/login', [AuthController::class, 'login']);
+
 
     
 
@@ -36,6 +41,15 @@ Route::prefix('mobile')->group(function (Router $router) {
 
     // PROTECTED ROUTES (Requires Sanctum token)
     $router->middleware('auth:sanctum')->group(function () use ($router) {
+
+        // Feedback Routes -- add before OTP/public data/protected routes!
+        Route::post('/feedback', [FeedbackController::class, 'store']);
+        Route::get('/feedback', [FeedbackController::class, 'index']); // (optional)
+        // Test route to get the authenticated user
+        $router->get('/user', function (Request $request) {
+            return $request->user();
+        });        
+
         // Test route to get the authenticated user
         $router->get('/user', function (Request $request) {
             return $request->user();
@@ -45,8 +59,8 @@ Route::prefix('mobile')->group(function (Router $router) {
  
         // Contributions
         Route::post('/{applicationId}/contribute', [ApplicationController::class, 'contribute']);
-        Route::get('/{applicationId}/contributions', [ApplicationController::class, 'getContributions']);
-        Route::post('/{applicationId}/contributions', [ApplicationController::class, 'submitContribution']);
+    
+        Route::post('/applications/{id}/contribute', [ApplicationController::class, 'contribute']); 
         
          Route::get('/grant-applications/{id}', [ApplicationController::class, 'getGrantApplicationDetails']);
         Route::post('/grant-applications', [GrantApplicationController::class, 'store']);
@@ -67,15 +81,12 @@ Route::prefix('mobile')->group(function (Router $router) {
     // ✅ Resubmit documents for on-hold application
     Route::post('/applications/{id}/resubmit', [ApplicationController::class, 'resubmit']);
     
-    // ✅ Submit contribution after claiming
+    //  Submit contribution after claiming
     Route::post('/applications/{id}/contribute', [ApplicationController::class, 'contribute']);
     
-    // ✅ Get contributions for specific application
-    Route::get('/applications/{id}/contributions', [ApplicationController::class, 'getContributions']);
+    //  Get all user contributions (across all applications)
+    Route::get('/contributions', [ApplicationController::class, 'getAllContributions']); // Get ALL user contributions with status (for Contribution History screen)
 
-    // CONTRIBUTIONS (Global)
-    // ✅ Get all user contributions (across all applications)
-    Route::get('/contributions', [ApplicationController::class, 'getAllContributions']);
 
     });
 });
@@ -125,6 +136,11 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::patch('/{id}/unread', [NotificationController::class, 'markAsUnread']);
         Route::delete('/{id}', [NotificationController::class, 'destroy']);
     });
+
+     // Acvity History
+     Route::get('/activities', [ActivityController::class, 'index']);
+     Route::delete('/activities/clear', [ActivityController::class, 'clear']);
+     Route::delete('/activities/{id}', [ActivityController::class, 'destroy']);
 
 });
 
@@ -189,12 +205,6 @@ Route::middleware('auth:sanctum')->prefix('mobile/chat')->group(function () {
     Route::post('/mark-read', [MobileChatController::class, 'markAsRead']);
 });
 
-
-// FEEDBACK
-use App\Http\Controllers\mobile\FeedbackController;
-// Feedback Routes -- add before OTP/public data/protected routes!
-Route::post('/feedback', [FeedbackController::class, 'store']);
-Route::get('/feedback', [FeedbackController::class, 'index']); // (optional)
 
 // FOR LOGS
 use App\Http\Controllers\mobile\MobileLogController;

@@ -14,7 +14,9 @@ class Participant extends Model
 
     protected $fillable = [
         'training_id',
-        'user_id',
+        'user_id', 
+        'qr_scanned',
+        'check_in_at'
     ];
 
     //RELATIONSHIPS

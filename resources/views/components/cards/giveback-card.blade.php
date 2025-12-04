@@ -1,7 +1,7 @@
 @props(['status', 'name', 'role', 'cont_type', 'cont_quantity', 'cont_source', 'cont_date', 'givebackId'=> NULL])
 
 
-<div class="w-full bg-white p-4 sm:p-6 rounded-xl shadow-lg flex flex-col space-y-6">
+<div class="w-full bg-white p-4 sm:p-6 rounded-xl border border-gray-300 shadow-lg flex flex-col space-y-6">
     <!-- Top Section -->
     <div class="flex flex-col sm:flex-row items-center sm:items-start sm:space-x-5 space-y-4 sm:space-y-0">
         <!-- Profile Image -->

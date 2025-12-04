@@ -23,7 +23,7 @@
                     <div class="flex flex-col items-center m-2">
                         <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
                         class="w-30 h-30 md:w-28 md:h-28 lg:w-36 lg:h-36 xl:w-40 xl:h-40 rounded-full shadow-md object-cover mb-2" />
-                        <h3 class="text-lg xl:text-xl font-semibold text-customIT">{{ $member->name}} </h3>
+                        <h3 class="text-lg xl:text-xl font-semibold text-customIT">{{ ucfirst($member->first_name) }} {{ ucfirst($member->middle_name) }} {{ ucfirst($member->last_name) }}</h3>
                         <p class="text-sm text-gray-700 font-medium">{{ $member->user_info->sector->sector_name ?? '-'}}</p>
                         <div class="flex">
                             <p class="text-xs text-gray-500 mt-2">{{ $member->formatted_id}} </p>
@@ -61,7 +61,7 @@
                     <div class="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center mb-3 text-xs md:text-sm lg:text-md">
                         <div class="col-start-1">
                             <p class="text-customIT font-semibold ">Full Name</p>
-                            <p class="text-gray-700 font-medium">{{ ucfirst($member->name) }}</p>
+                            <p class="text-gray-700 font-medium">{{ ucfirst($member->first_name) }} {{ ucfirst($member->middle_name) }} {{ ucfirst($member->last_name) }}</p>
                         </div>
                         <div class="col-start-2">
                             <p class="text-customIT font-semibold">Member Type</p>
@@ -111,7 +111,7 @@
                             <p class="text-customIT font-semibold">Contact Number</p>
                             <p class="text-gray-700 font-medium">
                                 <span x-show="!showDetails">09*********</span>
-                                <span x-show="showDetails">{{ $member->user_info->contact_no ?? '-'}}</span>
+                                <span x-show="showDetails">{{ $member->user_info->phone_no ?? '-'}}</span>
                             </p>
                         </div>
                         <div class="col-start-2 lg:col-start-4">
@@ -139,7 +139,7 @@
                             <p class="text-customIT font-semibold">Contact Number</p>
                             <p class="text-gray-700 font-medium">
                                 <span x-show="!showDetails">09*********</span>
-                                <span x-show="showDetails">{{ $member->user_info->contact_no ?? '-'}}</span>
+                                <span x-show="showDetails">{{ $member->user_info->sc_phone_no ?? '-'}}</span>
                             </p>
                         </div>
                         <div class="col-start-1 lg:col-start-3">
@@ -169,20 +169,22 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($member->applications->where('application_type', 'grant_request') as $member)
+                            @forelse(optional($member->applications)->where('application_type', 'Grant Application') as $application)
                                 <tr class="border border-gray-300">
-                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $member->formatted_id }}</td>
-                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $member->grant->title ?? '-'}}</td>
-                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $member->grant->grant_type->grant_type ?? '-'}}</td>
-                                    <td class="px-4 py-2 text-xs text-gray-700 font-medium">{{ $member->purpose ?? '-' }}</td>
-                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $member->created_at->format('F d Y') }}</td>
+                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $application->formatted_id }}</td>
+                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $application->grant->title ?? '-'}}</td>
+                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $application->grant->grant_type->grant_type ?? '-'}}</td>
+                                    <td class="px-4 py-2 text-xs text-gray-700 font-medium">{{ $application->purpose ?? '-' }}</td>
+                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $application->created_at->format('F d Y') }}</td>
                                     <td class="px-4 py-3 ">
                                         <div class="inline-block text-xs font-medium text-center px-3 py-1 rounded-full
-                                            {{ $member->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
-                                            {{ $member->status->status_name === 'pending' ? 'bg-pending text-white' : '' }}
-                                            {{ $member->status->status_name === 'rejected' ? 'bg-rejected text-white' : '' }}
+                                            {{ $application->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
+                                            {{ $application->status->status_name === 'pending' ? 'bg-pending text-white' : '' }}
+                                            {{ $application->status->status_name === 'rejected' ? 'bg-rejected text-white' : '' }}
+                                            {{ $application->status->status_name === 'completed' ? 'bg-approved text-white' : '' }}
+                                            {{ $application->status->status_name === 'processing_application' ? 'bg-pending text-white' : '' }}
                                         ">
-                                            {{ ucfirst($member->status->status_name) ?? '-' }}
+                                            {{ ucfirst($application->status->status_name) ?? '-' }}
                                         </div>
                                     </td>
                                 </tr>
@@ -239,7 +241,6 @@
                                         </a>
                                     </div>
                                 </li>
-                                @include('components.modals.view-documents')
                             @empty
                                 <li class="py-2 text-sm text-gray-500 text-center">No documents uploaded</li>
                             @endforelse
@@ -249,7 +250,7 @@
             </div>
         </div>
         @include('components.modals.grant-overview')
-        {{--@include('components.modals.view-applications')--}}
+        @include('components.modals.view-applications')
         @include('components.modals.view-logs')
         @include('components.modals.view-reason')
        

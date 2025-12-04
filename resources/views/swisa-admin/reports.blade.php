@@ -19,37 +19,36 @@
             <!-- Tabs Navigation -->
             <div class="bg-white rounded-xl shadow p-3">
                 <nav class="flex flex-wrap gap-2 text-sm font-medium">
-                    <button onclick="showSection(event, 'membership')" class="tab-btn active-tab px-3 py-2 rounded-lg">Membership</button>
-                    <button onclick="showSection(event, 'requests')" class="tab-btn px-3 py-2 rounded-lg">Requests</button>
-                    <button onclick="showSection(event, 'financial')" class="tab-btn px-3 py-2 rounded-lg">Financial</button>
-                    <button onclick="showSection(event, 'communication')" class="tab-btn px-3 py-2 rounded-lg">Communication</button>
-                    <button onclick="showSection(event, 'engagement')" class="tab-btn px-3 py-2 rounded-lg">Engagement</button>
-                    <button onclick="showSection(event, 'performance')" class="tab-btn px-3 py-2 rounded-lg">Performance</button>
-                    <button onclick="showSection(event, 'custom')" class="tab-btn px-3 py-2 rounded-lg">Custom</button>
+                    <button onclick="showSection('membership')" data-tab="membership" class="tab-btn px-3 py-2 rounded-lg">Membership</button>
+                    <button onclick="showSection('requests')" data-tab="requests" class="tab-btn px-3 py-2 rounded-lg">Requests</button>
+                    <button onclick="showSection('financial')" data-tab="financial" class="tab-btn px-3 py-2 rounded-lg">Financial</button>
+                    {{--<button onclick="showSection('communication')" data-tab="communication" class="tab-btn px-3 py-2 rounded-lg">Communication</button>
+                    <button onclick="showSection('engagement')" data-tab="engagement" class="tab-btn px-3 py-2 rounded-lg">Engagement</button>
+                    <button onclick="showSection('feedback')" data-tab="feedback" class="tab-btn px-3 py-2 rounded-lg">Feedback</button>--}}
+                    <button onclick="showSection('custom')" data-tab="custom" class="tab-btn px-3 py-2 rounded-lg">Custom</button>
+
                 </nav>
             </div>
 
-            <!-- Filters -->
-            <div class="bg-white rounded-xl shadow p-3 flex flex-wrap gap-1 items-center">
-                <div class="flex gap-1">
-                    <input type="date" class="border rounded-lg px-3 py-2 text-sm">
-                    <input type="date" class="border rounded-lg px-3 py-2 text-sm">
-                </div>
-                <select class="w-[200px] border rounded-lg px-2 py-2 text-sm">
-                    <option>All Categories</option>
-                    <option>Farming</option>
-                    <option>Fishing</option>
-                    <option>Livestock</option>
-                </select>
-                        <button class="bg-btncolor w-20 text-white px-2 py-2 rounded-lg text-sm hover:bg-btnhover">FILTER</button>
-            </div>
+
         </div>
 
         <!-- Report Sections -->
         <div class="flex-1 bg-mainbg min-h-screen">
 
             <!-- Membership -->
-            @include('swisa-admin.admin-reports.membership')
+            <!-- resources/views/swisa-admin/reports.blade.php -->
+            @include('swisa-admin.admin-reports.membership', [
+                'totalMembers' => \App\Models\UserInfo::count(),
+                'newMembers' => \App\Models\UserInfo::whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count(),
+                'activeMembers' => 0, // your logic…
+
+                'members' => \App\Models\UserInfo::orderBy('created_at', 'desc')->get(),
+
+
+            ])
+
+
 
             <!-- Requests -->
             @include('swisa-admin.admin-reports.request')
@@ -63,8 +62,8 @@
             <!-- Engagement -->
             @include('swisa-admin.admin-reports.engagement')
 
-            <!-- Performance -->
-            @include('swisa-admin.admin-reports.performance')
+            <!-- Feedback -->
+            {{--@include('swisa-admin.admin-reports.feedback')--}}
 
             <!-- Custom -->
             @include('swisa-admin.admin-reports.custom')
@@ -72,27 +71,37 @@
     </div>
 </div>
 
-<!-- Tab Switching Script -->
 <script>
-    function showSection(e, id) {
+    function showSection(id) {
         const sections = document.querySelectorAll('.report-section');
         const tabs = document.querySelectorAll('.tab-btn');
 
+        // Hide all sections
         sections.forEach(section => section.classList.add('hidden'));
+        // Show selected section
         document.getElementById(id).classList.remove('hidden');
 
-        tabs.forEach(tab => tab.classList.remove('active-tab', 'bg-green-600', 'text-white'));
-        e.target.classList.add('active-tab', 'bg-green-600', 'text-white');
+        // Remove active class from all tabs
+        tabs.forEach(tab => tab.classList.remove('active-tab', 'bg-btncolor', 'text-white'));
+
+        // Add active class to the selected tab
+        const activeTab = document.querySelector(`.tab-btn[data-tab="${id}"]`);
+        if (activeTab) {
+            activeTab.classList.add('active-tab', 'bg-btncolor', 'text-white');
+        }
+
+        // Save active tab in localStorage
+        localStorage.setItem('activeTab', id);
     }
+
+    // Restore last active tab on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const lastTab = localStorage.getItem('activeTab') || 'membership';
+        showSection(lastTab);
+    });
 </script>
 
-<style>
-    .tab-btn {
-        color: #4B5563; /* gray-600 */
-    }
-    .tab-btn.active-tab {
-        background-color: #4C956C; /* green-600 */
-        color: #fff;
-    }
-</style>
+
+
+
 @endsection

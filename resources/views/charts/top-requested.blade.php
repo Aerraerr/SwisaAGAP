@@ -77,7 +77,7 @@
     </div>
 
     <!-- Same View placement style -->
-    <div class="viewbtn">
-        <a href="#" class="text-xs text-custom">View &rarr;</a>
+    <div class="text-right">
+        <a href="{{ route('admin-reports') }}" class="text-sm text-[#2C6E49] hover:underline">View All Requests &gt;</a>
     </div>
 </div>

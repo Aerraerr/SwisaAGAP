@@ -1,10 +1,10 @@
 <!-- Add Training Modal -->
 <div id="addTrainingModal" 
-     class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 z-1100 h-full w-full flex items-center justify-center">
+     class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 z-20 h-full w-full flex items-center justify-center">
     <div class="relative w-full max-w-2xl mx-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
         <!-- Modal Header -->
         <div class="flex items-center justify-between pb-2">
-            <div class="flex items-center justify-center w-full">
+            <div class="items-center">
                 <h2 class="text-3xl font-bold text-customIT text-center">Add Event</h2>
             </div>
             <div class="absolute right-6 top-6">

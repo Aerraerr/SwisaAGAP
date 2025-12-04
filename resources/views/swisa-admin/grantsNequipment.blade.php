@@ -34,11 +34,11 @@
             </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl shadow-xl" >
+        <div class="bg-white p-5 rounded-xl shadow-xl border border-gray-300" >
             
                 <div x-data="{ activeTab: 'grid' }" class="mt-4">
 
-                    <x-filters modalId="addGrantModal" />
+                    <x-filters modalId="addGrantModal" targetTableId="grants-list-table"/>
 
                     <!-- Example of using the reusable component -->
                     <div x-show="activeTab === 'grid'" class="pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -49,11 +49,8 @@
                             image="{{ $grant->documents->first() ? asset('storage/'.$grant->documents->first()->file_path) : asset('images/default-grant.jpg') }}"
                             category="{{ $grant->grant_type->grant_type}}"
                             stockAvailable="{{ $grant->total_quantity}}"
-                            pendingRequests="0"
-                            approved="0"
                             available_date="{{ $grant->available_at->format('F d Y') }}"
                             end_date="{{ $grant->end_at->format('F d Y') }}"
-                            eligibility="Registered Members"
                             grantId="{{ $grant->id}}"
                         />
                     @endforeach
@@ -69,42 +66,20 @@
                                         <th class="px-4 py-3 text-xs font-medium">ITEM NAME</th>
                                         <th class="px-4 py-3 text-xs font-medium">CATEGORY</th>
                                         <th class="px-4 py-3 text-xs font-medium">STOCK AVAILABLE</th>
-                                        <th class="px-4 py-3 text-xs font-medium">ELIGIBILITY</th>
                                         <th class="px-4 py-3 text-xs font-medium">AVAILABLE DATE</th>
                                         <th class="px-4 py-3 text-xs font-medium">END DATE</th>
-                                        <th class="px-4 py-3 text-xs font-medium">ALLOCATION</th>
                                         <th class="px-4 py-3 text-xs font-medium">ACTION</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="grants-list-table">
                                     @foreach($grants as $grant)
                                         <tr class="border border-gray-300 hover:bg-gray-100">
                                             <td class="px-4 py-2 text-sm text-gray-700">GRNT{{$grant->id}}</td>
                                             <td class="px-4 py-2 text-sm text-gray-700">{{ $grant->title}}</td>
-                                            <td class="px-4 py-2 text-sm text-gray-700">
-                                                <div class="mt-1">
-                                                    <p>{{ $grant->grant_type->grant_type }}</p>
-                                                    <p class="text-[10px] text-gray-500">returnable</p>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-2 text-sm text-gray-700">
-                                                <div class="mt-1">
-                                                    <p class="pr-2">Available:<span> {{ $grant->total_quantity}} units</span></p>
-                                                    <p class="text-[10px] text-gray-500">Approved: 6</p>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-2 text-sm text-gray-700">All Registered Member</td>
+                                            <td class="px-4 py-2 text-sm text-gray-700"><p>{{ $grant->grant_type->grant_type }}</p></td>
+                                            <td class="px-4 py-2 text-sm text-gray-700"><p class="pr-2">{{ $grant->total_quantity}}</p></td>
                                             <td class="px-4 py-2 text-sm text-gray-700">{{ $grant->available_at->format('F d Y') }}</td>
                                             <td class="px-4 py-2 text-sm text-gray-700">{{ $grant->end_at->format('F d Y') }}</td>
-                                            <td class="pr-4 py-2 text-sm text-gray-700">
-                                                <div class=" h-2 w-full bg-gray-200 rounded-full">
-                                                    <div
-                                                        class="h-full bg-customIT rounded-full"
-                                                        style="width: 50%;">
-                                                    </div>
-                                                    <p class="text-center text-[10px]">50%</p>
-                                                </div>
-                                            </td>
                                             <td class="pl-4 py-2 text-sm">
                                                 <div class="relative" x-data="{ show: false }" @click.away="show = false">
                                                     <button @click="show = !show"  class="border border-gray-300 rounded-sm pl-2">

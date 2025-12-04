@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -20,9 +20,9 @@ use App\Models\CreditScore;
 use App\Models\CreditScoreHistory;
 use App\Models\PhoneOtp;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable;
+    use HasFactory, HasApiTokens, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -39,6 +39,7 @@ class User extends Authenticatable
         'password',
         'phone_number',
         'mpin',
+        'qr_code',
         'login_method',
         'role_id',
         'email_verified_at',
@@ -81,8 +82,13 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    //for user_info: each user has one profile information (1:1)
+    //for user_info: sa web
     public function user_info(){
+        return $this->hasOne(UserInfo::class);
+    }
+
+    //for user_info: sa mobile ini
+    public function userInfo(){
         return $this->hasOne(UserInfo::class);
     }
 

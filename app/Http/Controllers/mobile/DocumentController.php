@@ -5,11 +5,13 @@ namespace App\Http\Controllers\mobile;
 use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\Application;
+use App\Models\GrantRequirement;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Services\DocumentChecker;
 
 class DocumentController extends Controller
 {
@@ -48,7 +50,11 @@ class DocumentController extends Controller
             // Store file
             $file = $request->file('document');
             $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('documents', $filename, 'public');
+            $path = $file->storeAs('application/grants', $filename, 'public');
+
+            // Retrieve the requirement name
+            $requirement = GrantRequirement::with('requirement')->find($request->grant_requirement_id);
+            $requirementName = $requirement?->requirement?->requirement_name;
 
             // ✅ Save to database with additional fields
             $document = Document::create([
@@ -62,6 +68,26 @@ class DocumentController extends Controller
                 'documentable_id' => $request->application_id,
                 'documentable_type' => Application::class,
             ]);
+
+            // ---------------------------------------
+            // AUTO-CHECK DOCUMENT (SAME AS WEB)
+            // ---------------------------------------
+            if ($requirementName) {
+                $documentChecker = new DocumentChecker();
+
+                $userInfo = $application->user->user_info; // required for matching
+
+                $result = $documentChecker->verifyDocumentBelongsToUser(
+                    storage_path('app/public/' . $path),
+                    $requirementName,
+                    $userInfo
+                );
+
+                // Save auto-check result
+                $document->update([
+                    'check_result' => $result
+                ]);
+            }
 
             // Load relationships
             $document->load(['grantRequirement', 'status']);

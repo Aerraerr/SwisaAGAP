@@ -31,36 +31,25 @@
                                     <p class="font-semibold text-xs lg:text-lg text-customIT flex items-center mb-1">
                                         Stock Summary
                                     </p>
-                                    <p class="ml-5 text-[10px] text-gray-500 lg:text-sm">Available: <span class="font-medium text-gray-800">{{ $grant->total_quantity}}</span></p>
-                                    <p class="ml-5 text-[10px] text-gray-500 lg:text-sm">Unit per Request: <span class="font-medium text-gray-800">{{ $grant->unit_per_request}}</span></p>
-                                    <p class="ml-5 text-[10px] text-gray-500 lg:text-sm">Pending: <span class="font-medium text-gray-800">none</span></p>
-                                    <p class="ml-5 text-[10px] text-gray-500 lg:text-sm">Approved: <span class="font-medium text-gray-800">none</span></p>
+                                    <p class="ml-5 text-[10px] lg:text-sm">Available: <span class="font-medium ml-2 text-gray-600">{{ $grant->total_quantity ?? '-'}}</span></p>
+                                    <p class="ml-5 text-[10px] lg:text-sm">Unit per Request: <span class="font-medium ml-2 text-gray-600">{{ $grant->unit_per_request ?? '-'}}</span></p>
+                                    <p class="ml-5 text-[10px] lg:text-sm">Amount per Request: <span class="font-medium ml-2 text-gray-600">{{ $grant->amount_per_quantity ?? '-'}}</span></p>
+                                    <p class="ml-5 text-[10px] lg:text-sm">Total Amount: <span class="font-medium ml-2 text-gray-600">{{ $totalAmount ?? '-'}}</span></p>
                                 </div>
                                 <div class="flex-1">
                                     <h4 class="font-semibold text-xs lg:text-lg text-customIT flex items-center mb-1">
                                             Availability
                                     </h4>
-                                    <p class="ml-5 text-gray-500 text-[10px] lg:text-sm">Available Date: <span class="font-medium text-gray-800">{{ $grant->available_at->format('F d Y') }}</span></p>
-                                    <p class="ml-5 text-gray-500 text-[10px] lg:text-sm">End Date: <span class="font-medium text-gray-800">{{ $grant->end_at->format('F d Y') }}</span></p>
+                                    <p class="ml-5 text-[10px] lg:text-sm">Available Date: <span class="font-medium ml-2 text-gray-600">{{ $grant->available_at->format('F d Y') }}</span></p>
+                                    <p class="ml-5 text-[10px] lg:text-sm">End Date: <span class="font-medium ml-2 text-gray-600">{{ $grant->end_at->format('F d Y') }}</span></p>
                                 </div>
-                                <div class="flex justify-between items-start pb-4">
-                                    <div class="flex-1 flex-shrink-0">
-                                        <h4 class="font-semibold text-xs lg:text-lg text-sm text-customIT flex items-center mr-2">
-                                            <!-- Badge icon -->
-                                            Eligibility Info
-                                        </h4>
-                                        <p class="text-[10px] lg:text-sm text-gray-500 ml-5">
-                                        For: <span class="font-medium text-gray-800">Registered Member</span>
-                                        </p>
-                                    </div>
-                                    <div class="flex-1">
-                                        <h4 class="font-semibold text-xs lg:text-lg text-customIT flex items-center mb-1">Requirements</h4>
-                                        @forelse($grant->requirements as $requirement)
-                                            <p class="ml-5 text-[10px] lg:text-sm font-medium text-gray-800">-{{ $requirement->requirement_name }}</p>
-                                        @empty
-                                            <li class="text-gray-500">No requirements found.</li>
-                                        @endforelse
-                                    </div>
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-xs lg:text-lg text-customIT flex items-center mb-1">Requirements</h4>
+                                    @forelse($grant->requirements as $requirement)
+                                        <p class="ml-5 text-[10px] lg:text-sm font-medium text-gray-600">-{{ $requirement->requirement_name }}</p>
+                                    @empty
+                                        <li class="text-gray-500">No requirements found.</li>
+                                    @endforelse
                                 </div>
                             </div>
                         </div>
@@ -199,48 +188,5 @@
         @include('components.modals.add-grant-stock')
         @include('components.modals.delete-grant')
         @include('components.modals.generate-report')
-        <script>
-            // Get the canvas element to render the chart on
-            const ctx = document.getElementById('feedbackChart');
-
-            // Define the data for the chart
-            const data = {
-                labels: ['Positive', 'Neutral', 'Negative'],
-                datasets: [{
-                    data: [65, 20, 15],
-                    backgroundColor: [
-                        '#4C956C', // Positive
-                        '#B2D6D3', // Neutral
-                        '#F15B66'  // Negative
-                    ],
-                    hoverOffset: 4,
-                    // Add border between slices to match the image
-                    borderColor: '#ffffff',
-                    borderWidth: 2
-                }]
-            };
-
-            // Define the options for the chart
-            const options = {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '40%', // Creates the donut hole
-                plugins: {
-                    legend: {
-                        display: false // Hide the default Chart.js legend
-                    },
-                    tooltip: {
-                        enabled: false // Hide tooltips on hover
-                    }
-                }
-            };
-
-            // Create the new Chart.js instance
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: data,
-                options: options
-            });
-        </script>
     </div>
 @endsection

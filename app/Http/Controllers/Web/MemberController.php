@@ -18,7 +18,7 @@ class MemberController extends Controller
             },
             'applications.grant'])->where('role_id', 1)->whereHas('applications', function ($q) {
                 $q->where('application_type', 'membership')
-                ->where('status_id', 33);
+                ->where('status_id', 4);
             })->get();
 
         // Count all members
@@ -38,7 +38,7 @@ class MemberController extends Controller
     }
 
     public function viewProfile($id){
-        $member = User::with('documents', 'user_info', 'applications.grant')->findOrFail($id);
+        $member = User::with('documents', 'user_info.sector', 'applications.grant')->findOrFail($id);
 
         return view('swisa-admin.view-profile', compact('member'));
     }

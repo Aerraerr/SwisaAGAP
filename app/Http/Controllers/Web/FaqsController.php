@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Faq; // ✅ Import the Faq model
+use App\Models\Faqs; // ✅ Import the Faq model
 
 class FaqsController extends Controller
 {
@@ -13,9 +13,9 @@ class FaqsController extends Controller
      */
     public function index()
     {
-        $userFaqs = Faq::where('target_audience', 'user')->get();
-        $adminFaqs = Faq::where('target_audience', 'admin')->get();
-        $supportFaqs = Faq::where('target_audience', 'support-staff')->get();
+        $userFaqs = Faqs::where('target_audience', 'user')->get();
+        $adminFaqs = Faqs::where('target_audience', 'admin')->get();
+        $supportFaqs = Faqs::where('target_audience', 'support-staff')->get();
 
         return view('swisa-admin.faqs', compact('userFaqs', 'adminFaqs', 'supportFaqs'));
     }
@@ -40,7 +40,7 @@ class FaqsController extends Controller
             'type' => 'required|string',
         ]);
 
-        Faq::create($request->all());
+        Faqs::create($request->all());
 
         return redirect()->route('faqs.index')->with('success', 'FAQ created successfully.');
 
@@ -49,7 +49,7 @@ class FaqsController extends Controller
     /**
      * Show edit FAQ form.
      */
-    public function edit(Faq $faq)
+    public function edit(Faqs $faq)
     {
         return view('faqs.edit', compact('faq'));
     }
@@ -57,7 +57,7 @@ class FaqsController extends Controller
     /**
      * Update FAQ in DB.
      */
-    public function update(Request $request, Faq $faq)
+    public function update(Request $request, Faqs $faq)
     {
         $request->validate([
             'question' => 'required|string|max:255',
@@ -75,7 +75,7 @@ class FaqsController extends Controller
      */
     public function destroy($id)
     {
-        $faq = Faq::findOrFail($id);
+        $faq = Faqs::findOrFail($id);
         $faq->delete();
 
         return redirect()->back()->with('success', 'FAQ deleted successfully.');

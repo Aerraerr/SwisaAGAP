@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-@include('layouts.loading-overlay')
 
 <style>
 /* Scrollbar transparency and style */
@@ -9,55 +8,26 @@
   height: 10px;
   background: rgba(76, 149, 108, 0.5);
 }
-
-/* Smooth scroll behavior globally */
 html, body, #chat-messages {
   scroll-behavior: smooth;
 }
-
-/* Smooth fade-in animation for chat panel and messages */
-.fade-in {
-  animation: fadeIn 0.4s ease-in-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Smooth slide-in when switching between chats */
-.chat-slide-in {
-  animation: slideIn 0.35s ease-in-out forwards;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+.fade-in { animation: fadeIn 0.4s ease-in-out forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+.chat-slide-in { animation: slideIn 0.35s ease-in-out forwards; }
+@keyframes slideIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
 </style>
 
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<div class="p4">
-  <div class="-m-3 sd:h-screen h-full flex bg-white rounded-2xl border border-gray-200">
+<div class="p-3">
+  <div class="-mt-7 sd:h-screen h-full flex bg-white rounded-2xl border border-gray-200 relative">
 
     <!-- LEFT SIDEBAR -->
     <div class="w-full md:w-1/4 border-r border-gray-200 flex flex-col rounded-2xl">
-      <!-- Header -->
       <div class="h-[70px] p-5 border-b border-gray-300 flex flex-col justify-center">
-        <h2 class="font-semibold text-lg text-gray-800 pl-2">Chats</h2>
+        <h2 class="font-semibold text-lg text-gray-800 pl-2">
+          {{ Auth::user()->role_id == 1 ? 'All Users' : 'Chats' }}
+        </h2>
       </div>
 
       <!-- Search + Filter -->
@@ -66,7 +36,7 @@ html, body, #chat-messages {
           <input 
             type="text" 
             id="chat-search" 
-            placeholder="Search chats..." 
+            placeholder="Search..." 
             class="w-full p-2 pl-9 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#4C956C] focus:outline-none text-sm" 
             onkeyup="filterChats()">
           <svg class="absolute left-2 top-2.5 w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -86,60 +56,119 @@ html, body, #chat-messages {
         </div>
       </div>
 
-      <!-- Chat User List -->
-      <div id="chat-user-list" class="w-full flex-1 overflow-y-auto p-4 ">
-        @php
-          use App\Models\Chat;
-          use App\Models\User;
+<!-- Chat User List -->
+<div id="chat-user-list" class="w-full flex-1 overflow-y-auto p-4 max-h-[calc(100vh-120px)]">
+    @php
+        use App\Models\Chat;
+        use App\Models\User;
+        use Illuminate\Support\Carbon;
 
-          $currentUser = auth()->user();
+        $currentUser = auth()->user();
 
-          $chats = Chat::with(['messages' => function($q) {
-              $q->latest()->limit(1);
-          }, 'admin', 'supportStaff'])
-          ->when($currentUser->role_id == 2, function($q) use ($currentUser) {
-              $q->where('support_staff_id', $currentUser->id);
-          })
-          ->get()
-          ->sortByDesc(function($chat) {
-              return optional($chat->messages->first())->created_at ?? now()->subYears(10);
-          })
-          ->values();
-        @endphp
+        if ($currentUser->role_id == 3) {
+            // 👑 Admin: show all users sorted by latest message
+            $users = User::where('id', '!=', $currentUser->id)->get();
 
-        @if($chats->count())
-          @foreach($chats as $chat)
+            $users = $users->map(function ($user) use ($currentUser) {
+                $chat = Chat::where(function ($q) use ($currentUser, $user) {
+                        $q->where('admin_id', $currentUser->id)
+                          ->where('support_staff_id', $user->id);
+                    })
+                    ->orWhere(function ($q) use ($currentUser, $user) {
+                        $q->where('admin_id', $user->id)
+                          ->where('support_staff_id', $currentUser->id);
+                    })
+                    ->first();
+
+                if ($chat) {
+                    $latestMessage = $chat->messages()->latest()->first();
+                    $user->latest_message_at = $latestMessage ? Carbon::parse($latestMessage->created_at) : null;
+                    $user->latest_message = $latestMessage?->message;
+                    $user->is_unread = $latestMessage && !$latestMessage->is_read && $latestMessage->user_id != auth()->id();
+                } else {
+                    $user->latest_message_at = null;
+                    $user->latest_message = null;
+                    $user->is_unread = false;
+                }
+
+                return $user;
+            });
+
+            $chats = $users->sortByDesc(function ($user) {
+                return $user->latest_message_at?->timestamp ?? -INF;
+            })->values();
+        } else {
+            // 🧑‍💼 Support staff or 👤 Member
+            $chats = Chat::with([
+                'messages' => fn($q) => $q->latest()->limit(1),
+                'admin',
+                'supportStaff'
+            ])
+            ->when($currentUser->role_id == 2, fn($q) => $q->where('support_staff_id', $currentUser->id))
+            ->when($currentUser->role_id == 1, fn($q) => $q->where('member_id', $currentUser->id))
+            ->get()
+            ->sortByDesc(fn($chat) => optional($chat->messages->first())->created_at ?? now()->subYears(10))
+            ->values();
+        }
+    @endphp
+
+    @if(($chats ?? collect())->count())
+        @foreach($chats as $chat)
             @php
-              $otherUser = $chat->admin_id == auth()->id() ? $chat->supportStaff : $chat->admin;
-              if (!$otherUser) continue;
-              $latestMessage = $chat->messages->first();
-              $messageText = $latestMessage ? $latestMessage->message : 'Click to chat';
-              $isUnread = $latestMessage && !$latestMessage->is_read && $latestMessage->user_id != auth()->id();
-              $roleLabel = $otherUser->role_id == 2 ? 'support' : 'user';
+                if ($currentUser->role_id == 3) {
+                    // Admin’s view
+                    $otherUser = $chat;
+                    $messageText = $otherUser->latest_message ?: 'Click to chat';
+                    $isUnread = $otherUser->is_unread ?? false;
+                    $roleLabel = $otherUser->role_id == 2 ? 'support' : 'member';
+                } else {
+                    // Member or Support Staff view
+                    $otherUser = $currentUser->role_id == 2 ? $chat->admin : $chat->supportStaff;
+                    if (!$otherUser) continue;
+
+                    $latestMessage = $chat->messages->first();
+                    $messageText = $latestMessage?->message ?: 'Click to chat';
+                    $isUnread = $latestMessage && !$latestMessage->is_read && $latestMessage->user_id != auth()->id();
+                    $roleLabel = $otherUser->role_id == 2 ? 'support' : ($otherUser->role_id == 3 ? 'admin' : 'member');
+                }
+
+                $otherName = trim(($otherUser->first_name ?? '') . ' ' . ($otherUser->last_name ?? ''));
+                $displayId = $otherUser->id;
             @endphp
+
             <button 
-              data-user-id="{{ $otherUser->id }}"
-              data-role="{{ $roleLabel }}"
-              class="chat-user block w-full text-left px-8 py-6 flex items-center gap-5 hover:bg-gray-100 transition relative rounded-xl {{ $loop->first ? 'border-t' : '' }}">
-              <div class="w-10 h-10 rounded-full bg-[#2C6E49] flex items-center justify-center text-white text-sm font-bold ">
-                {{ strtoupper(substr($otherUser->name, 0, 1)) }}
-              </div>
-              <div class="flex-1 overflow-hidden">
-                <p class="text-sm font-medium truncate chat-user-name">{{ $otherUser->name }}</p>
-                <p id="message-status-{{ $otherUser->id }}" class="text-xs truncate {{ $isUnread ? 'text-red-500 font-semibold' : 'text-gray-500' }}">
-                  {{ $isUnread ? 'New message' : $messageText }}
-                </p>
-              </div>
+                data-user-id="{{ $displayId }}"
+                data-role="{{ $roleLabel }}"
+                class="chat-user block w-full text-left px-8 py-6 flex items-center gap-5 hover:bg-gray-100 transition relative rounded-xl {{ $loop->first ? 'border-t' : '' }}">
+                <div class="w-10 h-10 rounded-full bg-[#2C6E49] flex items-center justify-center text-white text-sm font-bold">
+                    {{ strtoupper(substr($otherUser->first_name ?? 'U', 0, 1)) }}
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-sm font-medium truncate chat-user-name">{{ $otherName ?: 'Unknown User' }}</p>
+                    <p id="message-status-{{ $displayId }}" class="text-xs truncate {{ $isUnread ? 'text-red-500 font-semibold' : 'text-gray-500' }}">
+                        {{ $isUnread ? 'New message' : $messageText }}
+                    </p>
+                </div>
             </button>
-          @endforeach
-        @else
-          <div class="p-4 text-sm text-gray-500">No chats available.</div>
-        @endif
-      </div>
+        @endforeach
+    @else
+        <div class="p-4 text-sm text-gray-500 text-center">No chats available.</div>
+    @endif
+
+    {{-- 👇 Additional message for support staff --}}
+    @if($currentUser->role_id == 2)
+        <div class="text-center mt-6 text-gray-600 text-sm italic">
+            You can only chat with the admin.
+        </div>
+    @endif
+</div>
+
+
+
     </div>
 
     <!-- RIGHT CHAT PANEL -->
-    <div id="chat-panel" class="flex-1 flex flex-col h-[850px] w-full bg-[#B2D6D3] bg-opacity-10 transition-all duration-300 ease-in-out">
+    <div id="chat-panel" class="flex-1 flex flex-col h-[850px] w-[500px] bg-[#B2D6D3] bg-opacity-10 transition-all duration-300 ease-in-out">
       <div class="flex flex-col items-center justify-center h-full text-gray-400 text-center px-4 fade-in">
         <svg class="w-10 h-10 sm:w-14 sm:h-14 mb-3 text-[#4C956C]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h8m-8 4h5m-9 4h14a2 2 0 002-2V6a2 2 0 00-2-2H4a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -152,17 +181,16 @@ html, body, #chat-messages {
   </div>
 </div>
 
-{{-- ============================= --}}
-{{-- JAVASCRIPT SECTION --}}
-{{-- ============================= --}}
 <script>
 const CURRENT_USER_ID = {!! json_encode(auth()->id()) !!};
 let CHAT_ID = null;
 let ACTIVE_USER_ID = null;
 let lastMessageId = 0;
-let pollInterval = null;
+let pollingInterval = null;
 
-// CLICK CHAT
+// --------------------
+// CHAT SELECTION
+// --------------------
 document.querySelectorAll('.chat-user').forEach(btn => {
   btn.addEventListener('click', async () => {
     const userId = parseInt(btn.getAttribute('data-user-id'));
@@ -176,150 +204,214 @@ document.querySelectorAll('.chat-user').forEach(btn => {
       const panel = document.getElementById('chat-panel');
       panel.classList.remove('chat-slide-in');
       panel.innerHTML = res.data.html;
-      void panel.offsetWidth; // reflow trick
+      void panel.offsetWidth;
       panel.classList.add('chat-slide-in');
-      
+
       CHAT_ID = res.data.chat_id;
       lastMessageId = res.data.last_message_id || 0;
 
       await axios.post(`/chat/${CHAT_ID}/mark-as-read`);
-      const statusText = document.getElementById(`message-status-${userId}`);
-      if (statusText) {
-        statusText.textContent = "Click to chat";
-        statusText.classList.remove('text-red-500', 'font-semibold');
-        statusText.classList.add('text-gray-500');
-      }
+      updateChatStatus(userId, false);
 
-      smoothScrollToBottom();
-      startPolling();
       setupChatEvents();
+      smoothScrollToBottom();
+
+      // reset polling
+      if (pollingInterval) clearInterval(pollingInterval);
+      pollingInterval = setInterval(pollMessages, 2000); // faster refresh
     } catch (err) {
       console.error('Chat load failed:', err);
     }
   });
 });
 
-// Smooth scroll behavior for messages
-function smoothScrollToBottom() {
-  const container = document.getElementById('chat-messages');
-  if (!container) return;
-  container.scrollTo({
-    top: container.scrollHeight,
-    behavior: 'smooth'
-  });
-}
-
-// Append message with fade animation
-function appendMessage(message) {
-  const container = document.getElementById('chat-messages');
-  if (!container) return;
-
-  const msgTime = new Date(message.created_at);
-  const timeLabel = msgTime.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
-
-  const wrapper = document.createElement('div');
-  wrapper.classList.add("flex", "items-end", "gap-2", "mt-1", "fade-in");
-  if (message.user_id === CURRENT_USER_ID) wrapper.classList.add("justify-end");
-
-  const bubbleClass = message.user_id === CURRENT_USER_ID
-    ? 'bg-[#4C956C] text-white px-4 py-2 rounded-2xl'
-    : 'bg-gray-200 text-gray-800 px-4 py-2 rounded-2xl';
-
-  wrapper.innerHTML = `
-    ${message.user_id !== CURRENT_USER_ID ? `<div class="w-8 h-8 rounded-full bg-[#2C6E49] flex items-center justify-center text-white text-xs font-bold">${(message.user?.name?.charAt(0).toUpperCase() ?? 'U')}</div>` : ''}
-    <div class="${bubbleClass} text-sm md:text-md max-w-[80%] break-words">${message.message}</div>
-    ${message.user_id === CURRENT_USER_ID ? `<div class="w-8 h-8 rounded-full bg-[#2C6E49] flex items-center justify-center text-white text-xs font-bold">${(message.user?.name?.charAt(0).toUpperCase() ?? 'U')}</div>` : ''}
-  `;
-  container.appendChild(wrapper);
-  smoothScrollToBottom();
-}
-
-// Sending message logic
-function sendMessage() {
-  if (!CHAT_ID) return alert('Select a chat first.');
-  const input = document.getElementById('chat-input');
-  const msg = input.value.trim();
-  if (!msg) return;
-
-  const btn = document.getElementById('send-btn');
-  btn.disabled = true;
-
-  axios.post(`/chat/${CHAT_ID}/message`, { message: msg })
-    .then(res => {
-      input.value = '';
-      appendMessage(res.data);
-      lastMessageId = res.data.id;
-      moveChatToTop(ACTIVE_USER_ID);
-    })
-    .finally(() => btn.disabled = false);
-}
-
-function setupChatEvents() {
-  const input = document.getElementById('chat-input');
-  const btn = document.getElementById('send-btn');
-  if (!input || !btn) return;
-
-  btn.addEventListener('click', sendMessage);
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-}
-
+// --------------------
+// POLLING
+// --------------------
 async function pollMessages() {
   if (!CHAT_ID) return;
+
   try {
-    const res = await axios.get(`/chat/${CHAT_ID}/poll?last_id=${lastMessageId}`);
-    res.data.messages.forEach(msg => {
-      appendMessage(msg);
-      lastMessageId = msg.id;
-      moveChatToTop(msg.user_id === CURRENT_USER_ID ? ACTIVE_USER_ID : msg.user_id);
-    });
+    const res = await axios.get(`/chat/${CHAT_ID}/poll`, { params: { last_id: lastMessageId } });
+    const newMessages = res.data.messages || [];
+    if (newMessages.length > 0) {
+      newMessages.forEach(msg => appendMessage(msg));
+      lastMessageId = newMessages[newMessages.length - 1].id;
+      smoothScrollToBottom();
+      await axios.post(`/chat/${CHAT_ID}/mark-as-read`);
+    }
   } catch (err) {
     console.error('Polling failed:', err);
   }
 }
 
+// --------------------
+// SCROLL
+// --------------------
+function smoothScrollToBottom() {
+  const container = document.getElementById('chat-messages');
+  if (container) container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+}
+
+// --------------------
+// APPEND MESSAGE
+// --------------------
+function appendMessage(message) {
+  const container = document.getElementById('chat-messages');
+  if (!container) return;
+
+  if (document.getElementById(`msg-${message.id}`)) return; // prevent duplicate
+
+  const wrapper = document.createElement('div');
+  wrapper.id = `msg-${message.id}`;
+  wrapper.classList.add("flex", "items-end", "gap-2", "mt-1", "fade-in");
+  if (message.user_id === CURRENT_USER_ID) wrapper.classList.add("justify-end");
+
+  let bubbleClass = 'bg-gray-200 text-gray-800 px-4 py-2 rounded-2xl';
+  if (message.is_auto_reply) {
+    bubbleClass = 'bg-transparent border border-[#4C956C] text-[#2C6E49] px-4 py-2 rounded-2xl italic';
+  } else if (message.user_id === CURRENT_USER_ID) {
+    bubbleClass = 'bg-[#4C956C] text-white px-4 py-2 rounded-2xl';
+  }
+
+  const senderInitial = message.user?.first_name 
+    ? message.user.first_name.charAt(0).toUpperCase() 
+    : 'U';
+
+  wrapper.innerHTML = `
+    ${message.user_id !== CURRENT_USER_ID ? `<div class="w-8 h-8 rounded-full bg-[#2C6E49] flex items-center justify-center text-white text-xs font-bold">${senderInitial}</div>` : ''}
+    <div class="${bubbleClass} text-sm md:text-md max-w-[50%] break-words">${message.message}</div>
+    ${message.user_id === CURRENT_USER_ID ? `<div class="w-8 h-8 rounded-full bg-[#2C6E49] flex items-center justify-center text-white text-xs font-bold">${senderInitial}</div>` : ''}
+  `;
+  container.appendChild(wrapper);
+}
+
+// --------------------
+// SEND MESSAGE
+// --------------------
+async function sendMessage() {
+  if (!CHAT_ID) return alert('Select a chat first.');
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+
+  try {
+    const res = await axios.post(`/chat/${CHAT_ID}/message`, { message: msg });
+    const sentMsg = res.data;
+
+    appendMessage(sentMsg);
+    input.value = '';
+    lastMessageId = sentMsg.id;
+
+    moveChatToTop(ACTIVE_USER_ID);
+
+    // 🔄 Immediately check for new incoming replies
+    setTimeout(pollMessages, 500);
+
+  } catch (err) {
+    console.error('Send message failed:', err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// --------------------
+// QUICK REPLY
+// --------------------
+async function sendQuickReply(button) {
+  if (!CHAT_ID) return alert('Select a chat first.');
+  const question = button.getAttribute('data-question');
+  const answer = button.getAttribute('data-answer');
+
+  try {
+    // Send user's quick message (normal chat bubble)
+    const resUser = await axios.post(`/chat/${CHAT_ID}/message`, { message: question });
+    appendMessage(resUser.data);
+
+    // Auto reply with styled design (distinct bubble)
+    const styledReply = `
+      <div style="
+        background: #e9f7ef;
+        border-left: 4px solid #2C6E49;
+        padding: 10px 10px;
+        border-radius: 10px;
+        margin-top: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        display: inline-block;
+        max-width: 100%;
+        color: #2C6E49;
+        font-style: italic;
+        font-size: 0.9rem;
+      ">
+        <strong style="color:#1e4620; font-style: normal;">Auto Reply:</strong> ${answer}
+      </div>
+    `;
+
+    const resBot = await axios.post(`/chat/${CHAT_ID}/message`, {
+      message: styledReply,
+      is_auto_reply: true
+    });
+
+    appendMessage(resBot.data);
+
+    lastMessageId = resBot.data.id;
+    setTimeout(pollMessages, 500); // sync again after quick reply
+  } catch (err) {
+    console.error('Quick reply failed:', err);
+  }
+}
+
+
+// --------------------
+// EVENT SETUP
+// --------------------
+function setupChatEvents() {
+  const input = document.getElementById('chat-input');
+  const btn = document.getElementById('send-btn');
+  if (!input || !btn) return;
+  btn.onclick = sendMessage;
+  input.onkeydown = e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+}
+
+// --------------------
+// UNREAD HANDLING
+// --------------------
 async function updateUnreadIndicators() {
   try {
     const res = await axios.get('/chat/unread-check');
-    Object.entries(res.data).forEach(([id, hasUnread]) => {
-      const statusText = document.getElementById(`message-status-${id}`);
-      const chatButton = document.querySelector(`.chat-user[data-user-id="${id}"]`);
-      if (!statusText || !chatButton) return;
-      if (parseInt(id) === ACTIVE_USER_ID) return;
-
-      if (hasUnread) {
-        statusText.textContent = "New message";
-        statusText.classList.add('text-red-500', 'font-semibold');
-        statusText.classList.remove('text-gray-500');
-        moveChatToTop(id);
-      } else {
-        statusText.textContent = "Click to chat";
-        statusText.classList.remove('text-red-500', 'font-semibold');
-        statusText.classList.add('text-gray-500');
-      }
-    });
+    Object.entries(res.data).forEach(([id, hasUnread]) => updateChatStatus(id, hasUnread));
   } catch (err) {
     console.error('Unread update failed:', err);
   }
 }
 
-function startPolling() {
-  if (pollInterval) clearInterval(pollInterval);
-  pollInterval = setInterval(pollMessages, 1000);
-}
+function updateChatStatus(id, hasUnread) {
+  const statusText = document.getElementById(`message-status-${id}`);
+  if (!statusText) return;
+  if (parseInt(id) === ACTIVE_USER_ID) return;
 
-updateUnreadIndicators();
-setInterval(updateUnreadIndicators, 1000);
+  if (hasUnread) {
+    statusText.textContent = "New message";
+    statusText.classList.add('text-red-500', 'font-semibold');
+    statusText.classList.remove('text-gray-500');
+    moveChatToTop(id);
+  } else {
+    statusText.textContent = "Click to chat";
+    statusText.classList.remove('text-red-500', 'font-semibold');
+    statusText.classList.add('text-gray-500');
+  }
+}
 
 function moveChatToTop(userId) {
   const chatBtn = document.querySelector(`.chat-user[data-user-id="${userId}"]`);
-  if (chatBtn && chatBtn.parentNode) {
-    chatBtn.parentNode.prepend(chatBtn);
-  }
+  if (chatBtn && chatBtn.parentNode) chatBtn.parentNode.prepend(chatBtn);
 }
 
 function filterChats() {
@@ -331,13 +423,22 @@ function filterChats() {
     const name = user.querySelector('.chat-user-name').textContent.toLowerCase();
     const userRole = user.getAttribute('data-role') || '';
     const matchesSearch = name.includes(searchInput);
-    const matchesFilter = 
+    const matchesFilter =
       filterValue === 'all' ||
       (filterValue === 'support' && userRole === 'support') ||
-      (filterValue === 'user' && userRole === 'user');
+      (filterValue === 'user' && (userRole === 'member' || userRole === 'admin')); // ✅ Fix here
 
     user.style.display = matchesSearch && matchesFilter ? 'flex' : 'none';
   });
 }
+
+
+// --------------------
+// INITIALIZE
+// --------------------
+updateUnreadIndicators();
+setInterval(updateUnreadIndicators, 3000);
 </script>
+
+
 @endsection

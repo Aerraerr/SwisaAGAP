@@ -11,20 +11,37 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Services\SMSService;
 
 class GrantRequestController extends Controller
 {
     public function displayApplications(){
         //load the application data with eager loading with status
+        $pendingApplications = Application::with('grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')
+            ->where('application_type', 'Grant Application')
+            ->whereHas('status', function($q) {
+                $q->where('status_name', 'pending');
+            })
+            ->get();
+
+        // 2. Fetch PROCESSING applications
+        $processingApplications = Application::with('grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')
+            ->where('application_type', 'Grant Application')
+            ->whereHas('status', function($q) {
+                $q->where('status_name', 'processing_application');
+            })
+            ->get();
+
+            // MERGE PENDING and PROCESSING into a new key
+            $pendingAndProcessing = $pendingApplications->merge($processingApplications);
+
         $applications = [
-            'all' => Application::with('grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')->where('application_type', 'grant_request')->get(),
-            'pending' => Application::with('status', 'grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')->where('application_type', 'grant_request')->whereHas('status', function($q)
-                {$q->where('status_name', 'pending'); 
-                })->get(),
-            'approved' => Application::with('status', 'grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')->where('application_type', 'grant_request')->whereHas('status', function($q)
+            'all' => Application::with('grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')->where('application_type', 'Grant Application')->get(),
+            'pending' => $pendingAndProcessing,
+            'approved' => Application::with('status', 'grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')->where('application_type', 'Grant Application')->whereHas('status', function($q)
                 {$q->where('status_name', 'approved'); 
                 })->get(),
-            'rejected' => Application::with('status', 'grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')->where('application_type', 'grant_request')->whereHas('status', function($q)
+            'rejected' => Application::with('status', 'grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')->where('application_type', 'Grant Application')->whereHas('status', function($q)
                 {$q->where('status_name', 'rejected'); 
                 })->get(),
         ];
@@ -45,6 +62,7 @@ class GrantRequestController extends Controller
         $application = Application::findOrFail($id);
 
         $application->update([
+            'status' => 15, //processing application
             'is_checked_by_staff' => true,
             'checked_by_staff_at' => now()
         ]);
@@ -65,18 +83,29 @@ class GrantRequestController extends Controller
     }
 
     public function approvedApplication(Request $request, $id){
+        DB::beginTransaction(); //begin transaction: ensures all actions are success, if one fails, rollback
 
         try{
             $application = Application::with('user.user_info', 'grant')->findOrFail($id);
+            $grant = $application->grant;
+            $deduction = $grant->unit_per_request ?? 1;
 
             if ($request->action === 'approve') {
-                $application->status_id = 33; //Approved id
+                //Check if grant has sufficient stock
+                if ($grant->total_quantity < $deduction) {
+                    return redirect()->back()->with('error', 'Cannot approve. Grant stock is insufficient.');
+                }
+
+                //Deduct stock total_quantity - unit_per_request
+                $grant->decrement('total_quantity', $deduction);
+
+                $application->status_id = 4; //Approved id
 
                 $notifMessage = "Congratulations! Your application for the grant '{$application->grant->title}' has been APPROVED.";
                 $smsMessage = "[SWISA-AGAP] Congratulations! Your application for the grant '{$application->grant->title}' has been APPROVED.";
 
             } elseif ($request->action === 'reject') {
-                $application->status_id = 35; //Rejected id
+                $application->status_id = 6; //Rejected id
                 $application->rejection_reason = $request->input('rejection_reason');
 
                 $notifMessage = "Your application for the grant '{$application->grant->title}' has been REJECTED. Reason: {$application->rejection_reason}";
@@ -92,19 +121,57 @@ class GrantRequestController extends Controller
                 'sent_at' => now(),
             ]);
 
-            /*send sms of the application
-            if ($member && $member->phone_number) {
+            //send sms of the application
+            if (!empty($application->user->phone_number)) {
                 
-                $number = $member->phone_number;
+                $number = $application->user->phone_number;
                 $message = $smsMessage;
 
                 SMSService::send($number, $message);
-            }*/
+            }
+
+            DB::commit(); //saved everything
 
             return redirect()->back()->with('success', 'Grant application ' . strtolower($request->action) . 'd successfully!');
         }catch(\Exception $error){
+            DB::rollback(); // revert all database changes, ensuring data integrety
+
             Log::error('Grant Application Update Error: ' . $error->getMessage());
             return redirect()->back()->with('error', 'Something went wrong while updating grant application.');
+        }
+    }
+
+    public function claimed(Request $request, $id){
+        try {
+            // Validate
+            $request->validate([
+                'proof_claimed' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120', // 5MB
+            ]);
+
+            $application = Application::findOrFail($id);
+
+            // Upload file
+            if ($request->hasFile('proof_claimed')) {
+
+                $file      = $request->file('proof_claimed');
+                $fileName  = 'proof_claimed_' . $application->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $filePath  = 'applications/proof/' . $fileName;
+
+                Storage::disk('public')->put($filePath, file_get_contents($file));
+
+                // Save file path in database
+                $application->proof_claimed = $filePath;
+            }
+
+            // OPTIONAL: Update status to "Claimed" (if status_id = 1 is Correct)
+            $application->status_id = 14;
+
+            $application->save();
+
+            return back()->with('success', 'Application marked as claimed successfully!');
+            
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to update claimed status: ' . $e->getMessage());
         }
     }
 }

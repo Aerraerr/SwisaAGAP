@@ -32,10 +32,10 @@
         </div>
     </div>
 
-    <div class="bg-white  p-5 rounded-xl shadow-xl">
+    <div class="bg-white  p-5 rounded-xl shadow-xl border border-gray-300">
         <div x-data="{ activeTab: 'grid' }" class="mt-4">
 
-            @include('components.filters')
+            @include('components.filters', ['targetTableId' => 'giveback-main-table'])
 
             <div x-show="activeTab === 'grid'" class="pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 <!-- Card with specific data -->
@@ -64,24 +64,22 @@
                         <table class="min-w-full bg-white border-spacing-y-1">
                         <thead class="bg-snbg border border-gray-100 px-8">
                             <tr class="text-customIT text-left ">
+                                <th class="px-4 py-3 text-xs font-medium">ID</th>
                                 <th class="px-4 py-3 text-xs font-medium">NAME</th>
-                                <th class="px-4 py-3 text-xs font-medium">SECTOR</th>
-                                <th class="px-4 py-3 text-xs font-medium">CONTRIBUTION TYPE</th>
                                 <th class="px-4 py-3 text-xs font-medium">QUANTITY</th>
-                                <th class="px-4 py-3 text-xs font-medium">SOURCE</th>
+                                <th class="px-4 py-3 text-xs font-medium">UNIT</th>
                                 <th class="px-4 py-3 text-xs font-medium">DATE</th>
                                 <th class="px-4 py-3 text-xs font-medium">STATUS</th>
                                 <th class="px-4 py-3 text-xs font-medium">ACTION</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="giveback-main-table">
                             @forelse($givebacks as $giveback)
                                 <tr class="border border-gray-300 hover:bg-gray-100">
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $giveback->user->name ?? '-'}}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $giveback->user->user_info->sector->sector_name ?? '-'}}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $giveback->application->grant->grant_type->grant_type ?? '-'}}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $giveback->id ?? '-'}}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $giveback->user->first_name ?? '-'}} {{ $giveback->user->middle_name ?? '-'}} {{ $giveback->user->last_name ?? '-'}}</td>
                                     <td class="px-4 py-2 text-sm text-gray-700">{{ $giveback->quantity ?? '-'}}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $giveback->application->application_type ?? '-'}}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $giveback->quantity_unit ?? '-'}}</td>
                                     <td class="px-4 py-2 text-sm text-gray-700">{{ $giveback->created_at?->format('M d, Y') ?? '-'}}</td>
                                     <td class="pr-4 py-2 text-sm text-gray-700">
                                         <div class="inline-block text-xs font-medium {{ $giveback->status->status_name == 'received' ? 'bg-approved' : 'bg-gray-400' }} text-white text-center px-3 py-1 rounded-full">

@@ -19,7 +19,7 @@
                         <p class="text-2xl lg:text-3xl font-bold text-customIT">{{  $giveback->application->grant->title ?? '-'}}</p>
                         <p class="text-sm text-bsctxt">ID: {{ $giveback->id}}</p>
                     </div>
-                    @if($giveback->status->status_name === 'to_be_review')
+                    @if($giveback->status->status_name === 'pending')
                         <div>
                             <button onclick="openModal('receivedModal')" class="border border-btncolor text-sm text-btncolor rounded-full py-1.5 px-3 hover:bg-btncolor hover:text-white transition-colors">Received?</button>
                         </div>
@@ -53,9 +53,9 @@
                     <p class="font-medium text-gray-700">Report Proof:</p>
 
                     {{-- Main preview image (first proof) --}}
-                    @if($giveback->documents && $giveback->documents->count() > 0)
+                    @if($giveback->image_path)
                         <div class="mt-2 bg-gray-200 h-72 rounded-md flex items-center justify-center overflow-hidden">
-                            <img src="{{ asset('storage/' . $giveback->documents->first()->file_path) }}" 
+                            <img src="{{ asset('storage/' . $giveback->image_path) }}" 
                                 alt="Proof Image" 
                                 class="h-full w-full object-cover rounded-md">
                         </div>
@@ -64,17 +64,6 @@
                             No Image Available
                         </div>
                     @endif
-
-                    {{-- Thumbnail images --}}
-                    <div class="flex space-x-2 mt-2 text-xs">
-                        @foreach($giveback->documents as $proof)
-                            <div class="bg-gray-200 h-16 w-16 flex items-center justify-center overflow-hidden rounded-md">
-                                <img src="{{ asset('storage/' . $proof->file_path) }}" 
-                                    alt="Proof Thumbnail" 
-                                    class="h-full w-full object-cover">
-                            </div>
-                        @endforeach
-                    </div>
                 </div>
             </div>
         </div>
@@ -85,14 +74,14 @@
             <div class="flex flex-col items-center bg-white shadow-lg rounded-md py-6 ">
                 <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
                     class="w-30 h-30 md:w-28 md:h-28 lg:w-36 lg:h-36 xl:w-40 xl:h-40 rounded-full shadow-md mb-2" />   
-                <p class="text-2xl font-bold text-customIT">{{ $giveback->user->name ?? '-'}}</p>
+                <p class="text-2xl font-bold text-customIT">{{ $giveback->user->first_name ?? '-'}} {{ $giveback->user->middle_name ?? '-'}} {{ $giveback->user->last_name ?? '-'}}</p>
                 <p class="text-sm text-bsctxt mb-4">REGISTERED MEMBER</p>
                 <div class="grid grid-cols-4">
                     <div class="col-start-1 col-span-3">
-                        <p class="text-md text-gray-600 font-semibold">ID NO :<span class="text-sm ml-4 font-extralight text-bsctxt">MEM-{{$giveback->user->id ?? '-'}}</span></span>
-                        <p class="text-md text-gray-600 font-semibold">MEMBER TYPE :<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->user->user_info->sector->sector_name ?? '-'}}</span></p>
+                        <p class="text-md text-gray-600 font-semibold">ID NO :<span class="text-sm ml-4 font-extralight text-bsctxt">{{$giveback->user->formatted_id ?? '-'}}</span></span>
+                        <p class="text-md text-gray-600 font-semibold">SECTOR :<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->user->user_info->sector->sector_name ?? '-'}}</span></p>
                         <p class="text-md text-gray-600 font-semibold">DOB :<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->user->user_info->birthdate ?? '-'}}</span></p>
-                        <p class="text-md text-gray-600 font-semibold">PHONE :<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->user->user_info->contact_no ?? '-'}}</span></p>
+                        <p class="text-md text-gray-600 font-semibold">PHONE :<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->user->user_info->phone_no ?? '-'}}</span></p>
                         <p class="text-md text-gray-600 font-semibold">EMAIL :<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->user->email ?? '-'}}</span></p>
                     </div>
                     
@@ -107,7 +96,7 @@
                         <div class="p-4 border-b">
                             <div class="flex justify-between items-center">
                                 <p class="font-semibold text-md text-customIT">{{ $history->application->grant->title ?? 'Untitled Grant' }} : {{ $history->created_at->format('M d, Y') }}</p>
-                                <div class="text-xs px-3 py-1 {{ $history->status->status_name == 'received' ? 'bg-approved' : 'bg-gray-400' }} text-white rounded-full"> {{ $history->status->status_name ?? '-' }} </div>
+                                <div class="text-xs px-3 py-1 {{ $history->status->status_name == 'received' ? 'bg-approved' : 'bg-pending' }} text-white rounded-full"> {{ $history->status->status_name ?? '-' }} </div>
                             </div>
                             <p class="font-medium text-sm text-gray-700">Contribution Quantity: {{ $history->quantity ?? '-' }}</p>
                             <div class="mt-2">

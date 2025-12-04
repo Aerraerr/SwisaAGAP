@@ -41,7 +41,7 @@
     <div class="bg-white  p-5 rounded-xl shadow-xl border border-gray-300">
         <div x-data="{ activeTab: 'grid' }" class="mt-4">
             
-            <x-filters modalId="addTrainingModal" />
+            <x-filters modalId="addTrainingModal" targetTableId="training-list-table"/>
             
             <!-- Example of using the reusable component -->
             <div x-show="activeTab === 'grid'" class="pt-2  grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -76,7 +76,7 @@
                                 <th class="px-4 py-3 text-xs font-medium">ACTION</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="training-list-table">
                             @foreach($trainings as $training)
                                 <tr class="border border-gray-300 hover:bg-gray-100">
                                     <td class="px-4 py-2 text-sm text-gray-700">{{ $training->id}}</td>

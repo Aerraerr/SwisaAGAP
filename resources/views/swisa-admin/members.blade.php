@@ -36,10 +36,10 @@
 
 
 
-        <div class="bg-white p-5 rounded-xl shadow-xl">
+        <div class="bg-white p-5 rounded-xl shadow-xl border border-gray-300">
                 <!--Sample Data-->
                 <div x-data="{ activeTab: 'grid' }" class="mt-4">
-                    @include('components.filters')
+                    @include('components.filters', ['targetTableId' => 'members-main-table'])
 
                         <!-- Main Grid Layout -->
                         <div x-show="activeTab === 'grid'" class="grid gap-2 grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 w-full">
@@ -47,7 +47,7 @@
                             @foreach($members as $member)
                                  <x-cards.member-card
                                     status="active"
-                                    name="{{ $member->name}}"
+                                    name="{{ $member->first_name}} {{ $member->middle_name ?? ''}} {{ $member->last_name}}{{ $member->suffix ?? ''}}"
                                     role="{{ $member->user_info->sector->sector_name ?? 'no sector initialize'}}"
                                     memberId="{{ $member->id}}"
                                     registered="{{ $member->created_at->format('F d Y') }}"
@@ -72,7 +72,7 @@
                                         <th class="px-4 py-3">ACTION</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="members-main-table">
                                     @foreach($members as $member)
                                         <tr class="border border-gray-300 hover:bg-gray-100">
                                         <td class="px-4 py-3 text-sm text-gray-700">{{ $member->formatted_id}}</td>
@@ -120,12 +120,15 @@
                                 </table>
                             </div>
                         </div>
-                        @include('components.pagination')
+                        <!-- Pagination Controls -->
+                        <div id="paginationControls" class="flex justify-center items-center space-x-2 mt-4">
+                            <button id="prevPage" class="px-3 py-1 border rounded hover:bg-gray-100 text-sm">Previous</button>
+                            <span id="pageInfo" class="text-sm text-gray-700"></span>
+                            <button id="nextPage" class="px-3 py-1 border rounded hover:bg-gray-100 text-sm">Next</button>
+                        </div>
                 </div>
-
         </div>
 
     </div>
-    {{--@include('components.modals.view-applications')--}}
 </div>
 @endsection

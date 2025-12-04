@@ -17,7 +17,8 @@ class UserInfo extends Model
     protected $fillable = [
         //user info
         'user_id',
-        'sector_id',
+        'farmer_type',
+        'name',
         'fname',
         'mname',
         'lname',
@@ -25,7 +26,6 @@ class UserInfo extends Model
         'birthdate',
         'civil_status',
         'gender',
-        'contact_no', // halion nalang pag ok na ta pinalitan ni boa naging phone_no kupal
         'contact_info',
         'phone_no',
         'email',
@@ -46,7 +46,6 @@ class UserInfo extends Model
         'sc_lname',
         'sc_suffix',
         'sc_gender',
-        'sc_contact_no', // halion nalang pag ok na ta pinalitan ni boa naging sc_phone_no kupal
         'sc_contact_info',
         'sc_phone_no',
         'sc_email',
@@ -55,6 +54,7 @@ class UserInfo extends Model
         'sc_barangay',
         'sc_zone',
         'relationship',
+
         'qr_code',
     ];
 

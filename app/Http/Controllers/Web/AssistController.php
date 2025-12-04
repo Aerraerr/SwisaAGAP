@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Services\DocumentChecker;
 use App\Services\SMSService;
 
@@ -26,6 +27,7 @@ class AssistController extends Controller
         $members = User::with(['documents', 'documents.requirement', 'user_info', 'applications.grant'])->where('role_id', 1)->get();
         $sectors = Sector::all();
         $grants  = Grant::with('grant_requirements.requirement')->get();
+        $application = Application::all();
         $membershipRequirements = MembershipRequirement::with('requirement')
         ->get()
         ->map(function ($item) {
@@ -35,14 +37,7 @@ class AssistController extends Controller
             ];
         });
 
-        foreach ($members as $member) {
-            $member->first_name  = $member->first_name ?? '';
-            $member->middle_name = $member->middle_name ?? '';
-            $member->last_name   = $member->last_name ?? '';
-            $member->suffix      = $member->suffix ?? '';
-        }
-
-        return view('swisa-support_staff.assisted-creation', compact('members', 'sectors', 'grants', 'membershipRequirements'));
+        return view('swisa-support_staff.assisted-creation', compact('members', 'sectors', 'grants', 'membershipRequirements', 'application'));
     }
 
     //assist create account
@@ -95,6 +90,7 @@ class AssistController extends Controller
     //assist membership application
     public function assistMembershipApplication(Request $request, $id){
         //dd($request->all());
+        DB::beginTransaction(); //begin transaction: ensures all actions are success, if one fails, rollback
         try{
             //validate inputs
             $request->validate([
@@ -158,15 +154,16 @@ class AssistController extends Controller
             $membership->user_info()->updateOrCreate(
                 ['user_id' => $membership->id],
                 [
-                    'sector_id'     => $request->sector,
+                    'farmer_type'     => $request->sector,
                     'fname'         => $request->fname,
                     'mname'         => $request->mname,
                     'lname'         => $request->lname,
                     'suffix'        => $request->suffix,
+                    'name'          => $request->fname. ' ' . ($request->mname ?? '') . ' '. $request->lname,
                     'birthdate'     => $request->birthdate,
                     'gender'        => $request->sex,
                     'civil_status'  => $request->civil_status,
-                    'contact_no'    => $request->phone,
+                    'phone_no'    => $request->phone,
                     'province'      => $request->province,
                     'city'          => $request->city,
                     'barangay'      => $request->barangay,
@@ -181,7 +178,7 @@ class AssistController extends Controller
                     'sc_lname'      => $request->sc_lname,
                     'sc_suffix'     => $request->sc_suffix,
                     'sc_gender'     => $request->sc_sex,
-                    'sc_contact_no' => $request->sc_phone,
+                    'sc_phone_no' => $request->sc_phone,
                     'sc_email'      => $request->sc_email,
                     'sc_province'   => $request->sc_province,
                     'sc_city'       => $request->sc_city,
@@ -195,8 +192,8 @@ class AssistController extends Controller
             // Create a membership application record
             $application = Application::create([
                 'user_id'          => $membership->id,
-                'status_id'        => 32, // pending
-                'application_type' => 'membership',
+                'status_id'        => 3, // pending
+                'application_type' => 'Membership',
                 'purpose'          => $request->purpose ?? $request->other_purpose,
             ]);
 
@@ -249,17 +246,21 @@ class AssistController extends Controller
                 'sent_at' => now(),
             ]);
 
-            /*send sms of the application
+            //send sms of the application
             if ($membership && $membership->phone_number) {
                 
                 $number = $membership->phone_number;
                 $message = '[SWISA-AGAP] Your Membership Application is created and pending for approval.';
 
                 SMSService::send($number, $message);
-            }*/
+            }
+
+            DB::commit(); //saved everything
 
             return redirect()->back()->with('success', 'Membership application success!');
         }catch(\Exception $error) {
+            DB::rollback(); // revert all database changes, ensuring data integrety
+
             Log::error('Membership Application Error: ' . $error->getMessage());
             return redirect()->back()->with('error', 'Something went wrong while submitting your membership application.');
         }
@@ -268,6 +269,7 @@ class AssistController extends Controller
     //assist grant application
     public function assistGrantApplication(Request $request, $id){
         //dd($request->all());
+        DB::beginTransaction(); //begin transaction: ensures all actions are success, if one fails, rollback
         try {
             //validate inputs
             $request->validate([
@@ -321,7 +323,7 @@ class AssistController extends Controller
             //Check if member already applied for this grant
             $existingApplication = Application::where('user_id', $member->id)
                 ->where('grant_id', $grant->id)
-                ->where('application_type', 'grant_request')
+                ->where('application_type', 'Grant Application')
                 ->exists();
 
             if ($existingApplication) {
@@ -381,8 +383,8 @@ class AssistController extends Controller
             $application = Application::create([
             'user_id'          => $member->id,
                 'grant_id'         => $grant->id,
-                'status_id'        => 32, // pending
-                'application_type' => 'grant_request',
+                'status_id'        => 3, // pending
+                'application_type' => 'Grant Application',
                 'purpose'          => $request->purpose,
             ]);
 
@@ -415,6 +417,8 @@ class AssistController extends Controller
                     }
                 }
             }
+            
+            //credit must be above 10, credit deduction
 
             //create pdf file of the form application
             $application->load(['documents', 'status', 'user.user_info']);
@@ -433,17 +437,21 @@ class AssistController extends Controller
                 'sent_at' => now(),
             ]);
 
-            /*send sms of the application
+            //send sms of the application
             if ($member && $member->phone_number) {
                 
                 $number = $member->phone_number;
                 $message = '[SWISA-AGAP] Your application for grant' .$grant->title . 'is created and pending for approval.';
 
                 SMSService::send($number, $message);
-            }*/
+            }
+
+            DB::commit(); //saved everything
 
             return redirect()->back()->with('success', 'Grant application success!.');
         }catch (\Exception $error) {
+            DB::rollback(); // revert all database changes, ensuring data integrety
+            
             Log::error('Grant Application Error: ' . $error->getMessage());
             return redirect()->back()->with('error', 'Something went wrong while submitting your grant application.');
         }

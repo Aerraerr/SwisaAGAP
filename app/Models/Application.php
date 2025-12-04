@@ -33,8 +33,8 @@ class Application extends Model
     public function getFormattedIdAttribute(){
         // Determine prefix based on application_type
         $prefix = match ($this->application_type) {
-            'membership' => 'MEM',
-            'grant_request' => 'REQ',
+            'Membership' => 'MEM',
+            'Grant Application' => 'REQ',
             default => 'APP', // fallback if ever needed
         };
 
@@ -70,7 +70,7 @@ class Application extends Model
     public function documents(){
         return $this->morphMany(Document::class, 'documentable');
     }
-    /*public function grantClaim(){
+    public function grantClaim(){
         return $this->hasOne(GrantClaim::class);
-    }*/
+    }
 }

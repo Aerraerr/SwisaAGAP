@@ -82,7 +82,7 @@
                     <p class="text-customIT text-lg font-bold">Grant Application List</p>
                 </div>
                 <div class="flex justify-end mb-2">
-                    <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
+                    <input type="text" placeholder="Search here"  id="searchAll" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
                 </div>
                 <div class="overflow-auto h-[80vh]">
                     <table class="table table-hover min-w-full border-spacing-y-1">
@@ -96,12 +96,12 @@
                                 <th class="px-4 py-3 rounded-tr-md">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbodyAll">
                             @forelse($applications['all'] as $app)
                                 <tr class="border border-gray-300 hover:bg-gray-100"
                                     @click="selectedUser = {
                                         id: '{{ $app->id ?? '-'}}', 
-                                        name: '{{ $app->user->name ?? '-'}}', 
+                                        name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                         item: '{{ $app->grant->title ?? '-'}}',
                                         type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
                                         date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}',
@@ -123,15 +123,16 @@
                                         checked_by_staff_at: '{{ $app->checked_by_staff_at?->format('F d, Y h:i A') ?? '-'}}'
                                     }">
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d, Y') ?? '-'}}</td>
                                     <td class="px-4 py-3">
                                         <div class="inline-block text-xs font-medium text-white text-center px-3 py-1 rounded-full
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
-                                        {{ $app->status->status_name === 'pending' ? 'bg-pending text-white' : '' }}
+                                        {{ $app->status->status_name === 'pending' || $app->status->status_name === 'processing_application' ? 'bg-pending text-white' : '' }}
                                         {{ $app->status->status_name === 'rejected' ? 'bg-rejected text-white' : '' }}
+                                        {{ $app->status->status_name === 'completed' ? 'bg-approved text-white' : '' }}
                                         ">
                                             {{ ucfirst($app->status->status_name) ?? '-'}}
                                         </div>
@@ -170,8 +171,9 @@
                                 <span x-text="selectedUser.status" class="text-white text-xs px-3 py-1 rounded-full font-medium"
                                 :class="{
                                     'bg-approved': selectedUser.status === 'Approved',
-                                    'bg-pending': selectedUser.status === 'Pending',
-                                    'bg-rejected': selectedUser.status === 'Rejected'
+                                    'bg-pending': selectedUser.status === 'Pending' || selectedUser.status === 'Processing_application',
+                                    'bg-rejected': selectedUser.status === 'Rejected',
+                                    'bg-approved': selectedUser.status === 'Completed',
                                     }">
                                 </span>
                             </div>
@@ -356,7 +358,7 @@
                     <p class="text-customIT text-lg font-bold">Pending Grant Application List</p>
                 </div>
                 <div class="flex justify-end mb-2">
-                    <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
+                    <input type="text" placeholder="Search here"  id="searchPending" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
                 </div>
                 <div class="overflow-auto h-[80vh]">
                     <table class="table table-hover min-w-full border-spacing-y-1">
@@ -370,16 +372,16 @@
                                 <th class="px-4 py-3 rounded-tr-md">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbodyPending">
                             @forelse($applications['pending'] as $app)
                                 <tr class="border border-gray-300 hover:bg-gray-100"
                                     @click="selectedUser = {
                                         id: '{{ $app->id  ?? '-'}}', 
-                                        name: '{{ $app->user->name ?? '-'}}', 
+                                        name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                         item: '{{ $app->grant->title ?? '-'}}',
                                         type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
                                         date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}', 
-                                        status: '{{ $app->status->status_name ?? '-'}}',
+                                        status: '{{ ucfirst($app->status->status_name) ?? '-'}}',
                                         phone: '{{ $app->user->user_info->contact_no ?? '-'}}',
                                         email: '{{ $app->user->email ?? '-'}}',
                                         documents: @js($app->documents),
@@ -395,14 +397,14 @@
                                         checked_by_staff_at: '{{ $app->checked_by_staff_at?->format('F d, Y h:i A') ?? '-'}}'
                                     }">
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id  ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}</td>
                                     <td class="px-4 py-3">
                                         <div class="inline-block text-xs font-medium text-white text-center px-3 py-1 rounded-full
                                         {{ $app->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
-                                        {{ $app->status->status_name === 'pending' ? 'bg-pending text-white' : '' }}
+                                        {{ $app->status->status_name === 'pending' || $app->status->status_name === 'processing_application' ? 'bg-pending text-white' : '' }}
                                         {{ $app->status->status_name === 'rejected' ? 'bg-rejected text-white' : '' }}
                                         ">
                                             {{ ucfirst($app->status->status_name) ?? '-'}}
@@ -442,8 +444,8 @@
                                 <span x-text="selectedUser.status" class="text-white text-xs px-3 py-1 rounded-full font-medium"
                                 :class="{
                                     'bg-approved': selectedUser.status === 'Approved',
-                                    'bg-pending': selectedUser.status === 'Pending',
-                                    'bg-rejected': selectedUser.status === 'Rejected'
+                                    'bg-pending': selectedUser.status === 'Pending' || selectedUser.status === 'Processing_application',
+                                    'bg-rejected': selectedUser.status === 'Rejected',
                                     }">
                                 </span>
                             </div>
@@ -467,7 +469,7 @@
 
                             <!-- Requested by -->
                             <div class="border-y py-4 items-center gap-3">
-                                <p class="text-xs text-gray-500">Requested by:</p>
+                                <p class="text-sm font-bold text-customIT">Requested by:</p>
                                 <div class="flex my-2">
                                     <img src="{{ asset('images/profile-user.png') }}" alt="profile" class="w-10 h-10 rounded-full">
                                     <div class="ml-2">
@@ -573,7 +575,7 @@
                                 </div>
                             </template>
 
-                             <!-- Checked Button -->
+                            <!-- Checked Button -->
                             <template x-if="selectedUser.is_checked_by_staff === false && {{ auth()->user()->role_id }} === 2"> 
                                 <div class="grid grid-cols-2 pt-4">
                                     <button onclick="openModal('markReqCheckedPending')" 
@@ -609,7 +611,7 @@
                     <p class="text-customIT text-lg font-bold">Approved Grant Application List</p>
                 </div>
                 <div class="flex justify-end mb-2">
-                    <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
+                    <input type="text" placeholder="Search here"  id="searchApproved" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
                 </div>
                 <div class="overflow-auto h-[80vh]">
                     <table class="table table-hover min-w-full border-spacing-y-1">
@@ -623,12 +625,12 @@
                                 <th class="px-4 py-3 rounded-tr-md">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbodyApproved">
                             @forelse($applications['approved'] as $app)
                                 <tr class="border border-gray-300 hover:bg-gray-100"
                                     @click="selectedUser = {
                                         id: '{{ $app->id ?? '-'}}', 
-                                        name: '{{ $app->user->name ?? '-'}}', 
+                                        name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                         item: '{{ $app->grant->title ?? '-'}}',
                                         type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
                                         date: '{{ $app->created_at->format('F d Y h:i A') ?? '-'}}',
@@ -649,7 +651,7 @@
                                         checked_by_staff_at: '{{ $app->checked_by_staff_at?->format('F d Y h:i A') ?? '-'}}' 
                                     }">
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d Y') ?? '-'}}</td>
@@ -721,7 +723,7 @@
 
                             <!-- Requested by -->
                             <div class="border-y py-4 items-center gap-3">
-                                <p class="text-xs text-gray-500">Requested by:</p>
+                                <p class="text-sm font-bold text-customIT">Requested by:</p>
                                 <div class="flex my-2">
                                     <img src="{{ asset('images/profile-user.png') }}" alt="profile" class="w-10 h-10 rounded-full">
                                     <div class="ml-2">
@@ -784,6 +786,25 @@
                             <div class="text-xs text-approved font-medium">
                                 <p class="text-gray-500 italic">*Approved by the Admin on <span class="font-medium text-customIT" x-text="selectedUser.updated"></span></p>
                             </div>
+
+                            <template x-if="selectedUser.is_checked_by_staff === true">
+                                <div class="flex items-center">
+                                    <input type="checkbox" x-model="verified" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor focus:ring-btncolor checked:border-btncolor">
+                                    <p class="text-xs text-bsctxt ml-2">All requirements have been reviewed and verified</p>
+                                </div>
+                            </template>
+
+                            <!-- Claimed Button -->
+                            <template x-if="{{ auth()->user()->role_id }} === 2"> 
+                                <div class="grid grid-cols-2 pt-4">
+                                    <button onclick="openModal('approvedClaimedModal')" 
+                                        class="col-start-2 bg-btncolor text-white font-medium py-2 px-4 rounded-md"
+                                        :class="verified ? 'bg-opacity-100 hover:bg-opacity-80' : 'bg-opacity-50'">
+                                        Claimed
+                                    </button>
+                                </div>
+                            </template>
+                            @include('components.modals.claimed-modal', ['modalId' => 'approvedClaimedModal'])
                         </div>
                     </template>
                 </div>
@@ -797,7 +818,7 @@
                     <p class="text-customIT text-lg font-bold">Rejected Grant Application List</p>
                 </div>
                 <div class="flex justify-end mb-2">
-                    <input type="text" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
+                    <input type="text" placeholder="Search here"  id="searchRejected" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
                 </div>
                 <div class="overflow-auto h-[80vh]">
                     <table class="table table-hover min-w-full border-spacing-y-1">
@@ -811,12 +832,12 @@
                                 <th class="px-4 py-3 rounded-tr-md">Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbodyRejected">
                             @forelse($applications['rejected'] as $app)
                                 <tr class="border border-gray-300 hover:bg-gray-100"
                                     @click="selectedUser = {
                                         id: '{{ $app->id ?? '-'}}', 
-                                        name: '{{ $app->user->name ?? '-'}}', 
+                                        name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                         item: '{{ $app->grant->title ?? '-'}}',
                                         type: '{{ $app->grant->grant_type->grant_type ?? '-'}}',
                                         date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}',
@@ -836,7 +857,7 @@
                                         }))  
                                     }">
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->name ?? '-'}}</td>
+                                    <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->title ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->grant->grant_type->grant_type ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}</td>
@@ -908,7 +929,7 @@
 
                             <!-- Requested by -->
                             <div class="border-y py-4 items-center gap-3">
-                                <p class="text-xs text-gray-500">Requested by:</p>
+                                <p class="text-sm font-bold text-customIT">Requested by:</p>
                                 <div class="flex my-2">
                                     <img src="{{ asset('images/profile-user.png') }}" alt="profile" class="w-10 h-10 rounded-full">
                                     <div class="ml-2">
@@ -929,7 +950,7 @@
                                     </p>
                                     <span class="text-customIT text-sm font-semibold">Status</span>
                                 </div>
-                                <ul class="space-y-1 font-medium text-sm text-gray-600 px-4">
+                                <ul class="space-y-1 font-medium text-xs text-gray-600 px-4">
                                     <template x-for="req in selectedUser.requirements" :key="req.grant_requirement_id">
                                         <li class="flex justify-between items-center cursor-pointer hover:text-gray-700">
                                             <span class="flex items-center">
@@ -980,5 +1001,52 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Define the IDs for all tabs' search input and table bodies
+        const tabConfigs = [
+            { searchId: 'searchAll', tbodyId: 'tbodyAll' },
+            { searchId: 'searchPending', tbodyId: 'tbodyPending' },
+            { searchId: 'searchApproved', tbodyId: 'tbodyApproved' },
+            { searchId: 'searchRejected', tbodyId: 'tbodyRejected' },
+        ];
 
+        // Function to perform the filtering on a specific table
+        const filterTable = (searchInputId, tbodyId) => {
+            const searchInput = document.getElementById(searchInputId);
+            const tbody = document.getElementById(tbodyId);
+
+            if (!searchInput || !tbody) {
+                // console.warn(`Missing element for configuration: Input ID: ${searchInputId}, TBody ID: ${tbodyId}`);
+                return; // Exit if elements aren't found (e.g., if a tab isn't active on load)
+            }
+            
+            // Get all rows once
+            const tableRows = tbody.querySelectorAll("tr");
+
+            searchInput.addEventListener("input", () => {
+                const term = searchInput.value.toLowerCase().trim();
+
+                tableRows.forEach(row => {
+                    // Check if the row is the 'No applications.' message row (to exclude it from filtering)
+                    if (row.querySelector('td[colspan="6"]')) {
+                        return;
+                    }
+
+                    const rowText = row.textContent.toLowerCase();
+                    
+                    // Show or hide the row based on the search term
+                    row.style.display = rowText.includes(term) ? "" : "none";
+                });
+            });
+        };
+
+        // Initialize filtering for all tabs
+        tabConfigs.forEach(config => {
+            // Use a short delay (setTimeout) to ensure all tabs' contents are rendered in the DOM, 
+            // even if they are initially hidden by x-show.
+            setTimeout(() => filterTable(config.searchId, config.tbodyId), 50);
+        });
+    });
+</script>
 @endsection

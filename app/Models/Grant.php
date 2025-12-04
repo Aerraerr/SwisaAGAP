@@ -19,6 +19,7 @@ class Grant extends Model
         'description',
         'total_quantity',
         'unit_per_request',
+        'amount_per_quantity',
         'available_at',
         'end_at',
     ];
@@ -36,12 +37,20 @@ class Grant extends Model
         return $this->belongsTo(GrantType::class, 'type_id');
     }
 
+    public function grantType(){ // sa mobile mdj 
+        return $this->belongsTo(GrantType::class, 'type_id');
+    }
+
     //a grant can have many requirements
     public function requirements(){
         return $this->belongsToMany(Requirement::class, 'grant_requirements');
     }
 
     public function grant_requirements(){
+        return $this->hasMany(GrantRequirement::class, 'grant_id');
+    }
+
+    public function grantRequirements(){
         return $this->hasMany(GrantRequirement::class, 'grant_id');
     }
 

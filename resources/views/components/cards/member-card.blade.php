@@ -4,7 +4,7 @@
     $statusColor = $status === 'active' ? 'bg-approved' : 'bg-rejected';
 @endphp
 
-<div class="w-full bg-white p-4 sm:p-6 rounded-xl shadow-lg flex flex-col space-y-6">
+<div class="w-full bg-white p-4 sm:p-6 rounded-xl border border-gray-300 shadow-lg flex flex-col space-y-6">
     <!-- Top Section -->
     <div class="flex flex-col sm:flex-row items-center sm:items-start sm:space-x-5 space-y-4 sm:space-y-0">
         <!-- Profile Image -->
@@ -29,14 +29,10 @@
     </div>
 
     <!-- Buttons -->
-    <div class="flex flex-col sm:flex-row justify-between gap-2">
+    <div class="grid grid-cols-2 text-right my-2">
         <a href="{{ route('view-profile', $memberId) }}" 
-           class="flex-1 p-2 text-xs sm:text-sm text-center font-medium text-customIT bg-snbg rounded-[3px] hover:bg-opacity-80 transition">
+           class="mb-2 col-start-2 bg-btncolor text-white text-center text-sm py-2 rounded-[3px] hover:bg-customIT transition duration-300">
             View Profile
         </a>
-        <button onclick="openModal('viewApplicationModal')"
-           class="flex-1 p-2 text-xs sm:text-sm text-center font-medium text-white bg-btncolor rounded-[3px] hover:bg-customIT transition">
-            View Applications
-        </button>
     </div>
 </div>

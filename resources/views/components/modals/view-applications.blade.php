@@ -18,29 +18,35 @@
             </button>
         </div>
         <!-- Modal Body -->
-        <div class="overflow-y-auto max-h-[80vh]">
+        <div class="overflow-y-auto max-h-[85vh]">
             <table class="table table-hover min-w-full border-spacing-y-1">
                 <thead class="bg-snbg border-gray-300 sticky top-0 z-10">
                     <tr class="text-customIT text-left text-xs font-semibold ">
                         <th class="px-4 py-3 rounded-tl-md">REQUEST ID</th>
                         <th class="px-4 py-3">MEMBER</th>
+                         <th class="px-4 py-3">APPLICATION TYPE</th>
                         <th class="px-4 py-3">REQUESTED ITEM</th>
-                        <th class="px-4 py-3">ITEM TYPE</th>
                         <th class="px-4 py-3">Date Submitted</th>
                         <th class="px-4 py-3 rounded-tr-md">Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                   @forelse($member->applications as $member)
-                        <tr onclick="openModal('grantViewModal'); return false;" class="border-y border-gray-300 hover:bg-gray-100">
-                            <td class="px-4 py-3 text-xs text-gray-700">REQ-ITEM{{ $applications->id }}</td>
+                   @forelse($member->applications as $application)
+                        <tr class="border-y border-gray-300 hover:bg-gray-100">
+                            <td class="px-4 py-3 text-xs text-gray-700">{{ $application->formatted_id }}</td>
                             <td class="px-4 py-3 text-xs text-gray-700">{{ $member->name}}</td>
-                            <td class="px-4 py-3 text-xs text-gray-700">{{ $applications->grant->grant_name}}</td>
-                            <td class="px-4 py-3 text-xs text-gray-700">{{ $applications->grant->grant_type}}</td>
-                            <td class="px-4 py-3 text-xs text-gray-700">{{ $applications->created_at->format('F d Y')}}</td>
-                            <td class="px-4 py-3">
-                                <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
-                                    {{ ucfirst($application->status ?? 'Pending') }}
+                            <td class="px-4 py-3 text-xs text-gray-700">{{ $application->application_type ?? '-'}}</td>
+                            <td class="px-4 py-3 text-xs text-gray-700">{{ $application->grant->title ??'-'}}</td>
+                            <td class="px-4 py-3 text-xs text-gray-700">{{ $application->created_at->format('F d Y')}}</td>
+                            <td class="px-4 py-3 ">
+                                <div class="inline-block text-xs font-medium text-center px-3 py-1 rounded-full
+                                    {{ $application->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
+                                    {{ $application->status->status_name === 'pending' ? 'bg-pending text-white' : '' }}
+                                    {{ $application->status->status_name === 'processing_application' ? 'bg-pending text-white' : '' }}
+                                    {{ $application->status->status_name === 'rejected' ? 'bg-rejected text-white' : '' }}
+                                    {{ $application->status->status_name === 'completed' ? 'bg-approved text-white' : '' }}
+                                    ">
+                                    {{ ucfirst($application->status->status_name) ?? '-' }}
                                 </div>
                             </td>
                         </tr>

@@ -99,7 +99,7 @@
 
                     <!--Middle Name -->
                     <label for="middle_name" class="block mb-2 text-sm font-medium text-[#2C6E49]">Middle Name</label>
-                    <input id="middle_name" type="text" name="middle_name" :value="old('middle_name')" required autocomplete="additional-name"
+                    <input id="middle_name" type="text" name="middle_name" :value="old('middle_name')" autocomplete="additional-name"
                         class="border border-gray text-[#2C6E49] text-sm rounded-lg focus:ring-[#2f8f4e] focus:border-[#2f8f4e] block w-full p-2.5 mb-4 bg-transparent"
                         placeholder="Raymon">
                     <x-input-error :messages="$errors->get('middle_name')" class="mt-2 text-sm text-red-500" />
@@ -113,7 +113,7 @@
 
                     <!--Suffix -->
                     <label for="suffix" class="block mb-2 text-sm font-medium text-[#2C6E49]">Suffix</label>
-                    <input id="suffix" type="text" name="suffix" :value="old('suffix')" required autocomplete="honorific-suffix"
+                    <input id="suffix" type="text" name="suffix" :value="old('suffix')" autocomplete="honorific-suffix"
                         class="border border-gray text-[#2C6E49] text-sm rounded-lg focus:ring-[#2f8f4e] focus:border-[#2f8f4e] block w-full p-2.5 mb-4 bg-transparent"
                         placeholder="Sr">
                     <x-input-error :messages="$errors->get('suffix')" class="mt-2 text-sm text-red-500" />

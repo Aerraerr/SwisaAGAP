@@ -17,7 +17,7 @@
                 <input type="checkbox" name="reports" value="financial" class="h-4 w-4 text-green-600">
                 <span>Financial Report</span>
             </label>
-            <label class="flex items-center space-x-2">
+           {{-- <label class="flex items-center space-x-2">
                 <input type="checkbox" name="reports" value="communication" class="h-4 w-4 text-green-600">
                 <span>Communication Report</span>
             </label>
@@ -28,7 +28,7 @@
             <label class="flex items-center space-x-2">
                 <input type="checkbox" name="reports" value="performance" class="h-4 w-4 text-green-600">
                 <span>Performance Report</span>
-            </label>
+            </label>--}}
         </form>
 
         <!-- Button -->

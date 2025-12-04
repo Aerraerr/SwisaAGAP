@@ -6,42 +6,54 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User; // Assuming your User model is here
+use App\Models\User;
 
 class MobileLogController extends Controller
 {
     /**
-     * Store login activity from Flutter mobile
-     * Can log success or fail attempts
+     * Store only successful login activity from Flutter
      */
-  public function storeLoginLog(Request $request)
-{
-    $userId = $request->user_id;
-    $userName = $request->user_name ?? 'Unknown';
-    $role = $request->role ?? 'Guest';
-    $status = $request->status ?? 'fail';
-    $details = $request->details;
+    public function storeLoginLog(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $userName = $request->input('user_name') ?? 'Unknown';
+        $role = $request->input('role') ?? 'Member';
+        $details = $request->input('details') ?? null;
 
-    Log::create([
-        'user_id' => $userId,
-        'user_name' => $userName,
-        'role' => $role,
-        'activity' => $status === 'success' ? 'Logged In' : 'Login Attempt',
-        'ip_address' => $request->ip(),
-        'status' => $status,
-        'activity_timestamp' => now(),
-        'details' => $details,
-    ]);
+        $user = User::find($userId);
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Login log saved',
-    ]);
-}
+        // Only log if user exists
+        if ($user) {
+            $log = Log::create([
+                'user_id' => $userId,
+                'user_name' => $userName,
+                'role' => $role,
+                'activity' => 'Logged In',
+                'ip_address' => $request->ip(),
+                'status' => 'success',
+                'activity_timestamp' => now(),
+                'details' => $details,
+            ]);
+
+            // Optional: log in user server-side
+            Auth::login($user);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login logged successfully',
+                'log' => $log,
+            ]);
+        }
+
+        // Do not log failed attempts
+        return response()->json([
+            'success' => false,
+            'message' => 'User not found, login not logged',
+        ]);
+    }
 
     /**
-     * Fetch recent logs for Flutter
+     * Fetch recent logs
      */
     public function recentLogs()
     {

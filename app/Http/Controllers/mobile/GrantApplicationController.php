@@ -6,11 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Application;
 use App\Models\Grant;
 use App\Models\GrantClaim;
+use App\Models\Notification;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Services\SMSService;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
@@ -71,7 +76,7 @@ class GrantApplicationController extends Controller
             $quarterlyApplications = Application::where('user_id', $user->id)
                 ->whereBetween('created_at', [$quarterStart, $quarterEnd])
                 ->whereNotNull('grant_id')
-                ->whereIn('status_id', [1, 3, 4, 5, 15, 16]) // ✅ CORRECTED
+                ->whereIn('status_id', [14, 3, 4, 5, 15, 16]) // ✅ CORRECTED
                 ->with('grant.grantType')
                 ->get();
             
@@ -127,8 +132,45 @@ class GrantApplicationController extends Controller
                     'activity' => 'Grant Application - ' . $grant->grantType->grant_type,
                     'points' => -$creditCost
                 ]);
+
+                //create pdf file of the application form
+                $application->load(['documents', 'status', 'user.user_info']);
+                $pdf = Pdf::loadView('pdf.membership_application_form', ['application' => $application]);
+
+                $fileName = $request->lname . '_membership_application_form_' . $application->id . '.pdf';
+                $filePath = 'applications/' . $fileName;
+
+                Storage::disk('public')->put($filePath, $pdf->output());
+                $application->update(['form_img' => $filePath]);
+
+                //store a confirmation message to table
+                Notification::create([ 
+                    'user_id' => Auth::id(),
+                    'message' => 'Grant application successful! Your application for {$grant->title} is now waiting for approval.' ,
+                    'sent_at' => now(),
+                ]);
+
+                $membership = $user->userInfo; // ensure membership data exists
+
+                //send sms of the application
+                if ($membership && $membership->phone_number) {
+                    
+                    $number = preg_replace('/^0/', '63', $membership->phone_no);
+                    $message = '[SWISA-AGAP] Grant application successful! Your application for {$grant->title} is now waiting for approval.';
+
+                    SMSService::send($number, $message);
+                }
                 
                 DB::commit();
+
+                 // NEW: activity log
+                    DB::table('activity_history')->insert([
+                    'user_id'    => $user->id,
+                    'type'       => 'Grant Application',
+                    'message'    => 'Submitted grant application for ' . $grant->title . '.',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    ]);
                 
                 $application->load(['user', 'grant.grantType', 'status']);
                 
@@ -242,7 +284,7 @@ class GrantApplicationController extends Controller
             
             try {
                 // ✅ Update status to REJECTED
-                $application->update(['status_id' => 7]); // ✅ 7 = rejected (Flutter: "Rejected")
+                $application->update(['status_id' => 6]); // ✅ 6 = rejected (Flutter: "Rejected")
                 
                 // ✅ REFUND credits since application was rejected
                 $application->user->creditScore->increment('score', $creditCost);
@@ -284,7 +326,7 @@ class GrantApplicationController extends Controller
         try {
             $application = Application::findOrFail($applicationId);
             // ✅ Update to COMPLETED
-            $application->update(['status_id' => 6]); // ✅ 6 = completed (Flutter: "Contribution Completed")
+            $application->update(['status_id' => 5]); // 5 = completed (Flutter: "Contribution Completed")
             
             return response()->json([
                 'success' => true,
@@ -449,7 +491,7 @@ class GrantApplicationController extends Controller
                 ]);
                 
                 // ✅ Update application status to CLAIMED
-                $claim->application->update(['status_id' => 1]); // ✅ 1 = claimed (Flutter: "Grant Claimed")
+                $claim->application->update(['status_id' => 14]); // ✅ 14 = claimed (Flutter: "Grant Claimed")
                 
                 DB::commit();
                 

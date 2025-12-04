@@ -1,20 +1,33 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\Web\GrantRequestController;
 use App\Http\Controllers\Web\MembershipController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Web\AnnouncementController;
 use App\Http\Controllers\Web\AssistController;
-use App\Http\Controllers\Web\GivebackController;
 use App\Http\Controllers\Web\GrantController;
 use App\Http\Controllers\Web\GrantReportController;
+use App\Http\Controllers\ReportMembershipController;
+use App\Http\Controllers\ReportRequestController;
+use App\Http\Controllers\ReportFinancialController;
+use App\Http\Controllers\ReportFeedbackController;
+use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Web\MemberController;
 use App\Http\Controllers\Web\TrainingController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\QuickRepliesController;
+use App\Http\Controllers\Web\ContributionController;
 use App\Http\Controllers\Web\UserManagementController;
 use App\Http\Controllers\Web\FaqsController;
 use Illuminate\Support\Facades\Route;
 use App\Services\SMSService;
+
+Route::get('/app-download', function () {
+    return view('app-download.download-page');
+})->name('app.download');
 
 //
 Route::get('/', function () {
@@ -25,9 +38,9 @@ Route::get('/landing', function () {
 });
 
 // SWISA ADMIN: Main pages
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 //sms testing
 Route::get('/test-sms', function () {
@@ -37,6 +50,42 @@ Route::get('/test-sms', function () {
     return $response;
 });
 
+Route::get('/admin-reports', [ReportFeedbackController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin-reports');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
+    Route::get('/scan-qr-user/{qr_code}', [AttendanceController::class, 'scanQr']);
+});
+
+// ------------REPORTS---------------
+
+//engagement report
+Route::get('/reports/engagement', [ReportsController::class, 'engagement']);
+//feedback reports
+Route::get('/admin-reports', [ReportFeedbackController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin-reports');
+//financial reports
+Route::get('/reports/financial/export/pdf', [ReportFinancialController::class, 'exportPdf'])->name('financial.export.pdf');
+Route::get('/reports/financial/export/csv', [ReportFinancialController::class, 'exportFinancialCsv'])->name('financial.export.csv');
+Route::get('/reports/financial/export/excel', [ReportFinancialController::class, 'exportFinancialExcel'])->name('financial.export.excel');
+//request grants reports
+Route::get('/reports/requests', [ReportRequestController::class, 'index'])->name('requests.report');
+Route::get('/reports/requests/export/csv', [ReportRequestController::class, 'exportCsv'])->name('requests.export.csv');
+Route::get('/reports/requests/export/excel', [ReportRequestController::class, 'exportExcel'])->name('requests.export.excel');
+Route::get('/reports/requests/export/pdf', [ReportRequestController::class, 'exportPdf'])->name('requests.export.pdf');
+Route::get('/reports/requests/stats', [ReportRequestController::class, 'requestStats'])->name('requests.stats');
+Route::get('/reports/request/chart', [ReportRequestController::class, 'requestChartData'])
+    ->name('requests.chart');
+Route::get('/reports/request/table', [ReportRequestController::class, 'requestTableData']);
+Route::get('/requests', [ReportRequestController::class, 'index'])->name('requests.index');
+//membership report
+Route::get('/reports/membership', [ReportMembershipController::class, 'index'])->name('membership');
+Route::get('/reports/membership/export/csv', [ReportMembershipController::class, 'exportCsv'])->name('membership.export.csv');
+Route::get('/reports/membership/export/excel', [ReportMembershipController::class, 'exportExcel'])->name('membership.export.excel');
+Route::get('/reports/membership/export/pdf', [ReportMembershipController::class, 'exportPdf'])->name('membership.export.pdf');
 
 //-------------ANNOUNCEMENT ROUTES------------
 
@@ -102,9 +151,6 @@ Route::get('/settings', function () {
     return view('swisa-admin.settings');
 })->middleware(['auth', 'verified'])->name('settings');
 
-Route::get('/logs', function () {
-    return view('swisa-admin.logs');
-})->middleware(['auth', 'verified'])->name('logs');
 
 
 Route::get('/faqs', function () {
@@ -114,7 +160,7 @@ Route::get('/faqs', function () {
 
 
 
-Route::middleware(['role:3'])->group(function () {
+Route::middleware(['role:3', 'verified'])->group(function () {
 
     //-----------ADMIN-REPORTS ROUTES----------------
 
@@ -152,13 +198,13 @@ Route::middleware(['role:3'])->group(function () {
 });
 
 // SWISA STAFF: Main pages
-Route::middleware(['role:2'])->group(function () {
+Route::middleware(['role:2', 'verified'])->group(function () {
     // ----- for giveback -------------
-    Route::get('/giveback', [GivebackController::class, 'displayGivebacks'])->name('giveback');
+    Route::get('/giveback', [ContributionController::class, 'displayGivebacks'])->name('giveback');
 
-    Route::get('/view-giveback/{id}', [GivebackController::class, 'viewGiveback'])->name('view-giveback');
+    Route::get('/view-giveback/{id}', [ContributionController::class, 'viewGiveback'])->name('view-giveback');
 
-    Route::patch('/view-giveback/{id}/received', [GivebackController::class, 'updateStatus'])->name('giveback.updateStatus');
+    Route::patch('/view-giveback/{id}/received', [ContributionController::class, 'updateStatus'])->name('giveback.updateStatus');
 
     // -------- for assisting page ---------------
     Route::get('/assisted-creation', [AssistController::class, 'displayMembers'])->name('assisted-creation');
@@ -171,19 +217,12 @@ Route::middleware(['role:2'])->group(function () {
 
     //assist grant request
     Route::post('/assisted-creation/{id}/grant_application', [AssistController::class, 'assistGrantApplication'])->name('assistGrantApplication.store');
-
-    //  --------- for grant reports -------------
-
-    Route::get('/report', [GrantReportController::class, 'displayGrantReports'])->name('report');
-
-    //views in support staff
-    Route::get('/view-report/{id}', [GrantReportController::class, 'viewGrantReport'])->name('view-report');
 });
 
 
 
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', 'verified')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -204,27 +243,24 @@ Route::delete('/faq/{id}', [FaqsController::class, 'destroy'])->name('faq.destro
 Route::put('/faq/{faq}', [FaqsController::class, 'update'])->name('faq.update');
 
 // CHATS
-use App\Http\Controllers\ChatController;
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/messages', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/messages/{chat}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{chat}/message', [ChatController::class, 'sendMessage'])->name('chat.send');
     Route::get('/chat/{chat}/poll', [ChatController::class, 'poll'])->name('chat.poll');
-    Route::get('/chat/{userId}/load', [ChatController::class, 'load'])->name('chat.load'); // ✅ Add this
+    Route::get('/chat/{userId}/load', [ChatController::class, 'load'])->name('chat.load');
     Route::get('/chat/unread-check', [ChatController::class, 'checkUnread']);
     Route::post('/chat/{chatId}/mark-as-read', [ChatController::class, 'markAsRead']);
-
-
-    
+    Route::get('/quickreplies/manage', [QuickRepliesController::class, 'index'])->name('quickreplies.manage');
 });
+
 
 // SETTINGS
 //================================================
 
 // CHAT SETTINGS
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/quickreplies/manage', [QuickRepliesController::class, 'index'])->name('quickreplies.manage');
     Route::post('/settings/chat/quick-replies', [QuickRepliesController::class, 'store'])->name('quickreplies.store');
     Route::put('/settings/chat/quick-replies/{quickReply}', [QuickRepliesController::class, 'update'])->name('quickreplies.update');
@@ -234,10 +270,19 @@ Route::middleware(['auth'])->group(function () {
 // USER MANAGEMENT
 
 Route::get('/settings', [UserManagementController::class, 'index'])->name('settings');
+Route::post('/settings/users/add-requirement', [UserManagementController::class, 'addRequirement'])->name('admin.requirement.store');
+Route::post('/settings/users/add-sector', [UserManagementController::class, 'addSector'])->name('admin.sector.store');
+Route::post('/settings/users/add-grant_type', [UserManagementController::class, 'addGrantType'])->name('admin.grant_type.store');
+Route::post('/settings/users/add-membership_requirement', [UserManagementController::class, 'addMembershipRequirement'])->name('admin.membership_requirement.store');
 Route::post('/settings/users/store', [UserManagementController::class, 'store'])->name('admin.users.store');
+
+Route::delete('/settings/users/delete-requirement/{id}', [UserManagementController::class, 'deleteRequirement'])->name('admin.requirement.destroy');
+Route::delete('/settings/users/delete-sector/{id}', [UserManagementController::class, 'deleteSector'])->name('admin.sector.destroy');
+Route::delete('/settings/users/delete-grant_type/{id}', [UserManagementController::class, 'deleteGrantType'])->name('admin.grant_type.destroy');
+Route::delete('/settings/users/delete-membership_requirement/{id}', [UserManagementController::class, 'deleteMembershipRequirement'])->name('admin.membership_requirement.destroy');
 Route::delete('/settings/users/{id}', [UserManagementController::class, 'destroy'])->name('admin.users.destroy');
 
-
+Route::post('/applications/{id}/claimed', [GrantRequestController::class, 'claimed'])->name('applications.claimed');
 
 
 
