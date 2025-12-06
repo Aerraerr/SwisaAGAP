@@ -8,12 +8,16 @@ use App\Models\CreditScore;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Services\SMSService;
 use Illuminate\Support\Facades\Auth;
 
 class ContributionController extends Controller
 {
     public function displayGivebacks(){
-        $givebacks = Contribution::with(['user.user_info', 'application.grant', 'status'])->get();
+        $perPage = (int) request('per_page', 10);
+        $perPage = in_array($perPage, [10, 20, 50, 100]) ? $perPage : 10;
+
+        $givebacks = Contribution::with(['user.user_info', 'application.grant', 'status'])->paginate($perPage)->withQueryString();
     
         return view('swisa-support_staff.giveback', compact('givebacks'));
     }
@@ -68,14 +72,17 @@ class ContributionController extends Controller
                 Log::info('Credit Score created for new member User ID: ' . $giveback->user->id);
             }
 
-            /*send sms of the application
-            if ($membership && $membership->phone_number) {
-                
-                $number = $membership->phone_number;
-                $message = "[SWISA-AGAP] Contribution for grant '{$giveback->application->grant->title}' received by staff. Thank you.";
+            //send sms of the application
+            if (
+                $giveback->user && 
+                $giveback->user->user_info && 
+                $giveback->user->user_info->phone_number) {
+                $number = $giveback->user->user_info->phone_number;
+
+                $message = "[SWISA-AGAP] Contribution for grant '{$giveback->application->grant->title}' has been received by staff. Thank you.";
 
                 SMSService::send($number, $message);
-            }*/
+            }
 
             return redirect()->back()->with('success', 'Giveback marked as received.');
         }catch(\Exception $error){

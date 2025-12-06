@@ -1,6 +1,10 @@
 @extends('layouts.app')
 @section('content')
 <div class="p-4">
+    <div class="col-span-12">
+            @include('components.breadcrumbs', [
+        'params' =>[$giveback]
+    ])
     <div class="bg-mainbg px-2">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
             <div class="text-customIT flex flex-col">
@@ -17,7 +21,7 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-2xl lg:text-3xl font-bold text-customIT">{{  $giveback->application->grant->title ?? '-'}}</p>
-                        <p class="text-sm text-bsctxt">ID: {{ $giveback->id}}</p>
+                        <p class="text-sm text-bsctxt">Giveback ID: {{ $giveback->id}}</p>
                     </div>
                     @if($giveback->status->status_name === 'pending')
                         <div>
@@ -25,7 +29,7 @@
                         </div>
                     @else
                         <div>
-                            <p class="text-sm rounded-full py-1.5 px-3 bg-btncolor text-white">Received</p>
+                            <p class="text-sm rounded-full py-1.5 px-3 bg-btncolor text-white">Completed</p>
                         </div>
                     @endif
                 </div>
@@ -35,10 +39,8 @@
                 <div class="">
                     <p class="text-xl font-bold text-customIT mb-2">Giveback Information</p>
                     <div class="ml-4 space-y-1 ">
-                        <p class="text-sm text-gray-600 font-medium">Contribution Type:<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->application->grant->grant_type->grant_type}}</span></span>
-                        <p class="text-sm text-gray-600 font-medium">Contribution Quantity:<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->quantity}}</span></p>
-                        <p class="text-sm text-gray-600 font-medium">Contribution Source:<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->application->application_type}}</span></p>
-                        <p class="text-sm text-gray-600 font-medium">Contribution Date:<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->created_at->format('M d, Y')}}</span></p>
+                        <p class="text-sm text-gray-600 font-medium">Contribution Quantity:<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->quantity}} {{ $giveback->quantity_unit}}</span></p>
+                        <p class="text-sm text-gray-600 font-medium">Contribution Date:<span class="text-sm ml-4 font-extralight text-bsctxt">{{ $giveback->created_at->format('F d, Y h:i A')}}</span></p>
                     </div>
                 </div>
                 <div>
@@ -95,10 +97,10 @@
                     @forelse($givebackHistory as $history)
                         <div class="p-4 border-b">
                             <div class="flex justify-between items-center">
-                                <p class="font-semibold text-md text-customIT">{{ $history->application->grant->title ?? 'Untitled Grant' }} : {{ $history->created_at->format('M d, Y') }}</p>
-                                <div class="text-xs px-3 py-1 {{ $history->status->status_name == 'received' ? 'bg-approved' : 'bg-pending' }} text-white rounded-full"> {{ $history->status->status_name ?? '-' }} </div>
+                                <p class="font-semibold text-md text-customIT">{{ $history->application->grant->title ?? 'Untitled Grant' }} : {{ $history->created_at->format('F d, Y h:i A') }}</p>
+                                <div class="text-xs px-3 py-1 {{ $history->status->status_name === 'completed' ? 'bg-approved' : 'bg-pending' }} text-white rounded-full"> {{ ucfirst($history->status->status_name) }}</div>
                             </div>
-                            <p class="font-medium text-sm text-gray-700">Contribution Quantity: {{ $history->quantity ?? '-' }}</p>
+                            <p class="font-medium text-sm text-gray-700">Contribution Quantity: {{ $history->quantity ?? '-' }} {{ $giveback->quantity_unit}}</p>
                             <div class="mt-2">
                                 <p class="font-medium text-sm text-gray-700">User Notes:</p>
                                 <div class="items-right border border-gray-200 rounded-md shadow px-2 py-4 ">
@@ -106,7 +108,15 @@
                                         {{ $history->notes ?? '-'}}
                                     </p>
                                 </div>
-                                <button class="text-xs text-bsctxt mr-2 hover:text-customIT hover:underline">Giveback proof</button>
+                                @if ($history->image_path)
+                                    <a href="{{ asset('storage/' . $history->image_path) }}"
+                                    target="_blank"
+                                    class="text-xs text-bsctxt mr-2 cursor-pointer hover:text-customIT hover:underline">
+                                        View Giveback Proof
+                                    </a>
+                                @else
+                                    <span class="text-xs text-gray-400 mr-2">No Proof Attached</span>
+                                @endif
                             </div>
                         </div>
                     @empty

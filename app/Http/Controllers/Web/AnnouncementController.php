@@ -14,7 +14,10 @@ class AnnouncementController extends Controller
 {
     //show member with documents (if any)
     public function showAnnouncements(){
-        return Announcement::with('role', 'documents', 'status')->get();
+        $perPage = (int) request('per_page', 10);
+        $perPage = in_array($perPage, [10, 20, 50, 100]) ? $perPage : 10;
+        
+        return Announcement::with('role', 'documents', 'status')->paginate($perPage)->withQueryString();
     }
 
     //pass the 'members' variable to the members page for data display

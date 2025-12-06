@@ -14,6 +14,7 @@
             </div>
         </div>
         
+        @include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
 
         <!-- Members Quick Stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -38,20 +39,22 @@
 
         <div class="bg-white p-5 rounded-xl shadow-xl border border-gray-300">
                 <!--Sample Data-->
-                <div x-data="{ activeTab: 'grid' }" class="mt-4">
+                <div x-data="{ activeTab: 'grid'}" class="mt-4">
                     @include('components.filters', ['targetTableId' => 'members-main-table'])
 
                         <!-- Main Grid Layout -->
-                        <div x-show="activeTab === 'grid'" class="grid gap-2 grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 w-full">
+                        <div x-show="activeTab === 'grid'" id="members-card-container" class="grid gap-2 grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 w-full">
                             {{-- Active Members --}}
                             @foreach($members as $member)
                                  <x-cards.member-card
-                                    status="active"
+                                    status="Approved"
                                     name="{{ $member->first_name}} {{ $member->middle_name ?? ''}} {{ $member->last_name}}{{ $member->suffix ?? ''}}"
                                     role="{{ $member->user_info->sector->sector_name ?? 'no sector initialize'}}"
+                                    member_Id="{{ $member->formatted_id}}" {{--for display--}}
                                     memberId="{{ $member->id}}"
-                                    registered="{{ $member->created_at->format('F d Y') }}"
+                                    registered="{{ $member->created_at->format('F d, Y h:i A') }}"
                                     modalId="{{ $member->id}}"
+                                    data-search="{{ strtolower($member->first_name.' '.$member->middle_name.' '.$member->last_name.' '.$member->suffix.' '.$member->email.' '.$member->user_info->contact_no. ' '.$member->user_info->sector->sector_name) }}"
                                 />
                             @endforeach
                         </div>
@@ -66,7 +69,7 @@
                                         <th class="px-4 py-3">NAME</th>
                                         <th class="px-4 py-3">EMAIL</th>
                                         <th class="px-4 py-3">PHONE</th>
-                                        <th class="px-4 py-3">TYPE</th>
+                                        <th class="px-4 py-3">SECTOR</th>
                                         <th class="px-4 py-3">REGISTERED SINCE</th>
                                         <th class="px-4 py-3">STATUS</th>
                                         <th class="px-4 py-3">ACTION</th>
@@ -76,14 +79,14 @@
                                     @foreach($members as $member)
                                         <tr class="border border-gray-300 hover:bg-gray-100">
                                         <td class="px-4 py-3 text-sm text-gray-700">{{ $member->formatted_id}}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->name}}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->first_name}} {{ $member->middle_name ?? ''}} {{ $member->last_name}}{{ $member->suffix ?? ''}}</td>
                                         <td class="px-4 py-3 text-sm text-gray-700">{{ $member->email}}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->user_info->contact_no ?? '-'}}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->user_info->phone_no ?? '-'}}</td>
                                         <td class="px-4 py-3 text-sm text-gray-700">{{ $member->user_info->sector->sector_name ?? '-'}}</td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->created_at->format('F d Y') }}</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">{{ $member->created_at->format('F d, Y h:i A') }}</td>
                                         <td class="px-4 py-3 ">
                                             <div class="inline-block text-xs font-medium bg-approved text-white text-center px-3 py-1 rounded-full">
-                                                {{ $member->status ?? '-'}}
+                                                Approved
                                             </div>
                                         </td>
                                         <td class="pl-4 py-3 text-sm">
@@ -103,12 +106,6 @@
                                                             <li>
                                                                 <a href="{{ route('view-profile', $member->id) }}"  class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Profile</a>
                                                             </li>
-                                                            <li>
-                                                                <a onclick="openModal('viewApplicationModal')" class="block cursor-pointer px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-[#4C956C] font-medium">View Application</a>
-                                                            </li>
-                                                            <li>
-                                                                <a href="#" class="block px-4 py-2 text-xs rounded-md hover:bg-gray-100 transition-colors duration-200 text-red-600 font-medium">Delete Member</a>
-                                                            </li>
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -120,15 +117,10 @@
                                 </table>
                             </div>
                         </div>
-                        <!-- Pagination Controls -->
-                        <div id="paginationControls" class="flex justify-center items-center space-x-2 mt-4">
-                            <button id="prevPage" class="px-3 py-1 border rounded hover:bg-gray-100 text-sm">Previous</button>
-                            <span id="pageInfo" class="text-sm text-gray-700"></span>
-                            <button id="nextPage" class="px-3 py-1 border rounded hover:bg-gray-100 text-sm">Next</button>
-                        </div>
+                       <x-pagination :paginator="$members" />
                 </div>
+                
         </div>
-
     </div>
 </div>
 @endsection

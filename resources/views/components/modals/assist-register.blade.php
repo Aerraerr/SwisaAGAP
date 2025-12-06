@@ -1,7 +1,7 @@
 <div id="assistRegisterModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-50 h-full w-full flex items-center justify-center">
-    <div class="relative w-full max-w-2xl mx-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
+    <div  x-data="{ isChecked: false }" class="relative w-full max-w-3xl mx-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
         <!-- Modal Header -->
-        <div class="flex items-center justify-between pb-2">
+        <div class="flex items-center justify-between pb-2 border-b">
             <div class="items-center">
                 <h2 class="text-3xl font-bold text-customIT">Create Account</h2>
                 <p class="text-gray-500 mt-1">Assist a member to get started</p>
@@ -17,13 +17,18 @@
 
 
         <!-- Modal Body: Activity Log Entries -->
-        <div class="mt-4 m-8 overflow-auto h-[75vh]">
+        <div class="mt-2 m-4 p-2 overflow-auto h-[75vh]">
 
         <form action="{{ route('assistRegister.store')}}" method="POST" class="space-y-4">
             @csrf
             <!-- Warning Note -->
-            <div class="bg-gray-200 text-sm text-custom-dark-gray rounded-lg p-3 mb-6">
-                note: Don't share your account credentials to anyone even the staff that is assisting you.
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-lg p-3 mb-6 flex items-start space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6 flex-shrink-0 mt-0.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.857 3.374 2.707 3.374h13.71c1.85 0 3.573-1.874 2.707-3.376L17.276 4.63a1.88 1.88 0 0 0-3.232 0L12 9Z" />
+                </svg>
+                <p class="text-sm font-medium">
+                    **SECURITY NOTE:** Do not share your account credentials with anyone, including the staff that is assisting you.
+                </p>
             </div>
 
             <!-- Form Fields -->
@@ -103,9 +108,18 @@
             </div>
 
             <!-- Checkbox for Terms -->
-            <div class="flex items-center space-x-2 pt-4">
-                <input type="checkbox" id="terms" class="peer h-5 w-5 appearance-none rounded-md border border-gray-300 bg-white transition-colors duration-200 checked:bg-btncolor checked:border-btncolor" />
-                <label for="terms" class="text-gray-700 select-none">I've read and agree with the <a href="#" class="text-custom-green font-medium">Terms and Conditions</a> and the <a href="#" class="text-custom-green font-medium">Privacy Policy</a>.</label>
+            <div class="flex items-start space-x-3 pt-4">
+                <input type="checkbox" 
+                    x-model="isChecked" 
+                    id="terms" 
+                    class="peer h-5 w-5 appearance-none rounded-md border-2 border-gray-400 bg-white transition-all duration-300 checked:bg-btncolor checked:border-btncolor focus:ring-2 focus:ring-btncolor focus:ring-opacity-50 mt-1 shrink-0" />
+                <label for="terms" class="text-sm text-gray-800 leading-snug select-none">
+                    I acknowledge that I have read, understood, and agree to the 
+                    <a href="#" class="text-custom-green font-semibold hover:text-green-700 underline transition duration-200">Terms and Conditions</a> 
+                    and the 
+                    <a href="#" class="text-custom-green font-semibold hover:text-green-700 underline transition duration-200">Privacy Policy</a>
+                    of the Swisa federation.
+                </label>
             </div>
             
         </div>
@@ -115,7 +129,8 @@
             <button type="button" onclick="closeModal('assistRegisterModal')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
                 Cancel
             </button>
-            <button type="submit" class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
+            <button type="submit" :disabled="!isChecked" 
+              :class="{ 'opacity-50 cursor-not-allowed': !isChecked }" class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
                 Register
             </button>
         </div>

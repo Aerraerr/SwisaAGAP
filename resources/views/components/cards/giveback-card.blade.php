@@ -1,7 +1,7 @@
 @props(['status', 'name', 'role', 'cont_type', 'cont_quantity', 'cont_source', 'cont_date', 'givebackId'=> NULL])
 
 
-<div class="w-full bg-white p-4 sm:p-6 rounded-xl border border-gray-300 shadow-lg flex flex-col space-y-6">
+<div {{ $attributes->merge(['class' => 'giveback-card cardClass w-full bg-white p-4 sm:p-6 rounded-xl border border-gray-300 shadow-lg flex flex-col space-y-6']) }}>
     <!-- Top Section -->
     <div class="flex flex-col sm:flex-row items-center sm:items-start sm:space-x-5 space-y-4 sm:space-y-0">
         <!-- Profile Image -->
@@ -14,18 +14,18 @@
         <div class="flex-grow text-left">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <h3 class="text-xl font-bold text-customIT break-words">{{ $name }}</h3>
-                <span class="text-xs font-medium text-white text-center px-3 py-1 rounded-full">{{ ($status) }}</span>
+                <span class="text-xs font-medium text-white text-center px-3 py-1 rounded-full 
+                    {{ $status === 'Pending' ? 'bg-pending' : 'bg-approved' }}">
+                    {{ $status }}
+                </span>
             </div>
-            <p class="text-xs sm:text-sm text-gray-600 font-light pb-4">{{ $role }}</p>
         </div>
     </div>
     <div class="text-sm text-gray-700 mb-2 ml-2">
         <!-- Stock Summary Section -->
         <h4 class="font-semibold text-customIT flex items-center mb-1">Giveback Info</h4>
-        <p class="font-medium">Contribution Type: <span class="text-gray-600 ml-1">{{ $cont_type }}</span></p>
-        <p class="font-medium">Contribution Quantity: <span class="text-gray-600 ml-1">{{ $cont_quantity }}</span></p>
-        <p class="font-medium">Contribution Source: <span class="text-gray-600 ml-1">{{ $cont_source }}</span></p>
-        <p class="font-medium">Contribution Date: <span class="text-gray-600 ml-1">{{ $cont_date }}</span></p>
+        <p class="font-medium ml-2">Contribution Quantity: <span class="text-gray-600 ml-1">{{ $cont_quantity }}</span></p>
+        <p class="font-medium ml-2">Contribution Date: <span class="text-gray-600 ml-1">{{ $cont_date }}</span></p>
     </div>
     <!-- Buttons -->
     <div class="grid grid-cols-2 sm:flex-row justify-between gap-2">

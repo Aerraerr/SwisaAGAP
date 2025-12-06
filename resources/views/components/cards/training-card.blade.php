@@ -10,8 +10,8 @@
     'status' => 'N/A',
 ])
 
-<div class="bg-white pt-2 px-4 rounded-md shadow-md border border-gray-300 overflow-hidden 
-            transform transition duration-300 hover:scale-104 hover:shadow-xl">
+<div {{ $attributes->merge(['class' => 'training-card cardClass bg-white pt-2 px-4 rounded-md shadow-md border border-gray-300 overflow-hidden 
+            transform transition duration-300 hover:scale-104 hover:shadow-xl']) }}>
     <!-- Image Placeholder Section -->
     <div class="bg-gray-200 rounded-md h-48 flex items-center justify-center border-b border-gray-300">
        <img 

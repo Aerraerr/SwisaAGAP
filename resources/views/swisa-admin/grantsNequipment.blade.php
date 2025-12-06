@@ -11,7 +11,8 @@
                 </p>
             </div>
         </div>
-@include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
+    
+        @include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
 
 
         
@@ -41,7 +42,7 @@
                     <x-filters modalId="addGrantModal" targetTableId="grants-list-table"/>
 
                     <!-- Example of using the reusable component -->
-                    <div x-show="activeTab === 'grid'" class="pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    <div x-show="activeTab === 'grid'" id="grant-card-container" class="pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                     <!-- Card with specific data -->
                     @foreach($grants as $grant)
                         <x-cards.grant-card
@@ -52,6 +53,7 @@
                             available_date="{{ $grant->available_at->format('F d Y') }}"
                             end_date="{{ $grant->end_at->format('F d Y') }}"
                             grantId="{{ $grant->id}}"
+                            data-search="{{ strtolower($grant->title.' '.$grant->grant_type->grant_type.' '.$grant->total_quantity.' '.$grant->available_at->format('F d Y').' '.$grant->end_at->format('F d Y') ) }}"
                         />
                     @endforeach
                     </div>
@@ -115,7 +117,7 @@
                             </div>
                     </div>
                 </div>
-                @include('components.pagination')
+               <x-pagination :paginator="$grants" />
         </div>
     </div>
     @include('components.modals.add-grant')

@@ -16,7 +16,10 @@ class TrainingController extends Controller
 {
     //show member with documents (if any)
     public function showTrainings(){
-        return Training::with('documents', 'sector')->get();
+        $perPage = (int) request('per_page', 10);
+        $perPage = in_array($perPage, [10, 20, 50, 100]) ? $perPage : 10;
+
+        return Training::with('documents', 'sector')->paginate($perPage)->withQueryString();
     }
 
     public function showSectors(){

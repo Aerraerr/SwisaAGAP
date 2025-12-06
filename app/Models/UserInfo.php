@@ -17,7 +17,7 @@ class UserInfo extends Model
     protected $fillable = [
         //user info
         'user_id',
-        'farmer_type',
+        'sector_id',
         'name',
         'fname',
         'mname',

@@ -22,10 +22,13 @@ class GrantController extends Controller
 
     //show grants with documents (if any)
     public function showGrants(){
+        $perPage = (int) request('per_page', 10);
+        $perPage = in_array($perPage, [10, 20, 50, 100]) ? $perPage : 10;
+        
         return Grant::with('documents')->where('end_at', '>=', Carbon::today())
         //Order by the nearest date_end
         ->orderBy('end_at', 'asc')
-        ->get();
+        ->paginate($perPage)->withQueryString();
     }
     
     public function showRequirements(){

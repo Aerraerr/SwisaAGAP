@@ -1,15 +1,17 @@
 @extends('layouts.app')
 @section('content')
 @include('layouts.loading-overlay')
-<div class="p-4">
+<div class="p-4 -mt-2">
     <div class="bg-mainbg px-4 min-h-screen">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
             <!-- Left side -->
             <div class="text-customIT flex flex-col">
                 <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Member Application Management</h2>
-                <p class="text-sm text-gray-600">Manage, and monitor the member application of SWISA members.</p>
+                <p class="text-sm text-gray-600">Manage and monitor the member application of SWISA members.</p>
             </div>
         </div>
+
+        @include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
 
         <!-- quick stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -35,7 +37,7 @@
                 </div>
         </div>
 
-        <div class="grid grid-cols-12 gap-1 md:gap-2" x-data="{ selectedUser: null, activeTab: 'All-Request' }" >
+        <div class="grid grid-cols-12 gap-1 md:gap-2" x-data="{ selectedId: null, selectedUser: null, activeTab: 'All-Request' }" >
 
             <!-- tab -->
             <div class="col-span-12 col-start-1 h-auto bg-white rounded-md shadow">
@@ -82,13 +84,16 @@
 
                 <!-- Search -->
                 <div class="flex justify-end mb-2">
-                    <input type="text" placeholder="Search here"  id="searchAll"
-                        class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border border-gray-300 rounded-md 
-                                focus:outline-none focus:ring-2 focus:ring-[var(--accent-green)] focus:border-[var(--accent-green)]">
+                   <input type="text" placeholder="Search here"  id="searchAll" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 rounded-l-[4px] border-gray-300 focus:border-btncolor focus:ring focus:ring-btncolor focus:ring-opacity-30">
+                    <button class="bg-btncolor text-white p-2 rounded-r-lg hover:bg-customIT transition duration-300 ease-in-out h-9 w-9">
+                        <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.35-1.42 1.42-5.35-5.35zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z" />
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Table -->
-                <div class="overflow-auto h-[80vh]">
+                <div class="overflow-auto h-auto">
                     <table class="min-w-full border-collapse">
                         <thead class="bg-snbg sticky top-0 z-10">
                             <tr class="text-customIT text-left text-xs font-semibold">
@@ -104,7 +109,9 @@
                             @forelse($applications['all'] as $app)
                                 <tr 
                                     class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
-                                    @click="selectedUser = { 
+                                    @click="
+                                        selectedId = '{{ $app->id }}';
+                                        selectedUser = { 
                                         id: '{{ $app->id ?? '-'}}', 
                                         name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                         date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}',
@@ -115,7 +122,9 @@
                                         reason: '{{ $app->rejection_reason ?? '-'}}',
                                         documents: @js($app->documents),
                                         form_img: '{{ $app->form_img ?? '-'}}'
-                                    }">
+                                    }"
+                                    :class="selectedId === '{{ $app->id }}' ? 'bg-snbg' : ''"
+                                    >
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
                                     <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->phone_no ?? '-'}}</td>
@@ -140,7 +149,7 @@
                         </tbody>
                     </table>
                 </div>
-                @include('components.pagination')
+               <x-pagination :paginator="$applications['all']" />
             </div>
 
 
@@ -288,9 +297,14 @@
                         <p class="text-customIT text-lg font-bold">Pending Membership List</p>
                     </div>
                     <div class="flex justify-end mb-2">
-                        <input type="text" id="searchPending" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
+                        <input type="text" placeholder="Search here"  id="searchPending" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 rounded-l-[4px] border-gray-300 focus:border-btncolor focus:ring focus:ring-btncolor focus:ring-opacity-30">
+                        <button class="bg-btncolor text-white p-2 rounded-r-lg hover:bg-customIT transition duration-300 ease-in-out h-9 w-9">
+                            <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.35-1.42 1.42-5.35-5.35zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z" />
+                            </svg>
+                        </button>
                     </div>
-                    <div class="overflow-auto h-[80vh]">
+                    <div class="overflow-auto h-auto">
                         <table class="min-w-full border-collapse">
                             <thead class="bg-snbg sticky top-0 z-10">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
@@ -306,7 +320,9 @@
                                 @forelse($applications['pending'] as $app)
                                     <tr 
                                         class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
-                                        @click="selectedUser = { 
+                                        @click="
+                                            selectedId = '{{ $app->id }}';
+                                            selectedUser = { 
                                             id: '{{ $app->id ?? '-'}}', 
                                             name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                             date: '{{ $app->created_at->format('F d Y') ?? '-'}}', 
@@ -316,7 +332,8 @@
                                             documents: @js($app->documents),
                                             form_img: '{{ $app->form_img ?? '-'}}' 
                                         }"
-                                    >
+                                        :class="selectedId === '{{ $app->id }}' ? 'bg-snbg' : ''"
+                                        >
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->phone_no ?? '-'}}</td>
@@ -340,7 +357,7 @@
                             </tbody>
                         </table>
                     </div>
-                    @include('components.pagination')
+                    <x-pagination :paginator="$applications['pending']" />
             </div>
 
             <div x-show="activeTab === 'Pending-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">
@@ -458,9 +475,14 @@
                         <p class="text-customIT text-lg font-bold">Approved Membership List</p>
                     </div>
                     <div class="flex justify-end mb-2">
-                        <input type="text"  id="searchApproved" placeholder="Search here" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
+                        <input type="text" placeholder="Search here"  id="searchApproved" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 rounded-l-[4px] border-gray-300 focus:border-btncolor focus:ring focus:ring-btncolor focus:ring-opacity-30">
+                        <button class="bg-btncolor text-white p-2 rounded-r-lg hover:bg-customIT transition duration-300 ease-in-out h-9 w-9">
+                            <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.35-1.42 1.42-5.35-5.35zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z" />
+                            </svg>
+                        </button>
                     </div>
-                    <div class="overflow-auto h-[80vh]">
+                    <div class="overflow-auto h-auto">
                         <table class="table table-hover min-w-full border-spacing-y-1">
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
@@ -476,10 +498,9 @@
                                 @forelse($applications['approved'] as $app)
                                     <tr 
                                         class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
-                                        :class="{ 
-                                            'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
-                                        }"
-                                        @click="selectedUser = { 
+                                        @click="
+                                            selectedId = '{{ $app->id }}';
+                                            selectedUser = { 
                                             id: '{{ $app->id ?? '-'}}', 
                                             name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                             date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}',
@@ -490,7 +511,8 @@
                                             documents: @js($app->documents),
                                             form_img: '{{ $app->form_img ?? '-'}}'  
                                         }"
-                                    >
+                                        :class="selectedId === '{{ $app->id }}' ? 'bg-snbg' : ''"
+                                        >
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->phone_no ?? '-'}}</td>
@@ -510,7 +532,7 @@
                             </tbody>
                         </table>
                     </div>
-                    @include('components.pagination')
+                    <x-pagination :paginator="$applications['approved']" />
             </div>
 
             <div x-show="activeTab === 'Approved-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">
@@ -616,9 +638,14 @@
                         <p class="text-customIT text-lg font-bold">Rejected Membership List</p>
                     </div>
                     <div class="flex justify-end mb-2">
-                        <input type="text" placeholder="Search here" id="searchRejected" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 border-gray-300 rounded-md focus:outline-none">
+                        <input type="text" placeholder="Search here"  id="searchRejected" class="w-1/2 h-9 bg-white text-xs text-gray-700 px-4 border-1 rounded-l-[4px] border-gray-300 focus:border-btncolor focus:ring focus:ring-btncolor focus:ring-opacity-30">
+                        <button class="bg-btncolor text-white p-2 rounded-r-lg hover:bg-customIT transition duration-300 ease-in-out h-9 w-9">
+                            <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.35-1.42 1.42-5.35-5.35zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z" />
+                            </svg>
+                        </button>
                     </div>
-                    <div class="overflow-auto h-[80vh]">
+                    <div class="overflow-auto h-auto">
                         <table class="table table-hover min-w-full border-spacing-y-1">
                             <thead class="bg-snbg border-gray-300">
                                 <tr class="text-customIT text-left text-xs font-semibold ">
@@ -634,10 +661,9 @@
                                 @forelse($applications['rejected'] as $app)
                                     <tr 
                                         class="border border-gray-200 hover:bg-[var(--hover-green)] cursor-pointer transition-colors"
-                                        :class="{ 
-                                            'bg-[var(--hover-green)]': selectedUser?.id === 'REQ-ITEM00001' 
-                                        }"
-                                        @click="selectedUser = { 
+                                        @click="
+                                            selectedId = '{{ $app->id }}';
+                                            selectedUser = { 
                                             id: '{{ $app->id ?? '-'}}', 
                                             name: '{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}', 
                                             date: '{{ $app->created_at->format('F d, Y h:i A') ?? '-'}}', 
@@ -649,7 +675,8 @@
                                             documents: @js($app->documents),
                                             form_img: '{{ $app->form_img ?? '-'}}'  
                                         }"
-                                    >
+                                        :class="selectedId === '{{ $app->id }}' ? 'bg-snbg' : ''"
+                                        >
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->formatted_id ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->first_name ?? '-'}} {{ $app->user->middle_name ?? '-'}} {{ $app->user->last_name ?? '-'}}</td>
                                         <td class="px-4 py-3 text-xs text-gray-700">{{ $app->user->user_info->phone_no ?? '-'}}</td>
@@ -669,7 +696,7 @@
                             </tbody>
                         </table>
                     </div>
-                    @include('components.pagination')
+                    <x-pagination :paginator="$applications['rejected']" />
             </div>
 
             <div x-show="activeTab === 'Rejected-Request'" class="col-span-12 lg:col-start-9 lg:col-span-4">

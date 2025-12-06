@@ -24,12 +24,14 @@
                                 General
                             </button>
                         </li>--}}
-                        <li>
-                            <button onclick="showSection('users', this)" 
-                                class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition">
-                                User Management
-                            </button>
-                        </li>
+                        @if(Auth()->user()->role_id == 3)
+                            <li>
+                                <button onclick="showSection('users', this)" 
+                                    class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition">
+                                    User Management
+                                </button>
+                            </li>
+                        @endif
                         <li>
                             <button onclick="showSection('grant-config', this)" 
                                 class="nav-btn w-full text-left py-2 px-3 rounded-lg hover:bg-hover-green transition">
@@ -141,8 +143,9 @@
                     </div>
 
                     <!-- USER MANAGEMENT -->
-                    @include('swisa-admin.settings.user-management', ['users' => $users])
-
+                    @if(Auth()->user()->role_id == 3)
+                        @include('swisa-admin.settings.user-management', ['users' => $users])
+                    @endif
 
                     <!-- GRANT CONFIGURATION -->
                     <div id="grant-config-section" class="settings-section hidden">
@@ -406,7 +409,7 @@
             showSection(section, btn);
         } else {
             // default section
-            showSection('general', document.querySelector('.nav-btn'));
+            showSection('grant-config', document.querySelector('.nav-btn'));
         }
     });
     function showSection(section, btn) {

@@ -1,10 +1,10 @@
-@props(['status' => 'active', 'name', 'role', 'memberId', 'registered'])
+@props(['status' => 'active', 'name', 'role', 'memberId', 'member_Id', 'registered'])
 
 @php
     $statusColor = $status === 'active' ? 'bg-approved' : 'bg-rejected';
 @endphp
 
-<div class="w-full bg-white p-4 sm:p-6 rounded-xl border border-gray-300 shadow-lg flex flex-col space-y-6">
+<div {{ $attributes->merge(['class' => 'member-card cardClass w-full bg-white p-4 sm:p-6 rounded-xl border border-gray-300 shadow-lg flex flex-col space-y-6']) }}>
     <!-- Top Section -->
     <div class="flex flex-col sm:flex-row items-center sm:items-start sm:space-x-5 space-y-4 sm:space-y-0">
         <!-- Profile Image -->
@@ -17,10 +17,9 @@
         <div class="flex-grow sm:text-left">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <h3 class="text-xl font-bold text-customIT break-words">{{ $name }}</h3>
-                <span class="text-xs font-medium text-white text-center px-3 py-1 rounded-full {{ $statusColor }}">{{ ucfirst($status) }}</span>
             </div>
             <p class="text-xs sm:text-sm text-gray-600 font-light pb-4">{{ $role }}</p>
-            <p class="text-xs font-medium sm:text-sm text-gray-700">Member ID:<span class="text-gray-600 ml-1">{{ $memberId }}</span></p>
+            <p class="text-xs font-medium sm:text-sm text-gray-700">Member ID:<span class="text-gray-600 ml-1">{{ $member_Id }}</span></p>
             <!-- Registered Date -->
             <div class="sm:text-left text-xs sm:text-sm text-gray-600">
                 <p class="text-xs font-medium sm:text-sm text-gray-700">Registered:<span class="text-gray-600 ml-1">{{ $registered }}</span></p>

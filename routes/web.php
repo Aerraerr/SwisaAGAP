@@ -29,6 +29,15 @@ Route::get('/app-download', function () {
     return view('app-download.download-page');
 })->name('app.download');
 
+
+Route::get('/faqs/list', function () {
+    return \App\Models\Faqs::where('target_audience', 'user')
+        ->select('type', 'question', 'answer')
+        ->orderBy('type')
+        ->orderBy('id')
+        ->get();
+});
+
 //
 Route::get('/', function () {
     return view('auth.landing');
@@ -95,7 +104,7 @@ Route::get('/announcements', [AnnouncementController::class, 'dispalyAnnouncemen
 Route::post('/announcements', [AnnouncementController::class, 'addAnnouncement'])
 ->middleware(['auth', 'verified'])->name('announcement.store');
 
-//edit training
+//edit announcement
 Route::patch('announcements/{id}/edit-announcement', [AnnouncementController::class, 'editAnnouncementInfo'])
 ->middleware(['auth', 'verified'])->name('announcement.update');
 

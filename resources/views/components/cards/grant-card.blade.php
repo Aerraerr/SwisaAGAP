@@ -10,7 +10,7 @@
     'end_date' => 'N/A',
 ])
 
-<div class="bg-white py-2 px-4 rounded-md shadow-lg border border-gray-300 overflow-hidden">
+<div {{ $attributes->merge(['class' => 'grant-card cardClass bg-white py-2 px-4 rounded-md shadow-lg border border-gray-300 overflow-hidden']) }}>
     <!-- Image Placeholder Section -->
     <div class="bg-gray-200 rounded-md h-48 flex items-center justify-center border-b border-gray-300">
        <img 

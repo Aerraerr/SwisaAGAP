@@ -58,7 +58,7 @@ class ProfileController extends Controller
                     'zone' => $user->userInfo->zone,
                     'profile_img' => $user->userInfo->profile_img,
                     //'qr_code' => $user->userInfo->qr_code,
-                    'farmer_type' => $user->userInfo->farmer_type,
+                    'farmer_type' => $user->userInfo->sector_id,
                     'farm_location' => $user->userInfo->farm_location,
                     'land_size' => $user->userInfo->land_size,
                     'water_source' => $user->userInfo->water_source,

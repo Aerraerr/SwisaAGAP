@@ -1,3 +1,4 @@
+
 @php
     use Illuminate\Support\Facades\Route;
 
@@ -6,9 +7,13 @@
         'members'             => 'person',
         'view-profile'        => 'account_circle',
         'grantsNequipment'    => 'inventory',
+        'giveback'            => 'inventory',
         'view-grant'          => 'description',
+        'view-giveback'          => 'description',
+        'assisted-creation'     => 'account_circle',
         'grant-view-profile'  => 'account_circle', 
         'training-workshop'   => 'school',
+        'view-training'       => 'description',
         'announcements'       => 'campaign',
         'grant-request'       => 'folder',
         'member-application'  => 'app_registration',
@@ -29,7 +34,11 @@
         $breadcrumbName = 'grant-view-profile';
     } elseif ($currentRouteName === 'view-profile') {
         $breadcrumbName = 'view-profile';
-    } else {
+    } elseif ($currentRouteName === 'view-training') {
+        $breadcrumbName = 'view-training';
+    }  elseif ($currentRouteName === 'view-giveback') {
+        $breadcrumbName = 'view-giveback';
+    }  else {
         $breadcrumbName = $breadcrumbName ?? $currentRouteName;
     }
 @endphp

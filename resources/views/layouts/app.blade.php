@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'SwisaAGAP') }}</title>
 
         <link rel="icon" href="{{ asset('images/swisa-logov1.png') }}" type="png">
 
@@ -119,50 +119,57 @@
         })
     @endif
 </script>
-{{-- for reusable search --}}
+{{--for reusable search--}}
 <script>
-    // --- Performance Helper: Debounce Function ---
-    // Prevents the filter function from running hundreds of times while the user types.
     function debounce(func, delay) {
         let timeout;
-        return function(...args) {
+        return function (...args) {
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(this, args), delay);
         };
     }
 
-    // --- Core Filtering Function ---
-    window.filterTable = (searchInputId, tbodyId) => {
-        const input = document.getElementById(searchInputId);
-        const tbody = document.getElementById(tbodyId);
+    // ✅ NOW supports multiple card container IDs
+    window.filterTableOrCards = (searchInputId, tbodyId, ...cardContainerIds) => {
 
-        if (!input || !tbody) {
-            // console.warn(`Filter setup error: Missing element for Input ID: ${searchInputId} or TBody ID: ${tbodyId}`);
-            return; 
-        }
+        const input = document.getElementById(searchInputId);
+        if (!input) return;
 
         const term = input.value.toLowerCase().trim();
-        const rows = tbody.querySelectorAll('tr');
 
-        rows.forEach(row => {
-            // Skip rows that are empty states (e.g., "No applications.")
-            if (row.querySelector('td[colspan]')) return; 
+        // ----------- TABLE FILTER -----------
+        const tbody = document.getElementById(tbodyId);
+        if (tbody) {
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach(row => {
+                if (row.querySelector('td[colspan]')) return;
+                const rowText = row.textContent.toLowerCase();
+                row.style.display = rowText.includes(term) ? '' : 'none';
+            });
+        }
 
-            // Get the entire text content of the row
-            const rowText = row.textContent.toLowerCase();
-            
-            // Show or hide the row
-            row.style.display = rowText.includes(term) ? '' : 'none';
+        // ----------- CARD FILTER (ALL CONTAINERS) -----------
+        cardContainerIds.forEach(containerId => {
+
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const cards = container.getElementsByClassName('cardClass');
+
+            Array.from(cards).forEach(card => {
+                const data = (card.getAttribute("data-search") || "").toLowerCase();
+                card.style.display = data.includes(term) ? "" : "none";
+            });
         });
     };
 
-    // --- Debounced Global Function (Used in the Blade Component) ---
-    // The filter will run 300 milliseconds after the user stops typing.
-    window.debouncedFilterTable = debounce(window.filterTable, 300);
+    window.debouncedFilterTableOrCards = debounce(window.filterTableOrCards, 300);
 </script>
+
 {{-- for sort--}}
 <script>
     // --- Core Sorting Function ---
+    
     window.sortHtmlTable = (sortValue, tbodyId) => {
         if (!sortValue) return;
 

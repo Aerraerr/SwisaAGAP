@@ -16,59 +16,21 @@ use App\Services\SMSService;
 class MembershipController extends Controller
 {
     public function displayApplications(){
-        // initialized the DocumentChecker service
-        //$checker = new DocumentChecker();
+        $perPage = (int) request('per_page', 10);
+        $perPage = in_array($perPage, [10, 20, 50, 100]) ? $perPage : 10;
 
         $applications = [
-            'all' => Application::with(['user.user_info', 'status', 'documents.membershipRequirement.requirement'])->where('application_type', 'membership')->get(),
+            'all' => Application::with(['user.user_info', 'status', 'documents.membershipRequirement.requirement'])->where('application_type', 'membership')->paginate($perPage)->withQueryString(),
             'pending' => Application::with(['user.user_info', 'status', 'documents.membershipRequirement.requirement'])->where('application_type', 'membership')->whereHas('status', function($q)
                 {$q->where('status_name', 'pending'); 
-                })->get(),
+                })->paginate($perPage)->withQueryString(),
             'approved' => Application::with(['user.user_info', 'status', 'documents.membershipRequirement.requirement'])->where('application_type', 'membership')->whereHas('status', function($q)
                 {$q->where('status_name', 'approved'); 
-                })->get(),
+                })->paginate($perPage)->withQueryString(),
             'rejected' => Application::with(['user.user_info', 'status', 'documents.membershipRequirement.requirement'])->where('application_type', 'membership')->whereHas('status', function($q)
                 {$q->where('status_name', 'rejected'); 
-                })->get(),
+                })->paginate($perPage)->withQueryString(),
         ];
-
-        /*foreach ($applications['pending'] as $app) {
-            foreach ($app->documents as $document) {
-                // Construct file path
-                $filePath = storage_path('app/public/' . $document->file_path);
-
-                // Retrieve corresponding requirement name
-                $requirementName = $document->membershipRequirement->requirement->requirement_name ?? null;
-
-                // Check if file exists and has a matching requirement
-                if (file_exists($filePath) && $requirementName) {
-                    $document->check_result = $checker->checkRequirementInFile(
-                        $filePath,
-                        $requirementName,
-                        $app->user
-                    );
-                } else {
-                    $document->check_result = 'Missing';
-                }
-            }
-        }
-
-        // Sync check results to the 'all' tab (for matching pending applications)
-        foreach ($applications['all'] as $app) {
-            if ($app->status->status_name === 'pending') {
-                // Find the same app from the pending collection
-                $pendingApp = $applications['pending']->firstWhere('id', $app->id);
-                if ($pendingApp) {
-                    // Apply the computed document check results
-                    foreach ($app->documents as $document) {
-                        $matchingDoc = $pendingApp->documents->firstWhere('id', $document->id);
-                        if ($matchingDoc) {
-                            $document->check_result = $matchingDoc->check_result ?? 'Missing';
-                        }
-                    }
-                }
-            }
-        }*/
 
         $membershipRequirements = DB::table('membership_requirements')
         ->join('requirements', 'membership_requirements.requirement_id', '=', 'requirements.id')

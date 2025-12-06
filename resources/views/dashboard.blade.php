@@ -71,7 +71,7 @@
         </div>
         <div class="flex flex-col">
             <h2 class="text-[20px] sm:text-[24px] font-semibold drop-shadow-sm animate-fadeIn">
-                Welcome Back, Admin! 👋
+                Welcome Back, {{ Auth::user()->first_name}}! 👋
             </h2>
             <p class="text-xs sm:text-sm opacity-90 animate-fadeIn delay-200">
                 Here’s your quick overview today.
@@ -138,16 +138,24 @@
                 <div class="flex flex-col sm:flex-row items-start gap-3">
                     <img src="{{ asset('images/grants.png') }}" alt="Check Icon" class="w-12 h-12 object-contain" />
                     <div class="flex flex-col justify-center w-full">
-                        <p class="header1 font-semibold text-[#2C6E49] tracking-widest">Available <br> Grants</p>
-                        <h1 class="text-poppins text-[#2C6E49] text-4xl sm:text-5xl font-bold leading-tight tracking-widest pb-5">
-                            {{ $totalGrants }}
-                        </h1>
-
-
-
-                        <div class="text-right">
-                            <a href="{{ route('grantsNequipment') }}" class="text-sm text-[#2C6E49] hover:underline">View All Grants &gt;</a>
-                        </div>
+                        @if(Auth()->user()->role_id == 3)
+                            <p class="header1 font-semibold text-[#2C6E49] tracking-widest">Available <br> Grants</p>
+                            <h1 class="text-poppins text-[#2C6E49] text-4xl sm:text-5xl font-bold leading-tight tracking-widest pb-5">
+                                {{ $totalGrants }}
+                            </h1>
+                            <div class="text-right">
+                                <a href="{{ route('grantsNequipment') }}" class="text-sm text-[#2C6E49] hover:underline">View All Grants &gt;</a>
+                            </div>
+                        @elseif(Auth()->user()->role_id == 2)
+                            <p class="header1 font-semibold text-[#2C6E49] tracking-widest">Total <br> Givebacks</p>
+                            <h1 class="text-poppins text-[#2C6E49] text-4xl sm:text-5xl font-bold leading-tight tracking-widest pb-5">
+                                {{ $totalGivebacks }}
+                            </h1>
+                            <div class="text-right">
+                                <a href="{{ route('giveback') }}" class="text-sm text-[#2C6E49] hover:underline">View All Givebacks &gt;</a>
+                            </div>
+                        @endif
+                        
                     </div>
                 </div>
             </div>
@@ -181,7 +189,7 @@
                             {{ $pendingRequests }}
                         </h1>
                         <div class="text-right">
-                            <a href="{{ route('grantsNequipment') }}" class="text-sm text-[#2C6E49] hover:underline">View All Requests &gt;</a>
+                            <a href="{{ route('grant-request') }}" class="text-sm text-[#2C6E49] hover:underline">View All Requests &gt;</a>
                         </div>
                     </div>
                 </div>
@@ -209,9 +217,14 @@
             <!-- Charts Section -->
             @include('charts.monthly-requests')
             @include('charts.request-status-overview')
-            @include('charts.member-type-breakdown')
+            @if(Auth()->user()->role_id == 3)
+                @include('charts.member-type-breakdown')
+            @endif
             @include('charts.top-requested')
-            @include('charts.recent-activity', ['recentLogs' => \App\Models\Log::latest('activity_timestamp')->take(5)->get()])
+            @if(Auth()->user()->role_id == 3)
+                @include('charts.recent-activity', ['recentLogs' => \App\Models\Log::latest('activity_timestamp')->take(5)->get()])
+            @endif
+            
 
 
             <!-- New: Member Demographics -->
@@ -224,59 +237,123 @@
                 <!-- Gender Distribution -->
                 <div class="mb-4">
                     <p class="text-sm font-semibold text-gray-600 mb-2">Gender</p>
+
                     <div class="flex items-center mb-3">
                         <span class="material-icons text-blue-600 mr-2">male</span>
                         <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-500 h-2 rounded-full" style="width: 78%"></div>
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: {{ $malePercent }}%"></div>
                         </div>
-                        <span class="text-xs font-medium text-blue-600">78% Male</span>
+                        <span class="text-xs font-medium text-blue-600">{{ $malePercent }}% Male</span>
                     </div>
+
                     <div class="flex items-center">
                         <span class="material-icons text-purple-600 mr-2">female</span>
                         <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
-                            <div class="bg-purple-600 h-2 rounded-full" style="width: 22%"></div>
+                            <div class="bg-purple-600 h-2 rounded-full" style="width: {{ $femalePercent }}%"></div>
                         </div>
-                        <span class="text-xs font-medium text-purple-600">22% Female</span>
+                        <span class="text-xs font-medium text-purple-600">{{ $femalePercent }}% Female</span>
                     </div>
                 </div>
 
                 <!-- Age Distribution -->
                 <div>
                     <p class="text-sm font-semibold text-gray-600 mb-2">Age Distribution</p>
-                    <ul class="text-xs text-gray-600 space-y-1">
-                        <li>18–25: <span class="font-medium">35%</span></li>
-                        <li>26–40: <span class="font-medium">40%</span></li>
-                        <li>41–60: <span class="font-medium">20%</span></li>
-                        <li>60+: <span class="font-medium">5%</span></li>
-                    </ul>
+
+                    <div class="flex items-center mb-2">
+                        <span class="text-xs font-medium w-16 text-gray-800 shrink-0">Under 18:</span>
+                        <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                            <!-- Using a soft color for this group -->
+                            <div class="bg-green-300 h-2 rounded-full" style="width: {{ $agePercent['below_18'] ?? 0 }}%"></div>
+                        </div>
+                        <span class="text-xs font-medium text-gray-700 w-8 text-right shrink-0">{{ $agePercent['below_18'] ?? 0 }}%</span>
+                    </div>
+
+                    <div class="flex items-center mb-2">
+                        <span class="text-xs font-medium w-16 text-gray-800 shrink-0">18–25:</span>
+                        <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                            <div class="bg-teal-500 h-2 rounded-full" style="width: {{ $agePercent['18-25'] ?? 0 }}%"></div>
+                        </div>
+                        <span class="text-xs font-medium text-gray-700 w-8 text-right shrink-0">{{ $agePercent['18-25'] ?? 0 }}%</span>
+                    </div>
+
+                    <div class="flex items-center mb-2">
+                        <span class="text-xs font-medium w-16 text-gray-800 shrink-0">26–40:</span>
+                        <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                            <div class="bg-orange-500 h-2 rounded-full" style="width: {{ $agePercent['26-40'] ?? 0 }}%"></div>
+                        </div>
+                        <span class="text-xs font-medium text-gray-700 w-8 text-right shrink-0">{{ $agePercent['26-40'] ?? 0 }}%</span>
+                    </div>
+
+                    <div class="flex items-center mb-2">
+                        <span class="text-xs font-medium w-16 text-gray-800 shrink-0">41–60:</span>
+                        <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                            <div class="bg-red-500 h-2 rounded-full" style="width: {{ $agePercent['41-60'] ?? 0 }}%"></div>
+                        </div>
+                        <span class="text-xs font-medium text-gray-700 w-8 text-right shrink-0">{{ $agePercent['41-60'] ?? 0 }}%</span>
+                    </div>
+
+                    <div class="flex items-center">
+                        <span class="text-xs font-medium w-16 text-gray-800 shrink-0">60+:</span>
+                        <div class="flex-1 mx-2 bg-gray-200 rounded-full h-2">
+                            <div class="bg-slate-500 h-2 rounded-full" style="width: {{ $agePercent['60+'] ?? 0 }}%"></div>
+                        </div>
+                        <span class="text-xs font-medium text-gray-700 w-8 text-right shrink-0">{{ $agePercent['60+'] ?? 0 }}%</span>
+                    </div>
                 </div>
             </div>
 
 
-            <!-- New: Announcements / Notices -->
+           <!-- Announcements / Notices -->
             <div class="lg:col-span-4 bg-white p-6 rounded-xl shadow-lg">
                 <p class="font-semibold mb-4 text-[#2C6E49] flex items-center">
                     <span class="material-icons mr-2 text-custom">campaign</span>
                     Announcements
                 </p>
+
                 <div class="space-y-3 text-sm">
-                    <div class="p-3 bg-green-50 rounded-lg border-l-4 border-green-600">
-                        <p class="font-medium text-green-800">📢 Training Session on Modern Farming</p>
-                        <p class="text-gray-600">Scheduled on September 25, 2025 at Barangay Hall.</p>
-                    </div>
-                    <div class="p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
-                        <p class="font-medium text-yellow-800">⚠️ Deadline for Grant Applications</p>
-                        <p class="text-gray-600">All requests must be submitted before October 5, 2025.</p>
-                    </div>
-                    <div class="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                        <p class="font-medium text-blue-800">ℹ️ System Maintenance</p>
-                        <p class="text-gray-600">The system will be down on Sept 30, 10 PM – 2 AM.</p>
-                    </div>
+
+                    @forelse($announcements as $announcement)
+
+                        @php
+                            $colors = [
+                                'bg-green-50 border-green-600 text-green-800',
+                                'bg-yellow-50 border-yellow-500 text-yellow-800',
+                                'bg-blue-50 border-blue-500 text-blue-800',
+                                'bg-red-50 border-red-600 text-red-800',
+                                'bg-purple-50 border-purple-600 text-purple-800',
+                                'bg-pink-50 border-pink-600 text-pink-800',
+                            ];
+
+                            $style = $colors[array_rand($colors)];
+                        @endphp
+
+                        <div class="p-3 rounded-lg border-l-4 {{ $style }}">
+                            <p class="font-medium">
+                                {{ $announcement->title }}
+                            </p>
+                            <p class="text-gray-600">
+                                {{ $announcement->message }}
+                            </p>
+
+                            @if($announcement->end_at)
+                                <p class="text-xs mt-1 italic text-gray-400">
+                                    Until {{ \Carbon\Carbon::parse($announcement->end_at)->format('M d, Y') }}
+                                </p>
+                            @endif
+                        </div>
+
+                    @empty
+                        <p class="text-center text-gray-500 italic">
+                            No announcements at the moment.
+                        </p>
+                    @endforelse
+
+                </div>
+                <div class="mt-2 text-right">
+                    <a href="{{ route('announcements') }}" class="text-sm text-[#2C6E49] hover:underline">View All Announcements &gt;</a>
                 </div>
             </div>
-                        @include('charts.shortcuts-quicklinks')
-
-
+            @include('charts.shortcuts-quicklinks')
         </div>
     </div>
 </div>

@@ -27,6 +27,9 @@
         <div class="grid grid-cols-12 gap-2 py-2 "  x-data="{ activeTab: 'initiative' }">
             <!-- Initiative tab -->
             <div class="col-span-12">
+                    @include('components.breadcrumbs', [
+                'params' =>[$training]
+            ])
                 <div class="bg-white shadow-lg p-4 h-auto rounded-md">
                     <div class="lg:flex h-full">
                         <div class="mt-3 bg-gray-200 rounded-md h-44 w-full  lg:h-[260px] lg:w-1/3 flex items-center justify-center border-b border-gray-300 flex-shrink-0">

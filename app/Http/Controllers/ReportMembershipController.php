@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Response;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Models\UserInfo;
@@ -52,14 +53,14 @@ class ReportMembershipController extends Controller
         $members = UserInfo::orderBy('created_at', 'desc')->get();
 
         // --- Sector labels & counts for chart ---
-        $sectors = Sector::orderBy('id')->get();
-        if ($sectors->isEmpty()) {
-            $sectorLabels = collect(['Agriculture','Fisheries','Livestock','Forestry','Agri-Business']);
-            $sectorCounts = $sectorLabels->map(fn($s) => UserInfo::where('farmer_type', $s)->count());
-        } else {
-            $sectorLabels = $sectors->pluck('name');
-            $sectorCounts = $sectors->map(fn($sector) => UserInfo::where('farmer_type', $sector->name)->count());
-        }
+        // Get all sectors dynamically
+        $sectorLabels = Sector::pluck('sector_name'); 
+
+        // Count users per sector
+        $sectorCounts = $sectorLabels->map(function($label) {
+            $sector = Sector::where('sector_name', $label)->first();
+            return $sector ? UserInfo::where('sector_id', $sector->id)->count() : 0;
+        });
 
         return view('swisa-admin.admin-reports.membership', compact(
             'totalMembers',
@@ -115,7 +116,7 @@ public function activeMembers()
     $totalMembers = UserInfo::count();
 
     // Get all users' latest login timestamp where role is 'Member'
-    $latestLogins = Log::select('user_id', \DB::raw('MAX(activity_timestamp) as latest_login'))
+    $latestLogins = Log::select('user_id', DB::raw('MAX(activity_timestamp) as latest_login'))
                         ->where('activity', 'Logged In')
                         ->where('role', 'Member') // Only consider Member role
                         ->groupBy('user_id')

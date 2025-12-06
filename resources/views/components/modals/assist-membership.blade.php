@@ -1,5 +1,5 @@
 <div id="assistMembershipModal-{{ $member->id}}" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 z-30 h-full w-full flex items-center justify-center">
-  <div class="relative w-7xl max-w-7xl mx-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
+  <div x-data="{ isChecked: false }" class="relative w-7xl max-w-7xl mx-auto p-6 border shadow-lg rounded-xl bg-white transition-transform transform scale-95 duration-300">
     
     <!-- Modal Header -->
     <div class="flex items-center justify-between pb-2 border-b">
@@ -41,7 +41,7 @@
                 <option value="">Suffix</option>
                 @foreach(\App\Models\UserInfo::Suffix as $suffix)
                   <option value="{{ $suffix }}"
-                  {{ (isset($member->user_info->suffix) && $member->user_info->suffix == $suffix) ? 'selected' : '' }}
+                  {{ (isset($member->suffix) && $member->suffix == $suffix) ? 'selected' : '' }}
                   >{{ $suffix }}</option>
                 @endforeach
               </Select>
@@ -258,7 +258,7 @@
         <!--Checkit -->
         <div class="pt-4">
           <label>
-            <input type="checkbox" class="input-field rounded-[4px] border-btncolor text-customIT mr-2">
+            <input type="checkbox" x-model="isChecked" class="input-field rounded-[4px] border-btncolor text-customIT mr-2">
             <span class="text-bsctxt text-sm font-medium">I hereby certify that the information I provided above is true and correct to the best of my knowledge. I understand that any false statement or misrepresentation shall be grounds for disqualification or termination of membership in SWISA-AGAP</span>
           </label>
         </div>
@@ -269,7 +269,8 @@
           <button type="button" onclick="closeModal('assistMembershipModal-{{ $member->id}}')" class="w-1/3 px-4 py-2 bg-cancel text-gray-500 rounded-md hover:bg-gray-400 hover:text-white">
               Cancel
           </button>
-          <button type="submit" class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
+          <button type="submit" :disabled="!isChecked" 
+              :class="{ 'opacity-50 cursor-not-allowed': !isChecked }" class="w-1/3 px-4 py-2 bg-btncolor text-white rounded-md hover:bg-customIT">
               Submit
           </button>
       </div>

@@ -2,52 +2,60 @@
 
 <div class="grid grid-cols-12 items-center mb-4 gap-2 ">
     <!-- TAB BUTTONS -->
-    <div class="flex col-span-3 gap-1">
-        <!-- Grid -->
-        <button 
-            @click="activeTab = 'grid'"
-            :class="activeTab === 'grid' ? 'bg-btncolor text-white shadow' : 'text-btncolor'" 
-            class="flex items-center justify-center gap-1 h-10 hover:bg-btncolor hover:text-white w-[80px] text-sm font-medium rounded-[4px] p-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current" viewBox="0 0 20 20">
-                <path d="M3 3h4v4H3V3zm5 0h4v4H8V3zm5 0h4v4h-4V3zM3 8h4v4H3V8zm5 0h4v4H8V8zm5 0h4v4h-4V8zM3 13h4v4H3v-4zm5 0h4v4H8v-4zm5 0h4v4h-4v-4z"/>
-            </svg>
-            Grid
-        </button>
+    @if(request()->routeIs('grantsNequipment') || request()->routeIs('training-workshop') || request()->routeIs('giveback') || request()->routeIs('members') )
+        <div class="flex col-span-3 gap-1">
+            <!-- Grid -->
+            <button 
+                @click="activeTab = 'grid'"
+                :class="activeTab === 'grid' ? 'bg-btncolor text-white shadow' : 'text-btncolor'" 
+                class="flex items-center justify-center gap-1 h-10 hover:bg-btncolor hover:text-white w-[80px] text-sm font-medium rounded-[4px] p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                    <path d="M3 3h4v4H3V3zm5 0h4v4H8V3zm5 0h4v4h-4V3zM3 8h4v4H3V8zm5 0h4v4H8V8zm5 0h4v4h-4V8zM3 13h4v4H3v-4zm5 0h4v4H8v-4zm5 0h4v4h-4v-4z"/>
+                </svg>
+                Grid
+            </button>
 
-        <!-- List -->
-        <button 
-            @click="activeTab = 'list'"
-            :class="activeTab === 'list' ? 'bg-btncolor text-white shadow' : 'text-btncolor'" 
-            class="flex items-center justify-center gap-1 h-10 hover:bg-btncolor hover:text-white w-[80px] text-sm font-medium rounded-[4px] p-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current" viewBox="0 0 20 20">
-                <path d="M4 6h12v2H4V6zm0 4h12v2H4v-2zm0 4h12v2H4v-2z"/>
-            </svg>
-            List
-        </button>
+            <!-- List -->
+            <button 
+                @click="activeTab = 'list'"
+                :class="activeTab === 'list' ? 'bg-btncolor text-white shadow' : 'text-btncolor'" 
+                class="flex items-center justify-center gap-1 h-10 hover:bg-btncolor hover:text-white w-[80px] text-sm font-medium rounded-[4px] p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 fill-current" viewBox="0 0 20 20">
+                    <path d="M4 6h12v2H4V6zm0 4h12v2H4v-2zm0 4h12v2H4v-2z"/>
+                </svg>
+                List
+            </button>
 
-        {{--<!-- Export -->
-        <button 
-            @click="exportData()" 
-            class="flex items-center justify-center gap-1 h-10 bg-white text-btncolor hover:bg-btncolor hover:text-white w-[80px] text-sm font-medium rounded-[4px] p-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M3 10h4v7h6v-7h4l-7-7-7 7z"/>
-            </svg>
-            Export
-        </button>--}}
-    </div>
+            {{--<!-- Export -->
+            <button 
+                @click="exportData()" 
+                class="flex items-center justify-center gap-1 h-10 bg-white text-btncolor hover:bg-btncolor hover:text-white w-[80px] text-sm font-medium rounded-[4px] p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 10h4v7h6v-7h4l-7-7-7 7z"/>
+                </svg>
+                Export
+            </button>--}}
+        </div>
+    @else
+        <div class="flex col-span-3 gap-1"></div>
+    @endif
 
     <!-- Add New + Sort + Category -->
     <div class="col-span-5 flex gap-2">
         <!-- Add New -->
-        <button onclick="openModal('{{ $modalId }}')" 
-            class="flex items-center justify-center gap-2 bg-btncolor hover:bg-btncolor/90 transition-colors h-10 px-4 text-sm font-medium text-white rounded-md shadow w-[200px]">
-            <span class="flex items-center justify-center w-5 h-5 rounded-full bg-white text-btncolor">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-            </span>
-            CREATE NEW
-        </button>
+        @if(request()->routeIs('grantsNequipment') || request()->routeIs('training-workshop') || request()->routeIs('assisted-creation') )
+            <button onclick="openModal('{{ $modalId }}')" 
+                class="flex items-center justify-center gap-2 bg-btncolor hover:bg-btncolor/90 transition-colors h-10 px-4 text-sm font-medium text-white rounded-md shadow w-[200px]">
+                <span class="flex items-center justify-center w-5 h-5 rounded-full bg-white text-btncolor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                </span>
+                CREATE NEW
+            </button>
+        @else
+            <div class="flex items-center justify-center gap-2 bg-white transition-colors h-10 px-4 text-sm font-medium text-white rounded-md w-[200px]"></div>
+        @endif
 
         <!-- Sort -->
         <div class="relative flex-1">
@@ -78,8 +86,8 @@
 
     <!-- Search -->
     <div class="col-span-4 flex items-center shadow rounded-lg">
-        <input type="text" placeholder="Search here" id="search-{{ $targetTableId }}" 
-        oninput="window.debouncedFilterTable('search-{{ $targetTableId }}', '{{ $targetTableId }}')" class="w-full h-10 bg-white text-sm text-gray-700 px-4 border rounded-l-[4px] focus:border-btncolor focus:ring focus:ring-btncolor focus:ring-opacity-30">
+        <input type="text" placeholder="Search here" id="search-{{ $targetTableId }}"  oninput="window.debouncedFilterTableOrCards('search-{{ $targetTableId }}', '{{ $targetTableId }}', 'members-card-container', 'grant-card-container', 'training-card-container', 'giveback-card-container')" 
+        class="w-full h-10 bg-white text-sm text-gray-700 px-4 border rounded-l-[4px] focus:border-btncolor focus:ring focus:ring-btncolor focus:ring-opacity-30">
         <button class="bg-btncolor text-white p-2 rounded-r-lg hover:bg-customIT transition duration-300 ease-in-out h-10 w-10 flex items-center justify-center">
             <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                 <path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.35-1.42 1.42-5.35-5.35zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z" />

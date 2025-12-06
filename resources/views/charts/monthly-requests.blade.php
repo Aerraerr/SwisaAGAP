@@ -12,9 +12,15 @@
         <canvas id="monthlyRequestsChart"></canvas>
     </div>
     
-    <div class="text-right">
-        <a href="{{ route('admin-reports') }}" class="text-sm text-[#2C6E49] hover:underline">View All Requests &gt;</a>
-    </div>
+    @if(Auth()->user()->role_id == 2)
+        <div class="text-right">
+            <a href="{{ route('grant-request') }}" class="text-sm text-[#2C6E49] hover:underline">View All Requests &gt;</a>
+        </div>
+    @elseif(Auth()->user()->role_id == 3)
+        <div class="text-right">
+            <a href="{{ route('admin-reports') }}" class="text-sm text-[#2C6E49] hover:underline">View Reports &gt;</a>
+        </div>
+    @endif
 </div>
 
 
@@ -28,40 +34,36 @@ document.addEventListener("DOMContentLoaded", function () {
         .getPropertyValue('--icon-color').trim();
 
     const ctx = document.getElementById('monthlyRequestsChart').getContext('2d');
+
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [{
                 label: 'Requests',
-                data: [12, 19, 15, 22, 30, 28, 35, 120, 110, 130, 95, 115],
+                data: @json($monthlyData),
                 borderColor: primaryGreen,
-                backgroundColor: accentGreen + '40', // 33 = ~20% opacity
+                backgroundColor: accentGreen + '40',
                 fill: true,
                 tension: 0.2
             }]
         },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                enabled: true, // make sure tooltips are active
-                mode: 'index',
-                intersect: false,
-                callbacks: {
-                    label: function(context) {
-                        return context.dataset.label + ': ' + context.parsed.y;
-                    }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    enabled: true,
+                    mode: 'index',
+                    intersect: false
                 }
+            },
+            scales: {
+                y: { beginAtZero: true }
             }
-        },
-        scales: {
-            y: { beginAtZero: true }
         }
-    }
-
     });
 });
 </script>

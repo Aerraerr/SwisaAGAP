@@ -27,4 +27,8 @@ class Status extends Model
     public function documents(){
         return $this->hasMany(Document::class);
     }
+
+    public function giveback(){
+        return $this->hasMany(Contribution::class);
+    }
 }

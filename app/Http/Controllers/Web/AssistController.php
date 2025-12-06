@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
+use App\Models\CreditScore;
 use App\Models\Grant;
 use App\Models\MembershipRequirement;
 use App\Models\Notification;
@@ -24,10 +25,13 @@ class AssistController extends Controller
 
     public function displayMembers(){
         //get only the user who are members and its relations
-        $members = User::with(['documents', 'documents.requirement', 'user_info', 'applications.grant'])->where('role_id', 1)->get();
+        $perPage = (int) request('per_page', 10);
+        $perPage = in_array($perPage, [10, 20, 50, 100]) ? $perPage : 10;
+        $members = User::with(['documents', 'documents.requirement', 'user_info', 'applications.grant', 'creditScore'])->where('role_id', 1)->paginate($perPage)->withQueryString();
         $sectors = Sector::all();
         $grants  = Grant::with('grant_requirements.requirement')->get();
         $application = Application::all();
+
         $membershipRequirements = MembershipRequirement::with('requirement')
         ->get()
         ->map(function ($item) {
@@ -154,7 +158,7 @@ class AssistController extends Controller
             $membership->user_info()->updateOrCreate(
                 ['user_id' => $membership->id],
                 [
-                    'farmer_type'     => $request->sector,
+                    'sector_id'     => $request->sector,
                     'fname'         => $request->fname,
                     'mname'         => $request->mname,
                     'lname'         => $request->lname,
@@ -353,7 +357,7 @@ class AssistController extends Controller
                     'birthdate'     => $request->birthdate,
                     'civil_status' => $request->civil_status,
                     'gender'        => $request->sex,
-                    'contact_no'    => $request->phone,
+                    'phone_no'    => $request->phone,
                     'province'      => $request->province,
                     'city'          => $request->city,
                     'barangay'      => $request->barangay,
@@ -368,7 +372,7 @@ class AssistController extends Controller
                     'sc_lname'      => $request->sc_lname,
                     'sc_suffix'     => $request->sc_suffix,
                     'sc_gender'     => $request->sc_sex,
-                    'sc_contact_no' => $request->sc_phone,
+                    'sc_phone_no' => $request->sc_phone,
                     'sc_email'      => $request->sc_email,
                     'sc_province'   => $request->sc_province,
                     'sc_city'       => $request->sc_city,
@@ -387,6 +391,25 @@ class AssistController extends Controller
                 'application_type' => 'Grant Application',
                 'purpose'          => $request->purpose,
             ]);
+
+            /* Check if a CreditScore record already exists for this user.
+            $existingScore = CreditScore::where('user_id', $giveback->user->id)->first();
+
+            if ($existingScore) {
+                // Add 10 to current score
+                $existingScore->score += 5;
+                $existingScore->save();
+
+                Log::info('Credit Score updated (+10) for User ID: ' . $giveback->user->id);
+            } else {
+                // Create new score if none exists
+                CreditScore::create([
+                    'user_id' => $giveback->user->id,
+                    'score' => 20, // Or 10 if you want starting score to be same as bonus
+                ]);
+
+                Log::info('Credit Score created for new member User ID: ' . $giveback->user->id);
+            }*/
 
             //Handle file uploads and auto checked documents once its uploaded
             if ($request->hasFile('documents')) {
@@ -422,9 +445,9 @@ class AssistController extends Controller
 
             //create pdf file of the form application
             $application->load(['documents', 'status', 'user.user_info']);
-            $pdf = Pdf::loadView('pdf.membership_application_form', ['application' => $application]);
+            $pdf = Pdf::loadView('pdf.grant_application_form', ['application' => $application]);
 
-            $fileName = $request->lname . '_grant_request_application_form_' . $application->id . '.pdf';
+            $fileName = $request->lname . '_grant_application_form' . $application->id . '.pdf';
             $filePath = 'applications/' . $fileName;
 
             Storage::disk('public')->put($filePath, $pdf->output());
@@ -433,7 +456,7 @@ class AssistController extends Controller
             //store a confirmation message to table
             Notification::create([ 
                 'user_id' => Auth::id(),
-                'message' => 'You successfully assisted '.$member->name .' application for grant' .$grant->title . 'and waiting for approval.' ,
+                'message' => 'You successfully assisted '.$member->name .' application for grant ' .$grant->title . ' and waiting for approval.' ,
                 'sent_at' => now(),
             ]);
 
@@ -441,7 +464,7 @@ class AssistController extends Controller
             if ($member && $member->phone_number) {
                 
                 $number = $member->phone_number;
-                $message = '[SWISA-AGAP] Your application for grant' .$grant->title . 'is created and pending for approval.';
+                $message = '[SWISA-AGAP] Your application for grant ' .$grant->title . ' is created and pending for approval.';
 
                 SMSService::send($number, $message);
             }

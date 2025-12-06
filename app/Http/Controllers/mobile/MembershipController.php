@@ -94,7 +94,7 @@ class MembershipController extends Controller
         // Create UserInfo with smart detection
         $userInfo = UserInfo::create([
             'user_id' => $user->id,
-            'farmer_type' => $validatedData['farmer_type'],
+            'sector_id' => $validatedData['farmer_type'],
             'fname' => $validatedData['fname'],
             'mname' => $validatedData['mname'],
             'lname' => $validatedData['lname'],

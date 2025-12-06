@@ -22,11 +22,54 @@ Breadcrumbs::for('view-profile', function (BreadcrumbTrail $trail, $member) {
 });
 
 
+// Dashboard > Giveback
+Breadcrumbs::for('giveback', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Giveback', route('giveback'));
+});
+
+// Dashboard > Giveback > View Giveback
+Breadcrumbs::for('view-giveback', function (BreadcrumbTrail $trail, $giveback) {
+    $trail->parent('giveback');
+    $trail->push('View Giveback', route('view-giveback', $giveback->id));
+});
 
 
+// Dashboard > Training
+Breadcrumbs::for('training-workshop', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Initiatives', route('training-workshop'));
+});
 
+// Dashboard > training > View training
+Breadcrumbs::for('view-training', function (BreadcrumbTrail $trail, $training) {
+    $trail->parent('training-workshop');
+    $trail->push('View Initiatives', route('view-training', $training->id));
+});
 
+// Dashboard > Announcements
+Breadcrumbs::for('announcements', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Announcements', route('announcements'));
+});
 
+// Dashboard > Assist
+Breadcrumbs::for('assisted-creation', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Assisted Creation', route('assisted-creation'));
+});
+
+// Dashboard > Announcements
+Breadcrumbs::for('grant-request', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Grant Request', route('grant-request'));
+});
+
+// Dashboard > Announcements
+Breadcrumbs::for('member-application', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Membership Application', route('member-application'));
+});
 
 // Dashboard > Grants and Equipment
 Breadcrumbs::for('grantsNequipment', function (BreadcrumbTrail $trail) {

@@ -13,6 +13,8 @@
             </div>
         </div>
 
+        @include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
+        
         <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Create New Announcement (Left) -->
@@ -156,6 +158,7 @@
                         </div>
                     </div>
                 @endforeach
+                <x-pagination :paginator="$announcements" />
             </div>
         </div>
     </div> 

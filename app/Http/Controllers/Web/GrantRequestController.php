@@ -16,34 +16,35 @@ use App\Services\SMSService;
 class GrantRequestController extends Controller
 {
     public function displayApplications(){
-        //load the application data with eager loading with status
-        $pendingApplications = Application::with('grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')
-            ->where('application_type', 'Grant Application')
-            ->whereHas('status', function($q) {
-                $q->where('status_name', 'pending');
-            })
-            ->get();
+        $perPage = (int) request('per_page', 10);
+        $perPage = in_array($perPage, [10, 20, 50, 100]) ? $perPage : 10;
 
-        // 2. Fetch PROCESSING applications
-        $processingApplications = Application::with('grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')
-            ->where('application_type', 'Grant Application')
-            ->whereHas('status', function($q) {
-                $q->where('status_name', 'processing_application');
-            })
-            ->get();
-
-            // MERGE PENDING and PROCESSING into a new key
-            $pendingAndProcessing = $pendingApplications->merge($processingApplications);
+        $pendingAndProcessing = Application::with(
+            'grant.grant_requirements.requirement',
+            'grant.documents',
+            'documents',
+            'user.user_info',
+            'status'
+        )
+        ->where('application_type', 'Grant Application')
+        ->whereHas('status', function($q) {
+            $q->whereIn('status_name', ['pending', 'processing_application']);
+        })
+        ->latest()
+        ->paginate($perPage)
+        ->withQueryString();
 
         $applications = [
-            'all' => Application::with('grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')->where('application_type', 'Grant Application')->get(),
+            'all' => Application::with('grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')->where('application_type', 'Grant Application')->latest()->paginate($perPage)->withQueryString(),
             'pending' => $pendingAndProcessing,
             'approved' => Application::with('status', 'grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')->where('application_type', 'Grant Application')->whereHas('status', function($q)
                 {$q->where('status_name', 'approved'); 
-                })->get(),
+                })->latest()
+                ->paginate($perPage)->withQueryString(),
             'rejected' => Application::with('status', 'grant.grant_requirements.requirement', 'grant.documents', 'documents', 'user.user_info', 'status')->where('application_type', 'Grant Application')->whereHas('status', function($q)
                 {$q->where('status_name', 'rejected'); 
-                })->get(),
+                })->latest()
+                ->paginate($perPage)->withQueryString(),
         ];
         
         //load the grant_requirements data
@@ -167,6 +168,17 @@ class GrantRequestController extends Controller
             $application->status_id = 14;
 
             $application->save();
+
+            $smsMessage = "[SWISA-AGAP] Your application #{$application->id} for '{$application->grant->title}' has been successfully claimed on " . now()->format('F d, Y h:i A') . ". Thank you!";
+
+            //send sms of the application
+            if (!empty($application->user->phone_number)) {
+                
+                $number = $application->user->phone_number;
+                $message = $smsMessage;
+
+                SMSService::send($number, $message);
+            }
 
             return back()->with('success', 'Application marked as claimed successfully!');
             

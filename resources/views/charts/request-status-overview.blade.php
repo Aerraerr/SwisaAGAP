@@ -14,8 +14,8 @@
         </div>
     </div>
 
-    <div class="text-right">
-        <a href="#" class="text-xs text-custom">View &rarr;</a>
+    <div class="mt-4 text-center border-t pt-3">
+        <a href="{{ route('grant-request') }}" class="text-sm text-[#2C6E49] hover:underline">View All Request &gt;</a>
     </div>
 </div>
 
@@ -30,9 +30,13 @@ document.addEventListener("DOMContentLoaded", function () {
     new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: ['Approved', 'In Review', 'Pending', 'Rejected'],
+            labels: ['Pending', 'In Process', 'Approved', 'Rejected'],
             datasets: [{
-                data: [30, 20, 40, 10],
+                data: [
+                    {{ $pendingRequests}},
+                     {{ $inProcessRequests}}, 
+                     {{ $approvedRequests}}, 
+                     {{ $rejectedRequests}}],
                 backgroundColor: [
                     '#2C6E49', // Approved
                     '#4C956C', // In Review
@@ -59,13 +63,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 tooltip: {
                     callbacks: {
-                        label: (context) => `${context.label}: ${context.parsed}%`
+                        label: (context) => `${context.label}: ${context.parsed}`
                     }
                 },
                 datalabels: {
                     color: '#fff',
                     font: { size: 15, weight: 'bold' },
-                    formatter: (value) => value + '%',
+                    formatter: (value)  => {
+                        return value > 0 ? value : null;
+                    },
                     anchor: 'center',
                     align: 'end',
                     offset: 5

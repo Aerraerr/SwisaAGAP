@@ -1,9 +1,4 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-@php
-    $sectorLabels = $sectorLabels ?? collect(['Agriculture','Fisheries','Livestock','Forestry','Agri-Business']);
-    $sectorCounts = $sectorCounts ?? $sectorLabels->map(fn($s) => \App\Models\UserInfo::where('farmer_type', $s)->count());
-@endphp
-
 <div class="lg:col-span-2 bg-white p-5 rounded-xl shadow">
     <p class="font-semibold mb-2 primary-color dashheader flex items-center">
         <span class="material-icons mr-2 text-custom">bar_chart</span>

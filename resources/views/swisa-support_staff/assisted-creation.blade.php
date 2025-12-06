@@ -12,6 +12,8 @@
             </div>
         </div>
 
+    @include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
+    
     <!-- Stats Cards for Initiatives & Events -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <!-- Total Initiatives -->
@@ -52,7 +54,7 @@
                             <th class="px-4 py-3 text-xs font-medium">NUMBER</th>
                             <th class="px-4 py-3 text-xs font-medium">EMAIL</th>
                             <th class="px-4 py-3 text-xs font-medium">DATE CREATED</th>
-                            <th class="px-4 py-3 text-xs font-medium">USER TYPE</th>
+                            <th class="px-4 py-3 text-xs font-medium">CREDITS</th>
                             <th class="px-4 py-3 text-xs font-medium">MEMBERSHIP STATUS</th>
                             <th class="px-4 py-3 text-xs font-medium">ACTION</th>
                         </tr>
@@ -62,10 +64,10 @@
                             <tr class="border border-gray-300 hover:bg-gray-100">
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $member->formatted_id}}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $member->first_name}} {{ $member->middle_name}} {{ $member->last_name}} {{ $member->suffix_name}}</td>
-                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->user_info->contact_no ?? '-'}}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->phone_no ?? '-'}}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $member->email}}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">{{ $member->created_at->format('F d Y')}}</td>
-                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->created_at < now()->subMonths(3) ? 'Old User' : 'New User'}}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">{{ $member->creditScore->score ?? '0'}}</td>
                                 <td class="px-4 py-2 text-sm text-gray-700">
                                     @php
                                         $membershipApps = $member->applications->where('application_type', 'Membership');
@@ -108,8 +110,8 @@
                                                                 onclick="openModal('assistGrantRequestModal-{{ $member->id}}')"
                                                                 :disabled="!membership || membership.status_id !== 4"
                                                                 :class="!membership || membership.status_id !== 4 
-                                                                    ? 'px-4 py-2 rounded-md bg-gray-400 text-gray-500 cursor-not-allowed' 
-                                                                    : 'px-4 py-2 rounded-md bg-btncolor text-white hover:bg-opacity-90'"
+                                                                    ? 'px-4 py-2 rounded-md border border-btncolor text-customIT opacity-80 cursor-not-allowed' 
+                                                                    : 'px-4 py-2 rounded-md border border-btncolor text-customIT hover:bg-btncolor hover:text-white'"
                                                                 class="transition"
                                                             >
                                                                 Assist Grant Application
@@ -119,12 +121,12 @@
                                                     <li>
                                                         <div>
                                                             @if($member->applications->where('application_type', 'Membership')->count() > 0)
-                                                                <span class="block px-4 py-2 text-xs cursor-not-allowed rounded-md bg-approved text-white font-medium">
+                                                                <span class="block px-4 py-2 cursor-not-allowed rounded-md bg-approved text-white font-medium opacity-80">
                                                                     Membership Applied
                                                                 </span>
                                                             @else
                                                                 <button onclick="openModal('assistMembershipModal-{{ $member->id}}')" 
-                                                                    class="block px-4 py-2 text-xs rounded-md hover:bg-gray-500 transition-colors duration-200 text-gray-600 font-medium">
+                                                                    class="block px-4 py-2 rounded-md border border-btncolor hover:bg-btncolor hover:text-white transition-colors duration-200 text-customIT font-medium">
                                                                     Assist Membership Application
                                                                 </button>
                                                             @endif
@@ -148,7 +150,7 @@
                 </div>
         </div>
 
-        @include('components.pagination')
+        <x-pagination :paginator="$members" />
         </div>
     </div>
     @foreach($members as $member)

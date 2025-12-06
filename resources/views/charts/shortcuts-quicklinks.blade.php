@@ -7,8 +7,12 @@
         Shortcuts / Quick Links
     </p>
     <ul class="text-sm mt-2 space-y-1">
-        <li><a href="#" class="text-custom">Add Member</a></li>
-        <li><a href="#" class="text-custom">Post Announcement</a></li>
-        <li><a href="#" class="text-custom">View Training</a></li>
+        @if(Auth()->user()->role_id == 2)
+            <li><a href="{{ route('assisted-creation')}}" class="text-custom">Add Member</a></li>
+        @elseif(Auth()->user()->role_id == 3)
+            <li><a href="{{ route('settings')}}" class="text-custom">Add Member</a></li>
+        @endif
+        <li><a href="{{ route('announcements')}}" class="text-custom">Post Announcement</a></li>
+        <li><a href="{{ route('training-workshop')}}" class="text-custom">View Training</a></li>
     </ul>
 </div>
