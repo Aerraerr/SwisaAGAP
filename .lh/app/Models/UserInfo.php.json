@@ -1,0 +1,66 @@
+{
+    "sourceFile": "app/Models/UserInfo.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 12,
+            "patches": [
+                {
+                    "date": 1763622928687,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1763733758234,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,68 +1,64 @@\n <?php\n \n namespace App\\Models;\n \n+use Illuminate\\Database\\Eloquent\\Factories\\HasFactory;\n use Illuminate\\Database\\Eloquent\\Model;\n \n class UserInfo extends Model\n {\n+    use HasFactory;\n+\n+    /**\n+     * The table associated with the model.\n+     *\n+     * @var string\n+     */\n     protected $table = 'user_info';\n-    \n+\n+    /**\n+     * The attributes that are mass assignable.\n+     *\n+     * @var array<int, string>\n+     */\n     protected $fillable = [\n         'user_id',\n-        'farmer_type',\n-    \n+        'farmer_type', // ADDED: For the simplified dropdown\n         'fname',\n         'mname',\n         'lname',\n-        'name', // ✅ Added (full name)\n         'suffix',\n         'birthdate',\n-        'civil_status',\n+        'civil_status', // ADDED: For the new dropdown\n         'gender',\n-        'profile_img',\n-        // ✅ NEW: Contact fields\n-        'contact_info',    // Raw input (email or phone)\n-        'phone_no',           // Extracted phone number\n-        'email',           // Extracted email\n-        \n+        'contact_no',\n         'province',\n         'city',\n-        'house_no',\n         'barangay',\n         'zone',\n+        'profile_img',\n         'farm_location',\n         'land_size',\n         'water_source',\n-        \n-        // Secondary Contact\n         'sc_fname',\n         'sc_mname',\n         'sc_lname',\n         'sc_suffix',\n         'sc_gender',\n-        \n-        // ✅ NEW: Secondary contact fields\n-        'sc_contact_info', // Raw input (email or phone)\n-        'sc_phone_no',        // Extracted phone number\n-        'sc_email',        // Extracted email\n-        \n+        'sc_contact_no',\n\\ No newline at end of file\n+        'sc_email',\n         'sc_province',\n         'sc_city',\n-        'sc_house_no',\n         'sc_barangay',\n         'sc_zone',\n         'relationship',\n-        'qr_code',\n     ];\n \n-    public function documents()\n-    {\n-        return $this->morphMany(Document::class, 'documentable');\n+    /**\n+     * Get the user that owns the user info.\n+     */\n+    public function user(){\n+        return $this->belongsTo(User::class);\n     }\n+}\n \n-    public function user()\n-    {\n-        return $this->belongsTo(User::class);\n-    }\n-}\n"
+                },
+                {
+                    "date": 1763733799977,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,63 +1,68 @@\n <?php\n \n namespace App\\Models;\n \n-use Illuminate\\Database\\Eloquent\\Factories\\HasFactory;\n use Illuminate\\Database\\Eloquent\\Model;\n \n class UserInfo extends Model\n {\n-    use HasFactory;\n-\n-    /**\n-     * The table associated with the model.\n-     *\n-     * @var string\n-     */\n     protected $table = 'user_info';\n-\n-    /**\n-     * The attributes that are mass assignable.\n-     *\n-     * @var array<int, string>\n-     */\n+    \n     protected $fillable = [\n         'user_id',\n-        'farmer_type', // ADDED: For the simplified dropdown\n+        'farmer_type',\n+    \n         'fname',\n         'mname',\n         'lname',\n+        'name', // ✅ Added (full name)\n         'suffix',\n         'birthdate',\n-        'civil_status', // ADDED: For the new dropdown\n+        'civil_status',\n         'gender',\n-        'contact_no',\n+        'profile_img',\n+        // ✅ NEW: Contact fields\n+        'contact_info',    // Raw input (email or phone)\n+        'phone_no',           // Extracted phone number\n+        'email',           // Extracted email\n+        \n         'province',\n         'city',\n+        'house_no',\n         'barangay',\n         'zone',\n-        'profile_img',\n         'farm_location',\n         'land_size',\n         'water_source',\n+        \n+        // Secondary Contact\n         'sc_fname',\n         'sc_mname',\n         'sc_lname',\n         'sc_suffix',\n         'sc_gender',\n-        'sc_contact_no',\n-        'sc_email',\n+        \n+        // ✅ NEW: Secondary contact fields\n+        'sc_contact_info', // Raw input (email or phone)\n+        'sc_phone_no',        // Extracted phone number\n+        'sc_email',        // Extracted email\n+        \n         'sc_province',\n         'sc_city',\n+        'sc_house_no',\n         'sc_barangay',\n         'sc_zone',\n         'relationship',\n+        'qr_code',\n     ];\n \n-    /**\n-     * Get the user that owns the user info.\n-     */\n-    public function user(){\n+    public function documents()\n+    {\n+        return $this->morphMany(Document::class, 'documentable');\n+    }\n+\n+    public function user()\n+    {\n         return $this->belongsTo(User::class);\n     }\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763822426400,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -64,5 +64,10 @@\n     public function user()\n     {\n         return $this->belongsTo(User::class);\n     }\n+    public function sector()\n+{\n+    return $this->belongsTo(Sector::class);\n+}\n+\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763822448691,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -64,10 +64,6 @@\n     public function user()\n     {\n         return $this->belongsTo(User::class);\n     }\n-    public function sector()\n-{\n-    return $this->belongsTo(Sector::class);\n-}\n-\n+    \n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763822895155,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,7 +63,11 @@\n \n     public function user()\n     {\n         return $this->belongsTo(User::class);\n+        public function sector()\n+{\n+    return $this->belongsTo(Sector::class);\n+}\n+\n     }\n-    \n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763832118797,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,11 +63,7 @@\n \n     public function user()\n     {\n         return $this->belongsTo(User::class);\n-        public function sector()\n-{\n-    return $this->belongsTo(Sector::class);\n-}\n-\n+        \n     }\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763832125590,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,7 +63,11 @@\n \n     public function user()\n     {\n         return $this->belongsTo(User::class);\n-        \n+        public function sector()\n+{\n+    return $this->belongsTo(Sector::class);\n+}\n+\n     }\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763832252562,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,8 +8,9 @@\n {\n     protected $table = 'user_info';\n     \n     protected $fillable = [\n+        'name',\n         'user_id',\n         'farmer_type',\n     \n         'fname',\n"
+                },
+                {
+                    "date": 1763832260125,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n {\n     protected $table = 'user_info';\n     \n     protected $fillable = [\n-        'name',\n+        \n         'user_id',\n         'farmer_type',\n     \n         'fname',\n"
+                },
+                {
+                    "date": 1763832313959,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,8 @@\n {\n     protected $table = 'user_info';\n     \n     protected $fillable = [\n-        \n         'user_id',\n         'farmer_type',\n     \n         'fname',\n@@ -64,11 +63,6 @@\n \n     public function user()\n     {\n         return $this->belongsTo(User::class);\n-        public function sector()\n-{\n-    return $this->belongsTo(Sector::class);\n-}\n-\n     }\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764941259759,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,14 @@\n <?php\n \n namespace App\\Models;\n \n+use Illuminate\\Database\\Eloquent\\Factories\\HasFactory;\n use Illuminate\\Database\\Eloquent\\Model;\n \n+use App\\Models\\User;\n+use App\\Models\\Sector;\n+\n class UserInfo extends Model\n {\n     protected $table = 'user_info';\n     \n@@ -64,5 +68,14 @@\n     public function user()\n     {\n         return $this->belongsTo(User::class);\n     }\n+\n+    public function getFormattedIdAttribute()\n+    {\n+        // Use the primary key or user_id\n+        $baseId = $this->id ?? $this->user_id ?? 0;\n+\n+        return 'MEM-' . str_pad($baseId, 6, '0', STR_PAD_LEFT);\n+    }\n+\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764942735555,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -76,6 +76,11 @@\n         $baseId = $this->id ?? $this->user_id ?? 0;\n \n         return 'MEM-' . str_pad($baseId, 6, '0', STR_PAD_LEFT);\n     }\n+    public function sector()\n+{\n+    return $this->belongsTo(Sector::class, 'sector_id', 'id');\n+}\n \n+\n }\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1763622928687,
+            "name": "Commit-0",
+            "content": "<?php\n\nnamespace App\\Models;\n\nuse Illuminate\\Database\\Eloquent\\Model;\n\nclass UserInfo extends Model\n{\n    protected $table = 'user_info';\n    \n    protected $fillable = [\n        'user_id',\n        'farmer_type',\n    \n        'fname',\n        'mname',\n        'lname',\n        'name', // ✅ Added (full name)\n        'suffix',\n        'birthdate',\n        'civil_status',\n        'gender',\n        'profile_img',\n        // ✅ NEW: Contact fields\n        'contact_info',    // Raw input (email or phone)\n        'phone_no',           // Extracted phone number\n        'email',           // Extracted email\n        \n        'province',\n        'city',\n        'house_no',\n        'barangay',\n        'zone',\n        'farm_location',\n        'land_size',\n        'water_source',\n        \n        // Secondary Contact\n        'sc_fname',\n        'sc_mname',\n        'sc_lname',\n        'sc_suffix',\n        'sc_gender',\n        \n        // ✅ NEW: Secondary contact fields\n        'sc_contact_info', // Raw input (email or phone)\n        'sc_phone_no',        // Extracted phone number\n        'sc_email',        // Extracted email\n        \n        'sc_province',\n        'sc_city',\n        'sc_house_no',\n        'sc_barangay',\n        'sc_zone',\n        'relationship',\n        'qr_code',\n    ];\n\n    public function documents()\n    {\n        return $this->morphMany(Document::class, 'documentable');\n    }\n\n    public function user()\n    {\n        return $this->belongsTo(User::class);\n    }\n}"
+        }
+    ]
+}

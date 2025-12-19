@@ -12,10 +12,7 @@ class Participant extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'training_id',
-        'user_id',
-    ];
+    protected $fillable = ['training_id', 'user_id', 'qr_scanned', 'check_in_at'];
 
     //RELATIONSHIPS
 

@@ -1,19 +1,21 @@
-<!-- Add this in your <head> if not already -->
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+@php
+    $sectorLabels = $sectorLabels ?? collect(['Agriculture','Fisheries','Livestock','Forestry','Agri-Business']);
+    $sectorCounts = $sectorCounts ?? $sectorLabels->map(fn($s) => \App\Models\UserInfo::where('farmer_type', $s)->count());
+@endphp
 
-<div class="lg:col-span-3 bg-white p-5 rounded-xl shadow">
+<div class="lg:col-span-8 bg-white p-5 rounded-xl shadow">
     <p class="font-semibold mb-2 primary-color dashheader flex items-center">
-        <span class="material-icons mr-2 text-custom">bar_chart</span>
+        <span class="material-icons mr-2 text-custom pt-5">bar_chart</span>
         Member Type Breakdown
     </p>
-    
-    <!-- Responsive chart wrapper -->
+
     <div class="relative h-64 sm:h-70 md:h-70 lg:h-70">
         <canvas id="memberTypeChart"></canvas>
     </div>
 
-    <div class="text-right mt-2">
-        <a href="#" class="text-xs text-custom">View &rarr;</a>
+    <div class="text-right">
+        <a href="{{ route('admin-reports') }}" class="text-sm text-[#2C6E49] hover:underline">View All Requests &gt;</a>
     </div>
 </div>
 
@@ -26,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const ctxMember = document.getElementById('memberTypeChart').getContext('2d');
 
-    // Create a horizontal gradient (left → right)
     const gradient = ctxMember.createLinearGradient(0, 0, ctxMember.canvas.width, 0);
     gradient.addColorStop(0, '#2C6E49');
     gradient.addColorStop(1, '#68b2abad');
@@ -34,10 +35,10 @@ document.addEventListener("DOMContentLoaded", function () {
     window.memberTypeChartInstance = new Chart(ctxMember, {
         type: 'bar',
         data: {
-            labels: ['Farmer', 'Fisher', 'Type 3', 'Type 4', 'Type 5'],
+            labels: @json($sectorLabels),
             datasets: [{
                 label: 'Members',
-                data: [95, 65, 45, 92, 15],
+                data: @json($sectorCounts),
                 backgroundColor: gradient,
                 borderRadius: 4
             }]
@@ -46,9 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
             indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
+            plugins: { legend: { display: false } },
             scales: {
                 x: {
                     beginAtZero: true,

@@ -1,0 +1,22 @@
+{
+    "sourceFile": "database/migrations/2025_11_26_0647145_create_feedback_table.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1764146833399,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1764146886336,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,34 +10,27 @@\n      * Run the migrations.\n      */\n     public function up(): void\n     {\n-        Schema::table('feedback', function (Blueprint $table) {\n-\n-            // Only add user_id column if it doesn't exist\n-            if (!Schema::hasColumn('feedback', 'user_id')) {\n-                $table->unsignedBigInteger('user_id')->nullable()->after('id');\n-            }\n-\n-            // Add foreign key safely\n+        Schema::create('feedback', function (Blueprint $table) {\n+            $table->bigIncrements('id');\n+            \n+            $table->unsignedBigInteger('user_id')->nullable(); // Allow anonymous\n             $table->foreign('user_id')\n                   ->references('id')\n                   ->on('users')\n-                  ->onDelete('set null');\n+                  ->onDelete('set null'); // if user is deleted, feedback stays but becomes anonymous\n+\n+            $table->unsignedTinyInteger('rating')->nullable();\n+            $table->text('feedback')->nullable();\n+            $table->timestamps();\n         });\n     }\n \n     /**\n      * Reverse the migrations.\n      */\n     public function down(): void\n     {\n-        Schema::table('feedback', function (Blueprint $table) {\n-\n-            // drop FK first\n-            $table->dropForeign(['user_id']);\n-\n-            // drop column\n-            $table->dropColumn('user_id');\n-        });\n+        Schema::dropIfExists('feedback');\n     }\n };\n"
+                }
+            ],
+            "date": 1764146833399,
+            "name": "Commit-0",
+            "content": "<?php\n\nuse Illuminate\\Database\\Migrations\\Migration;\nuse Illuminate\\Database\\Schema\\Blueprint;\nuse Illuminate\\Support\\Facades\\Schema;\n\nreturn new class extends Migration\n{\n    /**\n     * Run the migrations.\n     */\n    public function up(): void\n    {\n        Schema::table('feedback', function (Blueprint $table) {\n\n            // Only add user_id column if it doesn't exist\n            if (!Schema::hasColumn('feedback', 'user_id')) {\n                $table->unsignedBigInteger('user_id')->nullable()->after('id');\n            }\n\n            // Add foreign key safely\n            $table->foreign('user_id')\n                  ->references('id')\n                  ->on('users')\n                  ->onDelete('set null');\n        });\n    }\n\n    /**\n     * Reverse the migrations.\n     */\n    public function down(): void\n    {\n        Schema::table('feedback', function (Blueprint $table) {\n\n            // drop FK first\n            $table->dropForeign(['user_id']);\n\n            // drop column\n            $table->dropColumn('user_id');\n        });\n    }\n};\n"
+        }
+    ]
+}

@@ -129,7 +129,8 @@
                     </div>
 
                     <!-- USER MANAGEMENT -->
-                    @include('swisa-admin.settings.user-management')
+                    @include('swisa-admin.settings.user-management', ['users' => $users])
+
 
                     <!-- Notifications -->
                     <div id="notifications-section" class="settings-section hidden">
@@ -188,33 +189,8 @@
                         </div>
                     </div>
 
-                    <!-- CHAT SETTINGS -->
-                    <div id="chat-section" class="settings-section hidden">
-                        <h3 class="text-xl font-semibold text-[#2C6E49] mb-4">💬 Chat Settings</h3>
-                        <p class="text-gray-600 text-sm mb-4">Manage system chat options and quick replies.</p>
+                    @include('swisa-admin.settings.chat-section', ['roles' => $roles, 'quickReplies' => $quickReplies])
 
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center border p-4 rounded-lg">
-                                <div>
-                                    <p class="font-medium text-gray-800">Quick Replies</p>
-                                    <p class="text-sm text-gray-500">Create, edit, or remove predefined replies for faster responses.</p>
-                                </div>
-                                <a class="px-4 py-2 bg-accent-green text-white rounded-lg hover:bg-primary-green transition">
-                                    Manage
-                                </a>
-                            </div>
-
-                            <div class="flex justify-between items-center border p-4 rounded-lg">
-                                <div>
-                                    <p class="font-medium text-gray-800">Auto Greeting Message</p>
-                                    <p class="text-sm text-gray-500">Set a default message when users open the chat.</p>
-                                </div>
-                                <button class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
-                                    Edit
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- MODULES CONTROL -->
                     <div id="modules-section" class="settings-section hidden">
@@ -282,14 +258,51 @@
         </div>
     </div>
 
-    <!-- JS for Tabs -->
-    <script>
-        function showSection(section, btn) {
-            document.querySelectorAll('.settings-section').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('bg-hover-green', 'font-semibold', 'text-custom'));
 
-            document.getElementById(section + '-section').classList.remove('hidden');
+    <script>
+    function showSection(section, btn) {
+        document.querySelectorAll('.settings-section').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('bg-hover-green', 'font-semibold', 'text-custom'));
+
+        document.getElementById(section + '-section').classList.remove('hidden');
+
+        if(btn) {
             btn.classList.add('bg-hover-green', 'font-semibold', 'text-custom');
         }
-    </script>
+    }
+
+    // Auto-open section if query parameter exists
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const section = urlParams.get('section');
+
+        if(section && document.getElementById(section + '-section')) {
+            const btn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.textContent.trim().toLowerCase().includes(section));
+            showSection(section, btn);
+        } else {
+            // default section
+            showSection('general', document.querySelector('.nav-btn'));
+        }
+    });
+    function showSection(section, btn) {
+    // Hide all sections
+    document.querySelectorAll('.settings-section').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('bg-hover-green', 'font-semibold', 'text-custom'));
+
+    // Show selected section
+    document.getElementById(section + '-section').classList.remove('hidden');
+
+    // Highlight button
+    if(btn) {
+        btn.classList.add('bg-hover-green', 'font-semibold', 'text-custom');
+    }
+
+    // ✅ Update URL without reloading (important!)
+    const newUrl = window.location.pathname + '?section=' + section;
+    window.history.replaceState(null, '', newUrl);
+}
+
+</script>
+
+
 @endsection

@@ -16,12 +16,15 @@
         <link href="https://fonts.googleapis.com/css2?family=Rubik&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="{{ asset('css/global.css') }}">
         <link rel="stylesheet" href="{{ asset('css/forsidebar.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/forFont.css') }}">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         
         <script src="//unpkg.com/alpinejs" defer></script>
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 
         <!-- QR Scanner Library -->
         <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
@@ -68,3 +71,15 @@
     });
 </script>
 
+
+
+
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+</script>

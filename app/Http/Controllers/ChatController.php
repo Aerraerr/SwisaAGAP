@@ -11,6 +11,9 @@ use App\Events\MessageSent;
 
 class ChatController extends Controller
 {
+    // ==============================
+    // ADMIN WEB INTERFACE METHODS
+    // ==============================
     public function index()
     {
         $user = auth()->user();
@@ -18,20 +21,11 @@ class ChatController extends Controller
         $chats = Chat::with([
             'admin',
             'supportStaff',
-            'messages' => function ($q) {
-                $q->latest()->limit(1);
-            }
+            'messages' => fn($q) => $q->latest()->limit(1)
         ])
-        ->when($user->role_id == 2, function ($q) use ($user) {
-            $q->where('support_staff_id', $user->id);
-        })
-        ->when($user->role_id == 3, function ($q) use ($user) {
-            // Admin can see all
-        })
+        ->when($user->role_id == 2, fn($q) => $q->where('support_staff_id', $user->id))
         ->get()
-        ->sortByDesc(function ($chat) {
-            return optional($chat->messages->first())->created_at ?? now()->subYears(10);
-        })
+        ->sortByDesc(fn($chat) => optional($chat->messages->first())->created_at ?? now()->subYears(10))
         ->values();
 
         $chat = $chats->first();
@@ -46,7 +40,7 @@ class ChatController extends Controller
         $currentUser = auth()->user();
         $otherUser = User::findOrFail($userId);
 
-        // Find or create chat
+        // Find or create chat between admin and support staff
         $chat = Chat::where(function ($q) use ($currentUser, $otherUser) {
                 $q->where('admin_id', $currentUser->id)
                   ->where('support_staff_id', $otherUser->id);
@@ -64,15 +58,10 @@ class ChatController extends Controller
             ]);
         }
 
-        // 🔹 Sort chats again by last message created_at
-        $chats = Chat::with(['admin','supportStaff','messages' => function ($q) {
-            $q->latest()->limit(1);
-        }])
-        ->get()
-        ->sortByDesc(function ($chat) {
-            return optional($chat->messages->first())->created_at ?? now()->subYears(10);
-        })
-        ->values();
+        $chats = Chat::with(['admin', 'supportStaff', 'messages' => fn($q) => $q->latest()->limit(1)])
+            ->get()
+            ->sortByDesc(fn($chat) => optional($chat->messages->first())->created_at ?? now()->subYears(10))
+            ->values();
 
         $messages = $chat->messages()->with('user')->oldest()->get();
         $quickReplies = QuickReply::all();
@@ -80,6 +69,9 @@ class ChatController extends Controller
         return view('swisa-admin.messages', compact('chats', 'chat', 'messages', 'quickReplies'));
     }
 
+    // ==============================
+    // MESSAGE HANDLING
+    // ==============================
     public function sendMessage(Request $request, $chatId)
     {
         $request->validate(['message' => 'required|string']);
@@ -103,50 +95,69 @@ class ChatController extends Controller
             'created_at' => $message->created_at->format('Y-m-d h:i A'),
             'user' => [
                 'id' => $message->user->id,
-                'name' => $message->user->name,
+                'name' => $message->user->first_name . ' ' . $message->user->last_name,
             ],
         ]);
     }
 
     public function poll(Request $request, $chatId)
     {
-        $lastId = $request->query('last_id', 0);
-        $chat = Chat::findOrFail($chatId);
+        try {
+            $lastId = (int) $request->query('last_id', 0);
+            $chat = Chat::findOrFail($chatId);
 
-        $messages = $chat->messages()
-            ->with('user:id,name')
-            ->where('id', '>', $lastId)
-            ->orderBy('id', 'asc')
-            ->get();
+            $messages = $chat->messages()
+                ->with('user:id,first_name,last_name')
+                ->where('id', '>', $lastId)
+                ->orderBy('id', 'asc')
+                ->get();
 
-        $unreadCount = $chat->messages()
-            ->where('id', '>', $lastId)
-            ->where('user_id', '!=', auth()->id())
-            ->count();
+            $unreadCount = $chat->messages()
+                ->where('id', '>', $lastId)
+                ->where('user_id', '!=', auth()->id())
+                ->count();
 
-        return response()->json([
-            'messages' => $messages,
-            'unread' => $unreadCount,
-        ]);
+            return response()->json([
+                'messages' => $messages,
+                'unread' => $unreadCount,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Poll error: '.$e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
+    // ==============================
+    // LOAD CHAT OR CREATE IF NOT EXIST (ADMIN AUTO-CREATION)
+    // ==============================
     public function load($userId)
     {
         $currentUser = auth()->user();
         $otherUser = User::findOrFail($userId);
 
-        $chat = Chat::where(function ($q) use ($currentUser, $otherUser) {
-                $q->where('admin_id', $currentUser->id)
-                ->where('support_staff_id', $otherUser->id);
-            })
-            ->orWhere(function ($q) use ($currentUser, $otherUser) {
-                $q->where('admin_id', $otherUser->id)
-                ->where('support_staff_id', $currentUser->id);
-            })
-            ->first();
+        // ✅ If admin is logged in (role_id = 3), ensure chat relation exists
+        if ($currentUser->role_id == 3) {
+            // Check existing chat between admin and selected user (any role)
+            $chat = Chat::where(function ($q) use ($currentUser, $otherUser) {
+                    $q->where('admin_id', $currentUser->id)
+                      ->where('support_staff_id', $otherUser->id);
+                })
+                ->orWhere(function ($q) use ($currentUser, $otherUser) {
+                    $q->where('admin_id', $otherUser->id)
+                      ->where('support_staff_id', $currentUser->id);
+                })
+                ->first();
 
-        if (!$chat) {
-            $chat = Chat::create([
+            // If no chat exists → create empty chat relation
+            if (!$chat) {
+                $chat = Chat::create([
+                    'admin_id' => $currentUser->id,
+                    'support_staff_id' => $otherUser->id,
+                ]);
+            }
+        } else {
+            // For support or member users, find or create based on existing logic
+            $chat = Chat::firstOrCreate([
                 'admin_id' => $currentUser->role_id == 3 ? $currentUser->id : $otherUser->id,
                 'support_staff_id' => $currentUser->role_id == 2 ? $currentUser->id : $otherUser->id,
             ]);
@@ -163,6 +174,9 @@ class ChatController extends Controller
         ]);
     }
 
+    // ==============================
+    // UNREAD MESSAGE CHECK
+    // ==============================
     public function checkUnread()
     {
         $currentUserId = auth()->id();
@@ -196,6 +210,9 @@ class ChatController extends Controller
         return response()->json($result);
     }
 
+    // ==============================
+    // MARK AS READ
+    // ==============================
     public function markAsRead($chatId)
     {
         $chat = Chat::findOrFail($chatId);
@@ -207,5 +224,14 @@ class ChatController extends Controller
             ->update(['is_read' => true]);
 
         return response()->json(['success' => true]);
+    }
+
+    // ==============================
+    // MOBILE QUICK REPLIES ENDPOINT
+    // ==============================
+    public function getQuickReplies()
+    {
+        $quickReplies = QuickReply::select('id', 'question', 'answer')->get();
+        return response()->json($quickReplies);
     }
 }

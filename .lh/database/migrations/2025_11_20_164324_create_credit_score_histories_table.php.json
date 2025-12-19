@@ -1,0 +1,18 @@
+{
+    "sourceFile": "database/migrations/2025_11_20_164324_create_credit_score_histories_table.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1763628216166,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1763628216166,
+            "name": "Commit-0",
+            "content": "<?php\nuse Illuminate\\Database\\Migrations\\Migration;\nuse Illuminate\\Database\\Schema\\Blueprint;\nuse Illuminate\\Support\\Facades\\Schema;\n\nreturn new class extends Migration {\n    public function up(): void {\n        Schema::create('credit_score_histories', function (Blueprint $table) {\n            $table->id();\n            $table->foreignId('user_id')->constrained()->onDelete('cascade');\n            $table->string('activity');\n            $table->integer('points');\n            $table->timestamps();\n        });\n    }\n    public function down(): void {\n        Schema::dropIfExists('credit_score_histories');\n    }\n};\n\n"
+        }
+    ]
+}

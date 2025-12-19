@@ -1,0 +1,26 @@
+{
+    "sourceFile": "app/Models/Participant.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1763819590008,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1763819630874,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,19 +11,21 @@\n class Participant extends Model\n {\n     use HasFactory;\n \n-    protected $fillable = ['training_id','user_id','qr_scanned','check_in_at'];\n+    protected $fillable = [\n+        'training_id',\n+        'user_id',\n+    ];\n \n-    public function user() {\n-        return $this->belongsTo(User::class);\n-    }\n-\n     //RELATIONSHIPS\n \n     //participant belongs to a training\n     public function training(){\n         return $this->belongsTo(Training::class);\n     }\n \n-\n+    //participant belongs to a user\n+    public function user(){\n+        return $this->belongsTo(User::class);\n+    }\n }\n"
+                },
+                {
+                    "date": 1764007590065,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,28 @@\n+<?php\n+\n+namespace App\\Models;\n+\n+use Illuminate\\Database\\Eloquent\\Factories\\HasFactory;\n+use Illuminate\\Database\\Eloquent\\Model;\n+\n+use App\\Models\\Training;\n+use App\\Models\\User;\n+\n+class Participant extends Model\n+{\n+    use HasFactory;\n+\n+protected $fillable = ['training_id', 'user_id', 'qr_scanned', 'check_in_at'];\n+\n+    //RELATIONSHIPS\n+\n+    //participant belongs to a training\n+    public function training(){\n+        return $this->belongsTo(Training::class);\n+    }\n+\n+    //participant belongs to a user\n+    public function user(){\n+        return $this->belongsTo(User::class);\n+    }\n+}\n"
+                }
+            ],
+            "date": 1763819590008,
+            "name": "Commit-0",
+            "content": "<?php\n\nnamespace App\\Models;\n\nuse Illuminate\\Database\\Eloquent\\Factories\\HasFactory;\nuse Illuminate\\Database\\Eloquent\\Model;\n\nuse App\\Models\\Training;\nuse App\\Models\\User;\n\nclass Participant extends Model\n{\n    use HasFactory;\n\n    protected $fillable = ['training_id','user_id','qr_scanned','check_in_at'];\n\n    public function user() {\n        return $this->belongsTo(User::class);\n    }\n\n    //RELATIONSHIPS\n\n    //participant belongs to a training\n    public function training(){\n        return $this->belongsTo(Training::class);\n    }\n\n\n}\n"
+        }
+    ]
+}

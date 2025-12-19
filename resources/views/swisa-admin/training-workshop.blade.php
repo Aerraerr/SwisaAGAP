@@ -11,7 +11,6 @@
                     Organize, monitor, and showcase SWISA initiatives, programs, and community events.
                 </p>
             </div>
-            @include('components.UserTab')
         </div>
     </div>
 

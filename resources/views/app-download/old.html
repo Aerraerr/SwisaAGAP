@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download SWISA-AGAP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Base Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap');
+        
+        body { font-family: 'Poppins', sans-serif; }
+
+        .nav-link {
+            @apply text-gray-700 hover:text-primary-green transition font-semibold py-1 px-1; 
+        }
+
+        .active-link {
+            @apply border-b-2 border-primary-green text-primary-green;
+        }
+
+        /* --- Custom CSS for Scroll Reveal Animation (Kept) --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            will-change: opacity, transform;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .reveal-delay-100 { transition-delay: 100ms; }
+        .reveal-delay-200 { transition-delay: 200ms; }
+        .reveal-delay-300 { transition-delay: 300ms; }
+
+        /* --- Custom CSS for Leaf Animation (Kept) --- */
+        
+        /* The container for the image must be relative */
+        #img-container {
+            position: relative;
+            display: inline-block; /* Essential to keep the relative size correct */
+            cursor: pointer;
+        }
+
+        .leaf {
+            position: absolute;
+            background-color: #34d399; /* accent-green */
+            width: 10px;
+            height: 15px; 
+            border-radius: 50% 0 50% 50% / 60% 0 40% 40%;
+            pointer-events: none;
+            z-index: 10;
+            animation: falling-leaf 2s ease-out forwards; 
+        }
+
+        @keyframes falling-leaf {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x), var(--y)) rotate(var(--r)); 
+                opacity: 0;
+            }
+        }
+        
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-green': '#059669',
+                        'accent-green': '#34d399',
+                        'cream-bg': 'transparent',
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-[#e0f2f1] text-gray-900 overflow-x-hidden">
+
+<header class="bg-cream-bg py-3 ">
+    <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+        <img src="{{ asset('images/swisa-agap4.png') }}" 
+             alt="Swisa AGAP Logo" 
+             class="w-[#80px] h-16 object-contain">
+
+        <nav class="flex gap-6">
+            <a href="/" class="nav-link active-link">Home</a>
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#about" class="nav-link">About Us</a>
+        </nav>
+    </div>
+</header>
+
+<section id="download" class="relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 py-16 md:py-24 flex flex-col md:flex-row items-center gap-12">
+        
+        <div class="md:w-6/12 text-center md:text-left">
+            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4 reveal">
+                Download the <span class="text-primary-green">SWISA-AGAP</span> App
+            </h1>
+            <p class="text-lg text-gray-700 mb-6 reveal reveal-delay-100">
+                Empowering farmers, fishers, and agribusiness owners with real-time data, training modules, and community support — anytime, anywhere.
+            </p>
+            <p class="text-primary-green font-semibold mb-2 text-lg reveal reveal-delay-200">Available now for Android</p>
+
+            <a href="{{ asset('downloads/swisa-agap.apk') }}" download
+                class="inline-flex items-center justify-center px-8 py-3 bg-primary-green text-white font-semibold rounded-full shadow-md hover:bg-primary-green/90 transition transform hover:scale-105 reveal reveal-delay-300">
+                <svg class="w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download APK
+            </a>
+            <p class="mt-4 text-sm text-gray-500 reveal reveal-delay-400">
+                Compatible with Android 10+ • iOS version coming soon
+            </p>
+        </div>
+
+        <div class="md:w-6/12 flex justify-center reveal reveal-delay-200">
+             <div id="img-container">
+                <img src="{{ asset('images/download.png') }}" 
+                    alt="SWISA-AGAP App Illustration" 
+                    class="w-full max-w-[460px] object-contain select-none pointer-events-none">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="features" class="max-w-7xl mx-auto px-6 py-16">
+    <h2 class="text-3xl sm:text-4xl font-extrabold text-center mb-10 reveal">App Features</h2>
+    <div class="grid gap-8 md:grid-cols-3">
+        <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition reveal">
+            <h3 class="font-bold text-lg mb-2">Fast & Lightweight</h3>
+            <p class="text-gray-600 text-sm">Optimized to perform smoothly even in areas with limited connectivity.</p>
+        </div>
+        <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition reveal reveal-delay-100">
+            <h3 class="font-bold text-lg mb-2">All-in-One</h3>
+            <p class="text-gray-600 text-sm">Access reports, events, member management, and resources in one place.</p>
+        </div>
+        <div class="p-6 bg-white rounded-2xl shadow hover:shadow-lg transition reveal reveal-delay-200">
+            <h3 class="font-bold text-lg mb-2">Community-Driven</h3>
+            <p class="text-gray-600 text-sm">Built for and with the SWISA community to keep everyone connected.</p>
+        </div>
+    </div>
+</section>
+
+<footer id="contact" class="bg-[#4C956C] bg-opacity-70 text-white py-8">
+    <div class="max-w-7xl mx-auto px-6 text-center text-sm">
+        &copy; 2025 SWISA-AGAP Project. All rights reserved. Supported by the Provincial Government of Sorsogon.
+    </div>
+</footer>
+
+<script>
+    // --- JavaScript Logic (Kept) ---
+    document.addEventListener('DOMContentLoaded', function() {
+        // Scroll Reveal Logic
+        const revealElements = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { rootMargin: '0px', threshold: 0.1 });
+        revealElements.forEach(element => {
+            observer.observe(element);
+        });
+
+        // Navigation Active State Logic
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                navLinks.forEach(item => {
+                    item.classList.remove('active-link');
+                });
+                this.classList.add('active-link');
+                
+                event.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId.startsWith('#')) {
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+        
+        // Leaf Animation Logic
+        const imgContainer = document.getElementById('img-container');
+        
+        if (imgContainer) {
+            const NUMBER_OF_LEAVES = 10;
+            const HORIZONTAL_DRIFT = 50;
+            const VERTICAL_FALL = 200;
+
+            const launchLeaves = (x, y) => {
+                for (let i = 0; i < NUMBER_OF_LEAVES; i++) {
+                    const leaf = document.createElement('div');
+                    leaf.classList.add('leaf');
+                    
+                    leaf.style.left = `${x}px`;
+                    leaf.style.top = `${y}px`;
+
+                    const randomX = (Math.random() - 0.5) * HORIZONTAL_DRIFT * 2;
+                    const randomY = Math.random() * VERTICAL_FALL;
+                    const randomRotation = 360 + (Math.random() * 720);
+
+                    leaf.style.setProperty('--x', `${randomX}px`);
+                    leaf.style.setProperty('--y', `${randomY}px`);
+                    leaf.style.setProperty('--r', `${randomRotation}deg`);
+
+                    const sizeX = 10 + Math.random() * 5;
+                    const sizeY = 15 + Math.random() * 5;
+                    leaf.style.width = `${sizeX}px`;
+                    leaf.style.height = `${sizeY}px`;
+
+                    const hue = 140 + (Math.random() * 20 - 10);
+                    leaf.style.backgroundColor = `hsl(${hue}, 70%, 50%)`;
+
+                    imgContainer.appendChild(leaf);
+
+                    leaf.addEventListener('animationend', () => {
+                        leaf.remove();
+                    });
+                }
+            };
+
+            let isLaunching = false;
+            imgContainer.addEventListener('mousemove', (e) => {
+                if (isLaunching) return;
+
+                isLaunching = true;
+                setTimeout(() => {
+                    isLaunching = false;
+                }, 150);
+
+                const rect = imgContainer.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                launchLeaves(x, y);
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

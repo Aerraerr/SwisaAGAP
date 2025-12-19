@@ -1,0 +1,30 @@
+{
+    "sourceFile": "resources/views/charts/monthly-requests.blade.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1764440177887,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1764440721694,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,11 +11,11 @@\n     <div class=\"flex-1\">\r\n         <canvas id=\"monthlyRequestsChart\"></canvas>\r\n     </div>\r\n     \r\n-    <div class=\"text-right mt-2\">\r\n-        <a href=\"#\" class=\"text-xs text-custom\">View &rarr;</a>\r\n-    </div>\r\n+                        <div class=\"text-right\">\r\n+                            <a href=\"{{ route('grantsNequipment') }}\" class=\"text-sm text-[#2C6E49] hover:underline\">View All Requests &gt;</a>\r\n+                        </div>\r\n </div>\r\n \r\n \r\n @push('scripts')\r\n"
+                },
+                {
+                    "date": 1764440827352,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n         <canvas id=\"monthlyRequestsChart\"></canvas>\r\n     </div>\r\n     \r\n                         <div class=\"text-right\">\r\n-                            <a href=\"{{ route('grantsNequipment') }}\" class=\"text-sm text-[#2C6E49] hover:underline\">View All Requests &gt;</a>\r\n+                            <a href=\"{{ route('admin-reports') }}\" class=\"text-sm text-[#2C6E49] hover:underline\">View All Requests &gt;</a>\r\n                         </div>\r\n </div>\r\n \r\n \r\n"
+                },
+                {
+                    "date": 1764440834017,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,11 +11,11 @@\n     <div class=\"flex-1\">\r\n         <canvas id=\"monthlyRequestsChart\"></canvas>\r\n     </div>\r\n     \r\n-                        <div class=\"text-right\">\r\n-                            <a href=\"{{ route('admin-reports') }}\" class=\"text-sm text-[#2C6E49] hover:underline\">View All Requests &gt;</a>\r\n-                        </div>\r\n+    <div class=\"text-right\">\r\n+        <a href=\"{{ route('admin-reports') }}\" class=\"text-sm text-[#2C6E49] hover:underline\">View All Requests &gt;</a>\r\n+    </div>\r\n </div>\r\n \r\n \r\n @push('scripts')\r\n"
+                }
+            ],
+            "date": 1764440177887,
+            "name": "Commit-0",
+            "content": "<!-- Add this in your <head> if not already -->\r\n<link href=\"https://fonts.googleapis.com/icon?family=Material+Icons\" rel=\"stylesheet\">\r\n\r\n<div class=\"lg:col-span-8 h-[400px] bg-white p-7 rounded-xl shadow flex flex-col\">\r\n    <p class=\"font-semibold mb-2 primary-color dashheader flex items-center\">\r\n        <span class=\"material-icons mr-2 text-custom\">show_chart</span>\r\n        Monthly Request Submissions\r\n    </p>\r\n    \r\n    {{-- Chart Container --}}\r\n    <div class=\"flex-1\">\r\n        <canvas id=\"monthlyRequestsChart\"></canvas>\r\n    </div>\r\n    \r\n    <div class=\"text-right mt-2\">\r\n        <a href=\"#\" class=\"text-xs text-custom\">View &rarr;</a>\r\n    </div>\r\n</div>\r\n\r\n\r\n@push('scripts')\r\n<script src=\"https://cdn.jsdelivr.net/npm/chart.js\"></script>\r\n<script>\r\ndocument.addEventListener(\"DOMContentLoaded\", function () {\r\n    const primaryGreen = getComputedStyle(document.documentElement)\r\n        .getPropertyValue('--primary-green').trim();\r\n    const accentGreen = getComputedStyle(document.documentElement)\r\n        .getPropertyValue('--icon-color').trim();\r\n\r\n    const ctx = document.getElementById('monthlyRequestsChart').getContext('2d');\r\n    new Chart(ctx, {\r\n        type: 'line',\r\n        data: {\r\n            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],\r\n            datasets: [{\r\n                label: 'Requests',\r\n                data: [12, 19, 15, 22, 30, 28, 35, 120, 110, 130, 95, 115],\r\n                borderColor: primaryGreen,\r\n                backgroundColor: accentGreen + '40', // 33 = ~20% opacity\r\n                fill: true,\r\n                tension: 0.2\r\n            }]\r\n        },\r\n    options: {\r\n        responsive: true,\r\n        maintainAspectRatio: false,\r\n        plugins: {\r\n            legend: { display: false },\r\n            tooltip: {\r\n                enabled: true, // make sure tooltips are active\r\n                mode: 'index',\r\n                intersect: false,\r\n                callbacks: {\r\n                    label: function(context) {\r\n                        return context.dataset.label + ': ' + context.parsed.y;\r\n                    }\r\n                }\r\n            }\r\n        },\r\n        scales: {\r\n            y: { beginAtZero: true }\r\n        }\r\n    }\r\n\r\n    });\r\n});\r\n</script>\r\n@endpush\r\n"
+        }
+    ]
+}

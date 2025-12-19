@@ -1,0 +1,22 @@
+{
+    "sourceFile": "database/migrations/2025_11_26_064714_create_feedback_table.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1764146451704,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1764146459565,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,15 +10,15 @@\n      * Run the migrations.\n      */\n     public function up(): void\n     {\n-Schema::create('feedback', function (Blueprint $table) {\n-    $table->bigIncrements('id');\n-    $table->unsignedBigInteger('user_id')->nullable(); // allow anonymous\n-    $table->unsignedTinyInteger('rating')->nullable();\n-    $table->text('feedback')->nullable();\n-    $table->timestamps();\n-});\n+    Schema::create('feedback', function (Blueprint $table) {\n+        $table->bigIncrements('id');\n+        $table->unsignedBigInteger('user_id')->nullable(); // allow anonymous\n+        $table->unsignedTinyInteger('rating')->nullable();\n+        $table->text('feedback')->nullable();\n+        $table->timestamps();\n+    });\n \n     }\n \n     /**\n"
+                }
+            ],
+            "date": 1764146451704,
+            "name": "Commit-0",
+            "content": "<?php\n\nuse Illuminate\\Database\\Migrations\\Migration;\nuse Illuminate\\Database\\Schema\\Blueprint;\nuse Illuminate\\Support\\Facades\\Schema;\n\nreturn new class extends Migration\n{\n    /**\n     * Run the migrations.\n     */\n    public function up(): void\n    {\nSchema::create('feedback', function (Blueprint $table) {\n    $table->bigIncrements('id');\n    $table->unsignedBigInteger('user_id')->nullable(); // allow anonymous\n    $table->unsignedTinyInteger('rating')->nullable();\n    $table->text('feedback')->nullable();\n    $table->timestamps();\n});\n\n    }\n\n    /**\n     * Reverse the migrations.\n     */\n    public function down(): void\n    {\n        Schema::dropIfExists('feedback');\n    }\n};\n"
+        }
+    ]
+}

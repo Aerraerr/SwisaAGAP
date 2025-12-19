@@ -8,6 +8,9 @@ use App\Models\Sector;
 use App\Models\Training;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Services\SMSService;
 
 class TrainingController extends Controller
 {
@@ -32,103 +35,138 @@ class TrainingController extends Controller
 
     //add event function
     public function addTraining(Request $request){
-        // validate the form data/input
-        $request->validate([
-            'event_name' => 'required|string|max:255',
-            'sector' => 'required|exists:sectors,id',
-            'description' => 'nullable|string',
-            'venue' => 'required|string|max:255',
-            'date' => 'required|date',
-            'time' => 'required|date_format:H:i',
-        ]);
-
-        //store to table 'training'
-        $event = Training::create([
-            'title' => $request->event_name,
-            'sector_id' => $request->sector,
-            'description'   => $request->description,
-            'venue' => $request->venue,
-            'date' => $request->date,
-            'time' => $request->time,
-        ]);
-
-        //handle the file upload
-        if ($request->hasFile('event_image')) {
-            $file = $request->file('event_image');
-            $path = $file->store('events', 'public'); // saves in storage/app/public/events
-
-            $event->documents()->create([
-                'file_path'  => $path,
-                'file_name'  => $file->getClientOriginalName(), //gets the file name (e.g. docs.jpg)
+        try{
+            // validate the form data/input
+            $request->validate([
+                'event_name' => 'required|string|max:255',
+                'sector' => 'required|exists:sectors,id',
+                'description' => 'nullable|string',
+                'venue' => 'required|string|max:255',
+                'date' => 'required|date',
+                'time' => 'required|date_format:H:i',
+                'event_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5760',
             ]);
-        }
 
-        return redirect()->back()->with('success', 'Grant Added!');
+            //store to table 'training'
+            $event = Training::create([
+                'title' => $request->event_name,
+                'sector_id' => $request->sector,
+                'description'   => $request->description,
+                'venue' => $request->venue,
+                'date' => $request->date,
+                'time' => $request->time,
+            ]);
+
+            //handle the file upload
+            if ($request->hasFile('event_image')) {
+                $file = $request->file('event_image');
+                $path = $file->store('events', 'public'); // saves in storage/app/public/events
+
+                $event->documents()->create([
+                    'file_path'  => $path,
+                    'file_name'  => $file->getClientOriginalName(), //gets the file name (e.g. docs.jpg)
+                ]);
+            }
+
+            //send sms test
+            $user = Auth::user();
+
+            if ($user && $user->phone_number) {
+
+                //dd('SMS code reached', $user->phone_number);
+                
+                $number = $user->phone_number;
+                $message = 'Test SMS: A new event was published!';
+
+                SMSService::send($number, $message);
+            }
+
+            return redirect()->back()->with('success', 'Initiative/Event Added!');
+        }catch(\Exception $error){
+            Log::error('Event Creation Error: ' . $error->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong while creating initiative/event.');
+        }
     }
 
     //function to show specific data viewed in training
     public function viewTrainingDetails($id){
         $training = Training::with(['sector', 'documents', 'participants'])->findOrFail($id);
-
+        $isFinished = now()->greaterThan($training->date);
         $sectors = Sector::all();      
         $participants = Participant::all();
 
-        return view('swisa-admin.view-training', compact('training', 'sectors', 'participants'));
+        return view('swisa-admin.view-training', compact('training', 'sectors', 'participants', 'isFinished'));
     }
 
     //function to edit info of the grant
     public function editTrainingInfo(Request $request, $id){
         
-        // validate the form data/input
-        $request->validate([
-            'event_name' => 'required|string|max:255',
-            'sector' => 'required|exists:sectors,id',
-            'description' => 'nullable|string',
-            'venue' => 'required|string|max:255',
-            'date' => 'required|date',
-            'time' => 'required|date_format:H:i',
-        ]);
-
-        $training = Training::findOrFail($id);
-
-        //store to table 'grants'
-        $training->update([
-            'title' => $request->event_name,
-            'sector_id' => $request->sector,
-            'description'   => $request->description,
-            'venue' => $request->venue,
-            'date' => $request->date,
-            'time' => $request->time,
-        ]);
-
-        //handle the file upload
-        if ($request->hasFile('event_image')) {
-            $file = $request->file('event_image');
-            $path = $file->store('events', 'public'); // saves in storage/app/public/grants
-
-            // replace old file if new file is inputed
-            $training->documents()->delete();
-
-            $training->documents()->create([
-                'file_path'  => $path,
-                'file_name'  => $file->getClientOriginalName(), //gets the file name (e.g. docs.jpg)
+        try{
+            // validate the form data/input
+            $request->validate([
+                'event_name' => 'required|string|max:255',
+                'sector' => 'required|exists:sectors,id',
+                'description' => 'nullable|string',
+                'venue' => 'required|string|max:255',
+                'date' => 'required|date',
+                'time' => 'required|date_format:H:i',
             ]);
-        }
 
-        // Attach requirements (if any selected)
-        if ($request->has('requirements')) {
-            $training->requirements()->sync($request->requirements); //syncs to the pivot table 'grant_requirements'
-        }
+            $training = Training::findOrFail($id);
 
-        return redirect()->back()->with('success', 'Training Updated!');
+            //store to table 'grants'
+            $training->update([
+                'title' => $request->event_name,
+                'sector_id' => $request->sector,
+                'description'   => $request->description,
+                'venue' => $request->venue,
+                'date' => $request->date,
+                'time' => $request->time,
+            ]);
+
+            //handle the file upload
+            if ($request->hasFile('event_image')) {
+                $file = $request->file('event_image');
+                $path = $file->store('events', 'public'); // saves in storage/app/public/grants
+
+                // replace old file if new file is inputed
+                $training->documents()->delete();
+
+                $training->documents()->create([
+                    'file_path'  => $path,
+                    'file_name'  => $file->getClientOriginalName(), //gets the file name (e.g. docs.jpg)
+                ]);
+            }
+
+            // Attach requirements (if any selected)
+            if ($request->has('requirements')) {
+                $training->requirements()->sync($request->requirements); //syncs to the pivot table 'grant_requirements'
+            }
+
+            return redirect()->back()->with('success', 'Training Updated!');
+        }catch(\Exception $error){
+            Log::error('Event Update Error: ' . $error->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong while updating initiative/event.');
+        }
     }
 
      //delete Training
     public function deleteTraining($id){
-        $training = Training::findOrFail($id);
+        try{
+            $training = Training::findOrFail($id);
 
-        $training->delete();
+            $training->delete();
 
-        return redirect()->route('training-workshop')->with('success', 'Training Deleted!');
+            return redirect()->route('training-workshop')->with('success', 'Training Deleted!');
+        }catch(\Exception $error){
+            Log::error('Event Deletion Error: ' . $error->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong while deleting initiative/event.');
+        }
     }
+
+    //=============================
+    // FOR SCAN ATTENDANCE
+    //=============================
+    
+    
 }

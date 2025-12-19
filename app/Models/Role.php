@@ -17,8 +17,14 @@ class Role extends Model
         'role_name',
     ];
 
-    //users: one role can have many users
-    public function users(){
+    // Users under this role
+    public function users() {
         return $this->hasMany(User::class);
+    }
+
+    // ✅ Automatically format role_name when accessed
+    public function getRoleNameAttribute($value)
+    {
+        return ucwords(str_replace('_', ' ', $value));
     }
 }

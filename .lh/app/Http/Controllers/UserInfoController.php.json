@@ -1,0 +1,18 @@
+{
+    "sourceFile": "app/Http/Controllers/UserInfoController.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1763835990122,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1763835990122,
+            "name": "Commit-0",
+            "content": "<?php\r\nnamespace App\\Http\\Controllers;\r\n\r\nuse Illuminate\\Http\\Request;\r\nuse App\\Models\\UserInfo;\r\n\r\nclass UserInfoController extends Controller\r\n{\r\n    public function scanQr($qr)\r\n    {\r\n        $user = UserInfo::where('qr_code', $qr)->first();\r\n\r\n        if ($user) {\r\n            return response()->json([\r\n                'success' => true,\r\n                'name' => $user->name,\r\n            ]);\r\n        }\r\n\r\n        return response()->json([\r\n            'success' => false,\r\n            'message' => 'User not found.'\r\n        ]);\r\n    }\r\n}\r\n"
+        }
+    ]
+}

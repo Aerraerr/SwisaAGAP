@@ -163,7 +163,6 @@
   <div class="flex justify-between items-center px-4 py-3 border-b">
     <h2 class="font-bold text-lg text-gray-700">Notifications</h2>
     <button id="notif-close" class="text-gray-600 hover:text-black">
-      <span class="material-icons">close</span>
     </button>
   </div>
   <div class="p-4 overflow-y-auto h-[calc(100%-3rem)]">

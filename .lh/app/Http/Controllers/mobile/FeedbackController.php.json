@@ -1,0 +1,38 @@
+{
+    "sourceFile": "app/Http/Controllers/mobile/FeedbackController.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 5,
+            "patches": [
+                {
+                    "date": 1764146991780,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1764148329739,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,28 +7,29 @@\n use Illuminate\\Http\\Request;\n \n class FeedbackController extends Controller\n {\n-    public function store(Request $request)\n-    {\n-        $validated = $request->validate([\n-            'rating'   => 'nullable|integer|min:1|max:5',\n-            'feedback' => 'nullable|string|max:1000',\n-            'user_id'  => 'nullable|exists:users,id', // allow anonymous\n-        ]);\n+public function store(Request $request)\n+{\n+    $validated = $request->validate([\n+        'rating'   => 'nullable|integer|min:1|max:5',\n+        'feedback' => 'nullable|string|max:1000',\n+        'user_id'  => 'nullable|exists:users,id', // can be null\n+    ]);\n \n-        Feedback::create([\n-            'user_id'  => $validated['user_id'] ?? auth()->id(), // use logged in user OR null\n-            'rating'   => $validated['rating'] ?? null,\n-            'feedback' => $validated['feedback'] ?? null,\n-        ]);\n+    Feedback::create([\n+        'user_id'  => $validated['user_id'] ?? null, // use request user_id or null\n+        'rating'   => $validated['rating'] ?? null,\n+        'feedback' => $validated['feedback'] ?? null,\n+    ]);\n \n-        return response()->json([\n-            'success' => true,\n-            'message' => 'Thank you for your feedback!'\n-        ]);\n-    }\n+    return response()->json([\n+        'success' => true,\n+        'message' => 'Thank you for your feedback!'\n+    ]);\n+}\n \n+\n     public function index()\n     {\n         $allFeedback = Feedback::with('user') // include user info\n             ->orderBy('created_at', 'desc')\n"
+                },
+                {
+                    "date": 1764148792766,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,9 +16,9 @@\n         'user_id'  => 'nullable|exists:users,id', // can be null\n     ]);\n \n     Feedback::create([\n-        'user_id'  => $validated['user_id'] ?? null, // use request user_id or null\n+        'user_id'  => $validated['user_id'], // use request user_id or null\n         'rating'   => $validated['rating'] ?? null,\n         'feedback' => $validated['feedback'] ?? null,\n     ]);\n \n"
+                },
+                {
+                    "date": 1764155059602,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -39,5 +39,8 @@\n             'success' => true,\n             'data'    => $allFeedback\n         ]);\n     }\n+    $feedbacks = \\App\\Models\\Feedback::latest()->get(); \n+return view('dashboard', compact('feedbacks'));\n+\n }\n"
+                },
+                {
+                    "date": 1764155067082,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -39,8 +39,6 @@\n             'success' => true,\n             'data'    => $allFeedback\n         ]);\n     }\n-    $feedbacks = \\App\\Models\\Feedback::latest()->get(); \n-return view('dashboard', compact('feedbacks'));\n-\n+    \n }\n"
+                },
+                {
+                    "date": 1764155157908,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -39,6 +39,12 @@\n             'success' => true,\n             'data'    => $allFeedback\n         ]);\n     }\n-    \n+    public function showFeedback()\n+{\n+    // Get all feedbacks with their related user (if user_id is null, user() will be null)\n+    $feedbacks = Feedback::with('user')->latest()->get();\n+\n+    return view('dashboard', compact('feedbacks'));\n }\n+}\n"
+                }
+            ],
+            "date": 1764146991780,
+            "name": "Commit-0",
+            "content": "<?php\n\nnamespace App\\Http\\Controllers\\mobile;\n\nuse App\\Http\\Controllers\\Controller;\nuse App\\Models\\Feedback;\nuse Illuminate\\Http\\Request;\n\nclass FeedbackController extends Controller\n{\n    public function store(Request $request)\n    {\n        $validated = $request->validate([\n            'rating'   => 'nullable|integer|min:1|max:5',\n            'feedback' => 'nullable|string|max:1000',\n            'user_id'  => 'nullable|exists:users,id', // allow anonymous\n        ]);\n\n        Feedback::create([\n            'user_id'  => $validated['user_id'] ?? auth()->id(), // use logged in user OR null\n            'rating'   => $validated['rating'] ?? null,\n            'feedback' => $validated['feedback'] ?? null,\n        ]);\n\n        return response()->json([\n            'success' => true,\n            'message' => 'Thank you for your feedback!'\n        ]);\n    }\n\n    public function index()\n    {\n        $allFeedback = Feedback::with('user') // include user info\n            ->orderBy('created_at', 'desc')\n            ->get();\n\n        return response()->json([\n            'success' => true,\n            'data'    => $allFeedback\n        ]);\n    }\n}\n"
+        }
+    ]
+}

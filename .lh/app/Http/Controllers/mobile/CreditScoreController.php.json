@@ -1,0 +1,22 @@
+{
+    "sourceFile": "app/Http/Controllers/mobile/CreditScoreController.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1763866043125,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1763866052532,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,32 +1,22 @@\n <?php\n-\n namespace App\\Http\\Controllers\\mobile;\n-\n use App\\Http\\Controllers\\Controller;\n use Illuminate\\Http\\Request;\n \n-class CreditScoreController extends Controller\n-{\n-    public function show(Request $request)\n-    {\n+class CreditScoreController extends Controller {\n+    public function show(Request $request) {\n         $user = $request->user();\n \n-        if (!$user) {\n-            return response()->json([\n-                'success' => false,\n-                'message' => 'Unauthenticated user.',\n-            ], 401);\n-        }\n-\n+        // Eager load the relationships for efficiency\n         $user->load('creditScore', 'creditScoreHistory');\n \n+        // Now you can safely use the score - it defaults to 20 from the model\n         $currentScore = $user->creditScore?->score ?? 20;\n         $history = $user->creditScoreHistory;\n \n         return response()->json([\n-            'success' => true,\n-            'current_score': $currentScore,\n+            'current_score' => $currentScore,\n             'history' => $history,\n         ]);\n     }\n }\n"
+                }
+            ],
+            "date": 1763866043125,
+            "name": "Commit-0",
+            "content": "<?php\n\nnamespace App\\Http\\Controllers\\mobile;\n\nuse App\\Http\\Controllers\\Controller;\nuse Illuminate\\Http\\Request;\n\nclass CreditScoreController extends Controller\n{\n    public function show(Request $request)\n    {\n        $user = $request->user();\n\n        if (!$user) {\n            return response()->json([\n                'success' => false,\n                'message' => 'Unauthenticated user.',\n            ], 401);\n        }\n\n        $user->load('creditScore', 'creditScoreHistory');\n\n        $currentScore = $user->creditScore?->score ?? 20;\n        $history = $user->creditScoreHistory;\n\n        return response()->json([\n            'success' => true,\n            'current_score': $currentScore,\n            'history' => $history,\n        ]);\n    }\n}\n"
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "sourceFile": "app/Models/ReportFeedback.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1764162963458,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1764164538107,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,24 +1,37 @@\n-<?php\r\n-\r\n-namespace App\\Models;\r\n-\r\n-use Illuminate\\Database\\Eloquent\\Model;\r\n-\r\n-class ReportFeedback extends Model\r\n-{\r\n-    // Specify table name\r\n-    protected $table = 'feedback';\r\n-\r\n-    // Allow mass assignment\r\n-    protected $fillable = [\r\n-        'user_id',\r\n-        'rating',\r\n-        'feedback',\r\n-    ];\r\n-\r\n-    // Feedback belongs to a User\r\n-    public function user()\r\n-    {\r\n-        return $this->belongsTo(User::class, 'user_id');\r\n-    }\r\n-}\r\n+<?php\n+\n+namespace App\\Models;\n+\n+use Illuminate\\Database\\Eloquent\\Factories\\HasFactory;\n+use Illuminate\\Database\\Eloquent\\Model;\n+\n+class ReportFeedback extends Model\n+{\n+    use HasFactory;\n+\n+    // The table name (since your table is 'feedback' not the plural)\n+    protected $table = 'feedback';\n+\n+    // Fillable columns (for mass assignment safety)\n+    protected $fillable = [\n+        'user_id',\n+        'rating',\n+        'feedback',\n+    ];\n+\n+    // helpful casts\n+    protected $casts = [\n+        'rating' => 'integer',\n+        'created_at' => 'datetime',\n+        'updated_at' => 'datetime',\n+    ];\n+\n+    /**\n+     * If the feedback is from a registered user.\n+     */\n+    public function user()\n+    {\n+        // assuming App\\Models\\User is your User model\n+        return $this->belongsTo(\\App\\Models\\User::class, 'user_id');\n+    }\n+}\n"
+                }
+            ],
+            "date": 1764162963457,
+            "name": "Commit-0",
+            "content": "<?php\r\n\r\nnamespace App\\Models;\r\n\r\nuse Illuminate\\Database\\Eloquent\\Model;\r\n\r\nclass ReportFeedback extends Model\r\n{\r\n    // Specify table name\r\n    protected $table = 'feedback';\r\n\r\n    // Allow mass assignment\r\n    protected $fillable = [\r\n        'user_id',\r\n        'rating',\r\n        'feedback',\r\n    ];\r\n\r\n    // Feedback belongs to a User\r\n    public function user()\r\n    {\r\n        return $this->belongsTo(User::class, 'user_id');\r\n    }\r\n}\r\n"
+        }
+    ]
+}

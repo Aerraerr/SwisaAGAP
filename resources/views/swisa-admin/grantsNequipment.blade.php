@@ -10,7 +10,6 @@
                     Manage, track, and monitor the availability of grants and equipment for SWISA members.
                 </p>
             </div>
-            @include('components.UserTab')
         </div>
 @include('components.breadcrumbs', ['breadcrumbName' => Route::currentRouteName()])
 

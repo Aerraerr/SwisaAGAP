@@ -402,11 +402,12 @@
         </a>
 
         @if(Auth::user()->role_id == 3)
-            <a class="menu-item {{ request()->routeIs('logs') ? 'active' : '' }}" 
-            href="{{ route('logs') }}">
-            <i class="material-icons">history</i>
-            <span class="menu-text">Activity Logs</span>
+            <a class="menu-item {{ request()->routeIs('logs.index') ? 'active' : '' }}" 
+              href="{{ route('logs.index') }}">
+                <i class="material-icons">history</i>
+                <span class="menu-text">Activity Logs</span>
             </a>
+
 
             <a class="menu-item {{ request()->routeIs('admin-reports') ? 'active' : '' }}" 
             href="{{ route('admin-reports') }}">

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "app/Http/Controllers/Report-Feedback.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1764156866258,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1764156866258,
+            "name": "Commit-0",
+            "content": "<?php\r\n\r\nnamespace App\\Http\\Controllers;\r\n\r\nuse App\\Http\\Controllers\\Controller;\r\nuse App\\Models\\Feedback;\r\n\r\nclass FeedbackReportController extends Controller\r\n{\r\n    // Display all feedbacks in the reports page\r\n    public function index()\r\n    {\r\n        // Fetch all feedbacks with related user info\r\n        $feedbacks = Feedback::with('user')\r\n            ->orderBy('created_at', 'desc')\r\n            ->get();\r\n\r\n        // Pass the feedbacks to the report blade\r\n        return view('swisa-admin.admin-reports.feedback', compact('feedbacks'));\r\n    }\r\n}\r\n"
+        }
+    ]
+}

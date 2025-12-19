@@ -10,51 +10,77 @@ use App\Models\Sector;
 
 class UserInfo extends Model
 {
-    use HasFactory;
-
     protected $table = 'user_info';
-
+    
     protected $fillable = [
         'user_id',
-        'sector_id',
+        'farmer_type',
+    
         'fname',
         'mname',
         'lname',
+        'name', // ✅ Added (full name)
         'suffix',
         'birthdate',
+        'civil_status',
         'gender',
-        'contact_no',
+        'profile_img',
+        // ✅ NEW: Contact fields
+        'contact_info',    // Raw input (email or phone)
+        'phone_no',           // Extracted phone number
+        'email',           // Extracted email
+        
         'province',
         'city',
+        'house_no',
         'barangay',
         'zone',
-        'profile_img',
         'farm_location',
         'land_size',
         'water_source',
+        
+        // Secondary Contact
         'sc_fname',
         'sc_mname',
         'sc_lname',
         'sc_suffix',
         'sc_gender',
-        'sc_contact_no',
-        'sc_email',
+        
+        // ✅ NEW: Secondary contact fields
+        'sc_contact_info', // Raw input (email or phone)
+        'sc_phone_no',        // Extracted phone number
+        'sc_email',        // Extracted email
+        
         'sc_province',
         'sc_city',
+        'sc_house_no',
         'sc_barangay',
         'sc_zone',
         'relationship',
+        'qr_code',
     ];
 
-    //RELATIONSHIPS
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
 
-    // user_info belongs to one user
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    // user_info belongs to a sector
-    public function sector(){
-        return $this->belongsTo(Sector::class);
+    public function getFormattedIdAttribute()
+    {
+        // Use the primary key or user_id
+        $baseId = $this->id ?? $this->user_id ?? 0;
+
+        return 'MEM-' . str_pad($baseId, 6, '0', STR_PAD_LEFT);
     }
+    public function sector()
+{
+    return $this->belongsTo(Sector::class, 'sector_id', 'id');
+}
+
+
 }

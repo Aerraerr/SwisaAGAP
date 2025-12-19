@@ -1,0 +1,30 @@
+{
+    "sourceFile": "app/Models/Log.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1765121180069,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1765121242375,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,6 +35,10 @@\n     public function activityHistory()\n {\n     return $this->hasOne(ActivityHistory::class, 'log_id');\n }\n+public function userActivityHistory()\n+{\n+    return $this->hasMany(ActivityHistory::class, 'user_id', 'user_id');\n+}\n \n }\n"
+                },
+                {
+                    "date": 1765121269988,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,12 +31,9 @@\n     public function user()\n     {\n         return $this->belongsTo(User::class);\n     }\n-    public function activityHistory()\n-{\n-    return $this->hasOne(ActivityHistory::class, 'log_id');\n-}\n+\n public function userActivityHistory()\n {\n     return $this->hasMany(ActivityHistory::class, 'user_id', 'user_id');\n }\n"
+                },
+                {
+                    "date": 1765123829268,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,9 +10,9 @@\n     use HasFactory;\n \n     protected $fillable = [\n         'user_id',\n-        'user_name',\n+        'name',\n         'role',\n         'activity',\n         'ip_address',\n         'status',\n"
+                }
+            ],
+            "date": 1765121180069,
+            "name": "Commit-0",
+            "content": "<?php\n\nnamespace App\\Models;\n\nuse Illuminate\\Database\\Eloquent\\Factories\\HasFactory;\nuse Illuminate\\Database\\Eloquent\\Model;\n\nclass Log extends Model\n{\n    use HasFactory;\n\n    protected $fillable = [\n        'user_id',\n        'user_name',\n        'role',\n        'activity',\n        'ip_address',\n        'status',\n        'activity_timestamp',\n        'details',\n    ];\n\n    protected $casts = [\n        'details' => 'array',\n        'activity_timestamp' => 'datetime',\n    ];\n\n    /**\n     * Relationship to the User model.\n     */\n    public function user()\n    {\n        return $this->belongsTo(User::class);\n    }\n    public function activityHistory()\n{\n    return $this->hasOne(ActivityHistory::class, 'log_id');\n}\n\n}\n"
+        }
+    ]
+}

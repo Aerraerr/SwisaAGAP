@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,10 +13,16 @@ use App\Models\Document;
 use App\Models\Notification;
 use App\Models\Training;
 use App\Models\UserInfo;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\CreditScore;
+use App\Models\CreditScoreHistory;
+use App\Models\PhoneOtp;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, HasApiTokens, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -24,10 +30,20 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'name', // alion nalang pag okay na
+        'first_name',
+        'last_name',
+        'middle_name',
+        'suffix',
         'email',
         'password',
+        'phone_number',
+        'mpin',
+        'qr_code',
+        'login_method',
         'role_id',
+        'email_verified_at',
+        'phone_verified_at',
     ];
 
     /**
@@ -37,6 +53,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'mpin',
         'remember_token',
     ];
 
@@ -49,10 +66,14 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+             'phone_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
 
+    public function getFormattedIdAttribute(){
+        return 'MEM-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+    }
 
     //RELATIONSHIP TO USERS\
 
@@ -61,8 +82,13 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    //for user_info: each user has one profile information (1:1)
+    //for user_info: sa web
     public function user_info(){
+        return $this->hasOne(UserInfo::class);
+    }
+
+    //for user_info: sa mobile ini
+    public function userInfo(){
         return $this->hasOne(UserInfo::class);
     }
 
@@ -85,5 +111,103 @@ class User extends Authenticatable
     public function notifications(){
         return $this->hasMany(Notification::class);
     }
+    /**
+     * Get the credit score for the user.
+     */
+    public function creditScore(): HasOne
+    {
+        return $this->hasOne(CreditScore::class);
+    }
+
+    /**
+     * Get the credit score history for the user.
+     */
+    public function creditScoreHistory(): HasMany
+    {
+        return $this->hasMany(CreditScoreHistory::class)->latest();
+    }
+
+    /**
+     * Get phone OTP records for this user
+     */
+    public function phoneOtps()
+    {
+        return $this->hasMany(PhoneOtp::class, 'phone_number', 'phone_number');
+    }
+
+    /**
+     * Get latest phone OTP
+     */
+    public function latestPhoneOtp()
+    {
+        return $this->hasOne(PhoneOtp::class, 'phone_number', 'phone_number')
+            ->latestOfMany();
+    }
+
+    /**
+     * Check if user's phone is verified
+     */
+    public function isPhoneVerified(): bool
+    {
+        return $this->phone_verified_at !== null;
+    }
+
+    /**
+     * Check if user's email is verified
+     */
+    public function isEmailVerified(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+
+    /**
+     * Get user's full name
+     */
+    public function getFullNameAttribute(): string
+    {
+        $name = trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+        if ($this->suffix && $this->suffix !== 'N/A') {
+            $name .= " {$this->suffix}";
+        }
+        return $name;
+    }
+
+    /**
+     * Get user's identifier (email or phone)
+     */
+    public function getIdentifierAttribute(): string
+    {
+        return $this->email ?? $this->phone_number ?? 'Unknown';
+    }
+
+    /**
+     * Check if user registered with email
+     */
+    public function isEmailUser(): bool
+    {
+        return $this->login_method === 'email' || !empty($this->email);
+    }
+
+    /**
+     * Check if user registered with phone
+     */
+    public function isPhoneUser(): bool
+    {
+        return $this->login_method === 'phone' || !empty($this->phone_number);
+    }
+
+
+
+public function participants()
+{
+    return $this->hasMany(\App\Models\Participant::class, 'user_id');
+}
+
+
+
+public function activityHistory()
+{
+    return $this->hasMany(\App\Models\ActivityHistory::class, 'user_id');
+}
 
 }

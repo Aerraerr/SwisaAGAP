@@ -1,0 +1,18 @@
+{
+    "sourceFile": "app/Http/Controllers/mobile/LogController.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1764086256153,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1764086256153,
+            "name": "Commit-0",
+            "content": "<?php\r\n\r\nnamespace App\\Http\\Controllers\\mobile;\r\n\r\nuse App\\Http\\Controllers\\Controller;\r\nuse Illuminate\\Http\\Request;\r\nuse App\\Models\\Log;\r\n\r\nclass LogController extends Controller\r\n{\r\n    /**\r\n     * Fetch all logs with pagination for mobile\r\n     */\r\n    public function index(Request $request)\r\n    {\r\n        $perPage = $request->get('per_page', 10);\r\n\r\n        $logs = Log::latest('activity_timestamp')->paginate($perPage);\r\n\r\n        return response()->json([\r\n            'success' => true,\r\n            'data' => $logs->items(),\r\n            'pagination' => [\r\n                'current_page' => $logs->currentPage(),\r\n                'last_page' => $logs->lastPage(),\r\n                'per_page' => $logs->perPage(),\r\n                'total' => $logs->total(),\r\n            ]\r\n        ]);\r\n    }\r\n\r\n    /**\r\n     * Fetch recent logs (e.g., last 5 logs)\r\n     */\r\n    public function recent()\r\n    {\r\n        $recentLogs = Log::latest('activity_timestamp')->take(5)->get();\r\n\r\n        return response()->json([\r\n            'success' => true,\r\n            'data' => $recentLogs\r\n        ]);\r\n    }\r\n\r\n    /**\r\n     * Fetch logs filtered by user, role, status, or date range\r\n     */\r\n    public function filter(Request $request)\r\n    {\r\n        $query = Log::query();\r\n\r\n        if ($request->filled('user_name')) {\r\n            $query->where('user_name', 'like', '%' . $request->user_name . '%');\r\n        }\r\n\r\n        if ($request->filled('role')) {\r\n            $query->where('role', $request->role);\r\n        }\r\n\r\n        if ($request->filled('status')) {\r\n            $query->where('status', $request->status);\r\n        }\r\n\r\n        if ($request->filled('date_from')) {\r\n            $query->whereDate('activity_timestamp', '>=', $request->date_from);\r\n        }\r\n\r\n        if ($request->filled('date_to')) {\r\n            $query->whereDate('activity_timestamp', '<=', $request->date_to);\r\n        }\r\n\r\n        $logs = $query->latest('activity_timestamp')->paginate($request->get('per_page', 10));\r\n\r\n        return response()->json([\r\n            'success' => true,\r\n            'data' => $logs->items(),\r\n            'pagination' => [\r\n                'current_page' => $logs->currentPage(),\r\n                'last_page' => $logs->lastPage(),\r\n                'per_page' => $logs->perPage(),\r\n                'total' => $logs->total(),\r\n            ]\r\n        ]);\r\n    }\r\n}\r\n"
+        }
+    ]
+}

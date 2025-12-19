@@ -1,0 +1,18 @@
+{
+    "sourceFile": "app/Models/ActivityHistory/php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1764960090688,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1764960090688,
+            "name": "Commit-0",
+            "content": "<?php\r\n\r\nnamespace App\\Models;\r\n\r\nuse Illuminate\\Database\\Eloquent\\Model;\r\nuse Illuminate\\Database\\Eloquent\\SoftDeletes;\r\n\r\nclass ActivityHistory extends Model\r\n{\r\n    use SoftDeletes;\r\n\r\n    protected $table = 'activity_history';\r\n\r\n    protected $fillable = [\r\n        'user_id',\r\n        'type',\r\n        'message',\r\n    ];\r\n\r\n    // Relationship: Each activity belongs to a user\r\n    public function user()\r\n    {\r\n        return $this->belongsTo(\\App\\Models\\User::class, 'user_id');\r\n    }\r\n}\r\n"
+        }
+    ]
+}

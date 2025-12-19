@@ -81,4 +81,6 @@ class FaqsController extends Controller
         return redirect()->back()->with('success', 'FAQ deleted successfully.');
     }
 
+
+
 }

@@ -11,39 +11,22 @@
                 <p class="text-sm text-gray-600">See detailed information about the selected member’s profile.</p>
 
             </div>
-
-            @include('components.UserTab')
         </div>
     </div>
-@include('components.breadcrumbs', [
-    'params' => isset($grant) ? [$grant, $member] : [$member]
-])
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
+    @include('components.breadcrumbs', [
+        'params' => isset($grant) ? [$grant, $member] : [$member]
+    ])
         <div class="grid grid-cols-1 md:grid-cols-8 xl:grid-cols-12 gap-2 xl:gap-3">
             <!-- left part-->
-            <div class="col-span-12 md:col-span-3">
-                <div class="bg-white shadow-lg flex justify-center pt-3 rounded-md">
-                    <div class="flex flex-col items-center m-2">
+            <div class="col-span-12 md:col-span-3 ">
+                <div class="bg-white shadow-lg flex justify-center pt-3 rounded-md ">
+                    <div class="flex flex-col items-center m-2 pb-3 pt-3">
                         <img src="{{ asset('images/profile-user.png') }}" alt="Profile"
                         class="w-30 h-30 md:w-28 md:h-28 lg:w-36 lg:h-36 xl:w-40 xl:h-40 rounded-full shadow-md object-cover mb-2" />
-                        <h3 class="text-lg xl:text-xl font-semibold text-customIT">{{ $member->name}} </h3>
-                        <p class="border bg-snbg w-34 pl-6 pr-6 p-1 text-sm shadow rounded-3xl">{{ $member->sector->sector_name ?? '-'}}</p>
+                        <h3 class="text-lg xl:text-xl font-semibold text-customIT">{{ ucfirst($member->first_name) }} {{ ucfirst($member->middle_name) }} {{ ucfirst($member->last_name) }}</h3>
+                        <p class="text-sm text-gray-700 font-medium">{{ $member->user_info->sector->sector_name ?? '-'}}</p>
                         <div class="flex">
-                            <p class="text-xs text-gray-500 mt-2">MEM-{{ $member->id}} </p>
+                            <p class="text-xs text-gray-500 mt-2">{{ $member->formatted_id}} </p>
                             <button><img src="{{ asset('images/copy-svg.svg') }}" alt="copy" class="w-8 h-8" /></button>
                         </div>
                     </div>
@@ -61,86 +44,109 @@
             <div class="col-span-12 md:col-span-5 xl:col-span-6">
                 <!--tab content upper middle part -->
                 <div x-data="{ showDetails: false }" class="md:col-span-5 bg-white shadow-lg w-full md:h-auto lg:h-auto xl:h-auto mb-3 py-4 px-6 rounded-md">
-                    <div class="text-customIT text-sm md:text-xl flex justify-between items-center mb-2">
+                    <div class="text-customIT text-sm md:text-lg flex justify-between items-center mb-3">
                         <h1 class="font-bold">Basic Information</h1>
                         <button @click="showDetails = !showDetails">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <!-- Eye Slash Icon (when not visible) -->
+                            <svg x-show="!showDetails" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
+                            <!-- Eye Slash Icon (when visible) -->
+                            <svg x-show="showDetails" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                            </svg>
                         </button>
                     </div>
-                    <div class="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center mb-2 text-[10px] md:text-sm lg:text-md">
+                    <div class="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center mb-3 text-xs md:text-sm lg:text-md">
                         <div class="col-start-1">
                             <p class="text-customIT font-semibold ">Full Name</p>
-                            <p class="text-gray-500 font-medium">{{ $member->name}}</p>
+                            <p class="text-gray-700 font-medium">{{ ucfirst($member->first_name) }} {{ ucfirst($member->middle_name) }} {{ ucfirst($member->last_name) }}</p>
                         </div>
                         <div class="col-start-2">
                             <p class="text-customIT font-semibold">Member Type</p>
-                            <p class="text-gray-500 font-medium">{{ $member->sector->sector_name ?? '-'}}</p>
+                            <p class="text-gray-700 font-medium">{{ $member->user_info->sector->sector_name ?? '-'}}</p>
                         </div>
                         <div class="col-start-3 md:col-start-1 lg:col-start-3">
                             <p class="text-customIT font-semibold">Joined Since</p>
-                            <p class="text-gray-500 font-medium">{{ $member->created_at->format('F d Y')}}</p>
+                            <p class="text-gray-700 font-medium">{{ $member->created_at->format('F d Y')}}</p>
                         </div>
-                        <div class="justify-center col-start-4 md:col-start-2 lg:col-start-4 text-center">
+                        <div class="justify-center col-start-4 md:col-start-2 lg:col-start-4">
                             <p class="text-customIT font-semibold">Membership Status</p>
                             <p class="inline-block text-xs font-medium bg-approved text-white px-4 py-1 rounded-full">
                                 Active
                             </p>
                         </div>
                     </div>
-                    <div class="text-customIT flex grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center text-[10px] md:text-xs lg:text-md mb-2">
+                    <div class="text-customIT flex grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center text-xs md:text-xs lg:text-md mb-3">
                         <div class="col-start-1">
                             <p class="text-customIT font-semibold">Gender</p>
-                            <p class="text-gray-500 font-medium">{{ $member->user_info->gender ?? '-'}}</p>
+                            <p class="text-gray-700 font-medium">{{ $member->user_info->gender ?? '-'}}</p>
                         </div>
                         <div class="col-start-2">
+                            <p class="text-customIT font-semibold">Age</p>
+                            <p class="text-gray-700 font-medium">{{ \Carbon\Carbon::parse($member->birthdate)->age ?? '-'}}</p>
+                        </div>
+                        <div class="col-start-1 lg:col-start-3">
+                            <p class="text-customIT font-semibold">Birthday</p>
+                            <p class="text-gray-700">{{ $member->user_info->birthdate ?? '-'}}</p>
+                        </div>
+                        <div class="col-start-2 lg:col-start-4">
+                            <p class="text-customIT font-semibold">Civil Stats</p>
+                            <p class="text-gray-700 font-medium">{{ $member->user_info->civil_status ?? '-'}}</p>
+                        </div>
+                    </div>
+                    <div class="text-customIT grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center text-xs md:text-xs lg:text-md  mb-3">
+                        <div class="col-start-1 col-span-2">
+                            <p class="text-customIT font-semibold">Address</p>
+                            <p class="text-gray-700 font-medium">
+                                {{ ucfirst($member->user_info->house_no) ?? ''}} 
+                                {{ ucfirst($member->user_info->zone) ?? ''}}, 
+                                {{ ucfirst($member->user_info->barangay) ?? ''}}, 
+                                {{ ucfirst($member->user_info->city) ?? ''}}, 
+                                {{ ucfirst($member->user_info->province) ?? ''}}
+                            </p>
+                        </div>
+                        <div class="col-start-1 lg:col-start-3">
+                            <p class="text-customIT font-semibold">Contact Number</p>
+                            <p class="text-gray-700 font-medium">
+                                <span x-show="!showDetails">09*********</span>
+                                <span x-show="showDetails">{{ $member->user_info->phone_no ?? '-'}}</span>
+                            </p>
+                        </div>
+                        <div class="col-start-2 lg:col-start-4">
                             <p class="text-customIT font-semibold">Email</p>
-                            <p class="text-gray-500 font-medium">
+                            <p class="text-gray-700 font-medium">
                                 <span x-show="!showDetails">*************</span>
                                 <span x-show="showDetails">{{ $member->email}}</span>
                             </p>
                         </div>
                     </div>
-                    <div class="text-customIT grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center text-[10px] md:text-xs lg:text-md  mb-2">
-                        <div class="col-start-1">
-                            <p class="text-customIT font-semibold">Age</p>
-                            <p class="text-gray-500 font-medium">{{ \Carbon\Carbon::parse($member->birthdate)->age ?? '-'}}</p>
-                        </div>
-                        <div class="col-start-2">
-                            <p class="text-customIT font-semibold">Address</p>
-                            <p class="text-gray-500 font-medium">
-                                <span x-show="!showDetails">*************</span>
-                                <span x-show="showDetails">{{ $member->user_info->address ?? '-'}}</span>
-                            </p>
-                        </div>
+                    <div class="text-customIT text-sm md:text-lg mb-3">
+                        <h1 class="font-bold">Second Contact Information</h1>
                     </div>
-                    <div class="text-customIT grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 items-center text-[10px] md:text-xs lg:text-md  mb-2">
+                    <div class="text-customIT grid grid-cols-4 items-center text-xs md:text-xs lg:text-md mb-3">
                         <div class="col-start-1">
-                            <p class="text-customIT font-semibold">Birthday</p>
-                            <p class="text-gray-500">{{ $member->user_info->birthdate ?? '-'}}</p>
+                            <p class="text-customIT font-semibold">Second Contact</p>
+                            <p class="text-gray-700 font-medium">
+                                {{ ucfirst($member->user_info->sc_fname) ?? '-'}}
+                                {{ ucfirst($member->user_info->sc_mname) ?? ' '}}
+                                {{ ucfirst($member->user_info->sc_lname) ?? '-'}}
+                                {{ ucfirst($member->user_info->suffix) ?? ' '}}
+                            </p>
                         </div>
                         <div class="col-start-2">
                             <p class="text-customIT font-semibold">Contact Number</p>
-                            <p class="text-gray-500 font-medium">
-                                <span x-show="!showDetails">Primary: **************</span>
-                                <span x-show="showDetails">{{ $member->user_info->contact_no ?? '-'}}</span>
+                            <p class="text-gray-700 font-medium">
+                                <span x-show="!showDetails">09*********</span>
+                                <span x-show="showDetails">{{ $member->user_info->sc_phone_no ?? '-'}}</span>
                             </p>
                         </div>
-                        <div class="col-start-2 mt-4">
-                            <p class="text-gray-500 text-xs font-medium block w-22 truncate">
-                                <span x-show="!showDetails">Secondary: **************</span>
-                                <span x-show="showDetails">Secondary: 0998-765-4321</span>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="text-customIT grid grid-cols-4 items-center text-[10px] md:text-xs lg:text-md mb-2">
-                        <div class="col-start-1 col-span-2">
-                            <p class="text-customIT font-semibold">Benificiaries</p>
-                            <p class="text-gray-500 font-medium">
-                                <span x-show="!showDetails">************ *********** </span>
-                                <span x-show="showDetails">Juan Dela Cruz</span>
+                        <div class="col-start-1 lg:col-start-3">
+                            <p class="text-customIT font-semibold">Email</p>
+                            <p class="text-gray-700 font-medium">
+                                <span x-show="!showDetails">*************</span>
+                                <span x-show="showDetails">{{ $member->user_info->sc_email ?? '-'}}</span>
                             </p>
                         </div>
                     </div>
@@ -155,30 +161,36 @@
                         <thead class="bg-snbg">
                             <tr class="text-customIT text-left text-sm font-semibold">
                                 <th class="px-4 py-2">ID</th>
-                                <th class="px-4 py-2">Requested Item</th>
-                                <th class="px-4 py-2">Item Type</th>
-                                <th class="px-4 py-2">Reason</th>
-                                <th class="px-4 py-2">Date Submitted</th>
-                                <th class="px-4 py-2">Status</th>
+                                <th class="px-4 py-2">ITEM</th>
+                                <th class="px-4 py-2">TYPE</th>
+                                <th class="px-4 py-2">REASON</th>
+                                <th class="px-4 py-2">SUBMITTED AT</th>
+                                <th class="px-4 py-2">STATUS</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($member->applications as $member)
+                            @forelse(optional($member->applications)->where('application_type', 'Grant Application') as $application)
                                 <tr class="border border-gray-300">
-                                    <td class="px-4 py-2 text-sm text-gray-700">REQ-ITEM{{ $applications->id }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $applications->grant->grant_name}}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $applications->grant->grant_type}}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-700 font-medium"><button onclick="openModal('viewReasonModal')">{{ $applications->purpose}}</button></td>
-                                    <td class="px-4 py-2 text-sm text-gray-700">{{ $applications->created_at}}</td>
+                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $application->formatted_id }}</td>
+                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $application->grant->title ?? '-'}}</td>
+                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $application->grant->grant_type->grant_type ?? '-'}}</td>
+                                    <td class="px-4 py-2 text-xs text-gray-700 font-medium">{{ $application->purpose ?? '-' }}</td>
+                                    <td class="px-4 py-2 text-xs text-gray-700">{{ $application->created_at->format('F d Y') }}</td>
                                     <td class="px-4 py-3 ">
-                                        <div class="inline-block text-xs font-medium bg-pending text-white text-center px-3 py-1 rounded-full">
-                                            {{ $applications->status->status_name}}
+                                        <div class="inline-block text-xs font-medium text-center px-3 py-1 rounded-full
+                                            {{ $application->status->status_name === 'approved' ? 'bg-approved text-white' : '' }}
+                                            {{ $application->status->status_name === 'pending' ? 'bg-pending text-white' : '' }}
+                                            {{ $application->status->status_name === 'rejected' ? 'bg-rejected text-white' : '' }}
+                                            {{ $application->status->status_name === 'completed' ? 'bg-approved text-white' : '' }}
+                                            {{ $application->status->status_name === 'processing_application' ? 'bg-pending text-white' : '' }}
+                                        ">
+                                            {{ ucfirst($application->status->status_name) ?? '-' }}
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-3 text-md text-gray-500 text-center">No Applications</td>
+                                    <td colspan="6" class="px-4 py-3 text-md text-gray-500 text-center">No Grant Applications</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -189,8 +201,8 @@
             <!--tab contents right part -->
             <div class="col-span-12 md:col-start-4 md:col-span-5 xl:col-span-3">
                 <!--tab contents upper right part -->
-                <div class="bg-white p-4 h-auto mb-3 rounded-md shadow-lg">
-                        <h2 class="text-md font-semibold text-customIT">Program Participation Summary</h2>
+                <div class="bg-white p-2 h-auto mb-3 rounded-md shadow-lg">
+                        <h2 class="text-lg font-semibold text-customIT">Program Participation Summary</h2>
                         <div class="grid grid-cols-2 p-4 md:py-8 lg:py-12">
                             <div class="col-start-1 gap-2 text-md md:text-xs mt-6 md:p-8 lg:p-1">
                                 <div class="flex text-btncolor gap-2 mb-2 md:gap-1">
@@ -215,8 +227,8 @@
                             @forelse($member->documents as $document)
                                 <li class="flex justify-between items-center">
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm text-gray-700 font-medium block w-28 truncate" title="{{ $document->file_name ?? 'Document' }}">{{ $document->file_name ?? 'Document'}}</p>
-                                        <p class="text-[9px] text-gray-700">date uploaded:{{ $document->created_at->format(' F d Y')}}</p>
+                                        <p class="text-sm text-gray-700 font-medium block w-44 truncate" title="{{ $document->file_name ?? 'Document' }}">{{ $document->file_name ?? 'Document'}}</p>
+                                        <p class="text-[10px] text-gray-700">date uploaded:{{ $document->created_at->format(' F d Y')}}</p>
                                     </div>
                                     <div class="flex gap-4 text-xs text-customIT font-medium">
                                         <button onclick="openModal('viewDocumentModal', {{ $document->id}})"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 20" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -229,7 +241,6 @@
                                         </a>
                                     </div>
                                 </li>
-                                @include('components.modals.view-documents')
                             @empty
                                 <li class="py-2 text-sm text-gray-500 text-center">No documents uploaded</li>
                             @endforelse
@@ -240,28 +251,37 @@
         </div>
         @include('components.modals.grant-overview')
         @include('components.modals.view-applications')
-        @include('components.modals.view-logs')
+@include('components.modals.view-logs')
         @include('components.modals.view-reason')
        
     </div>
 </div>
-    <script>
-        const ctx = document.getElementById('programChart');
-        new Chart(ctx, {
-            type: 'pie',
-            data: {
+<script>
+    const programJoined = @json($programsJoined);
+    const completion = @json($completion);
+
+    const ctx = document.getElementById('programChart');
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
             labels: ['Programs Joined', 'Completion'],
             datasets: [{
-                data: [60, 40], // sample data
+                data: [programJoined, completion],
                 backgroundColor: ['#4C956C', '#68B2AB']
             }]
-            },
-            options: {
-            responsive: false, // disable auto resize
-            maintainAspectRatio: false, 
-            plugins: { legend: { display: false } }
+        },
+        options: {
+            responsive: false,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false } 
             }
-        });
+        }
+    });
+</script>
 
-    </script>
+
+
+
 @endsection

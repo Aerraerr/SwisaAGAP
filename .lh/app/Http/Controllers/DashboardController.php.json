@@ -1,0 +1,38 @@
+{
+    "sourceFile": "app/Http/Controllers/DashboardController.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 5,
+            "patches": [
+                {
+                    "date": 1764436257019,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1764436304375,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,9 +18,9 @@\n         // Count all available grants\n         $totalGrants = Grant::count();\n \n         // Count upcoming trainings/events (assuming 'start_date' field exists)\n-        $upcomingTrainings = Training::whereDate('start_date', '>=', Carbon::today())->count();\n+        $upcomingTrainings = Training::whereDate('date', '>=', Carbon::today())->count();\n \n         return view('dashboard', compact('totalMembers', 'totalGrants', 'upcomingTrainings'));\n     }\n }\n"
+                },
+                {
+                    "date": 1764439934372,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,9 +18,12 @@\n         // Count all available grants\n         $totalGrants = Grant::count();\n \n         // Count upcoming trainings/events (assuming 'start_date' field exists)\n-        $upcomingTrainings = Training::whereDate('date', '>=', Carbon::today())->count();\n+        $upcomingTrainings = Training::whereDate('start_date', '>=', Carbon::today())->count();\n \n-        return view('dashboard', compact('totalMembers', 'totalGrants', 'upcomingTrainings'));\n+        // Count all pending requests (status_id = 3)\n+        $pendingRequests = Grant::where('status_id', 3)->count();\n+\n+        return view('dashboard', compact('totalMembers', 'totalGrants', 'upcomingTrainings', 'pendingRequests'));\n     }\n }\n"
+                },
+                {
+                    "date": 1764439985588,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,9 +18,9 @@\n         // Count all available grants\n         $totalGrants = Grant::count();\n \n         // Count upcoming trainings/events (assuming 'start_date' field exists)\n-        $upcomingTrainings = Training::whereDate('start_date', '>=', Carbon::today())->count();\n+        $upcomingTrainings = Training::whereDate('date', '>=', Carbon::today())->count();\n \n         // Count all pending requests (status_id = 3)\n         $pendingRequests = Grant::where('status_id', 3)->count();\n \n"
+                },
+                {
+                    "date": 1764440042595,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,9 +21,9 @@\n         // Count upcoming trainings/events (assuming 'start_date' field exists)\n         $upcomingTrainings = Training::whereDate('date', '>=', Carbon::today())->count();\n \n         // Count all pending requests (status_id = 3)\n-        $pendingRequests = Grant::where('status_id', 3)->count();\n+        $pendingRequests = Application::where('status_id', 3)->count();\n \n         return view('dashboard', compact('totalMembers', 'totalGrants', 'upcomingTrainings', 'pendingRequests'));\n     }\n }\n"
+                },
+                {
+                    "date": 1764440052470,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,8 +4,9 @@\n \n use Illuminate\\Http\\Request;\n use App\\Models\\User;\n use App\\Models\\Grant;\n+use App\\Models\\Application;\n use App\\Models\\Training;\n use Carbon\\Carbon;\n \n class DashboardController extends Controller\n"
+                }
+            ],
+            "date": 1764436257019,
+            "name": "Commit-0",
+            "content": "<?php\n\nnamespace App\\Http\\Controllers;\n\nuse Illuminate\\Http\\Request;\nuse App\\Models\\User;\nuse App\\Models\\Grant;\nuse App\\Models\\Training;\nuse Carbon\\Carbon;\n\nclass DashboardController extends Controller\n{\n    public function index()\n    {\n        // Count total members (role_id = 1)\n        $totalMembers = User::where('role_id', 1)->count();\n\n        // Count all available grants\n        $totalGrants = Grant::count();\n\n        // Count upcoming trainings/events (assuming 'start_date' field exists)\n        $upcomingTrainings = Training::whereDate('start_date', '>=', Carbon::today())->count();\n\n        return view('dashboard', compact('totalMembers', 'totalGrants', 'upcomingTrainings'));\n    }\n}\n"
+        }
+    ]
+}

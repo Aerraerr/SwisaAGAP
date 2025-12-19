@@ -9,9 +9,6 @@
                 <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Request Management</h2>
                 <p class="text-sm text-gray-600">insert text here.</p>
             </div>
-            
-            <!-- Right side -->
-            @include('components.UserTab')
         </div>
 
         <div class="grid grid-cols-12 gap-1 md:gap-2" x-data="{ selectedUser: null, activeTab: 'All-Request' }" >
@@ -1180,5 +1177,5 @@
     </div>
 </div>
 @include('components.modals.requirement-view')
-@include('components.modals.delete-grant')
+
 @endsection

@@ -1,0 +1,46 @@
+{
+    "sourceFile": "app/Models/Chat.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 7,
+            "patches": [
+                {
+                    "date": 1765178254957,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1765198449795,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n use Illuminate\\Database\\Eloquent\\Model;\n \n class Chat extends Model\n {\n-    protected $fillable = ['admin_id', 'member_id', 'support_staff_id'];\n+    protected $fillable = ['admin_id', 'user_id', 'support_staff_id'];\n     \n \n     public function messages()\n     {\n@@ -26,9 +26,9 @@\n \n     //for mobile \n     public function member()\n     {\n-        return $this->belongsTo(User::class, 'member_id');\n+        return $this->belongsTo(User::class, 'user_id');\n     }\n \n     \n }\n"
+                },
+                {
+                    "date": 1765198547846,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n use Illuminate\\Database\\Eloquent\\Model;\n \n class Chat extends Model\n {\n-    protected $fillable = ['admin_id', 'user_id', 'support_staff_id'];\n+    protected $fillable = ['admin_id', 'member_id', 'support_staff_id'];\n     \n \n     public function messages()\n     {\n@@ -26,9 +26,9 @@\n \n     //for mobile \n     public function member()\n     {\n-        return $this->belongsTo(User::class, 'user_id');\n+        return $this->belongsTo(User::class, 'member_id');\n     }\n \n     \n }\n"
+                },
+                {
+                    "date": 1765198970245,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n use Illuminate\\Database\\Eloquent\\Model;\n \n class Chat extends Model\n {\n-    protected $fillable = ['admin_id', 'member_id', 'support_staff_id'];\n+    protected $fillable = ['admin_id', 'user_id', 'support_staff_id'];\n     \n \n     public function messages()\n     {\n@@ -26,9 +26,9 @@\n \n     //for mobile \n     public function member()\n     {\n-        return $this->belongsTo(User::class, 'member_id');\n+        return $this->belongsTo(User::class, 'user_id');\n     }\n \n     \n }\n"
+                },
+                {
+                    "date": 1765199200005,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n use Illuminate\\Database\\Eloquent\\Model;\n \n class Chat extends Model\n {\n-    protected $fillable = ['admin_id', 'user_id', 'support_staff_id'];\n+    protected $fillable = ['admin_id', 'member_id', 'support_staff_id'];\n     \n \n     public function messages()\n     {\n@@ -26,9 +26,7 @@\n \n     //for mobile \n     public function member()\n     {\n-        return $this->belongsTo(User::class, 'user_id');\n+        return $this->belongsTo(User::class, 'member_id');\n     }\n-\n-    \n }\n"
+                },
+                {
+                    "date": 1765199273980,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n use Illuminate\\Database\\Eloquent\\Model;\n \n class Chat extends Model\n {\n-    protected $fillable = ['admin_id', 'member_id', 'support_staff_id'];\n+    protected $fillable = ['admin_id', 'user_id', 'support_staff_id'];\n     \n \n     public function messages()\n     {\n@@ -26,7 +26,9 @@\n \n     //for mobile \n     public function member()\n     {\n-        return $this->belongsTo(User::class, 'member_id');\n+        return $this->belongsTo(User::class, 'user_id');\n     }\n+\n+    \n }\n"
+                },
+                {
+                    "date": 1765200837922,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n use Illuminate\\Database\\Eloquent\\Model;\n \n class Chat extends Model\n {\n-    protected $fillable = ['admin_id', 'user_id', 'support_staff_id'];\n+    protected $fillable = ['admin_id','member_id', 'user_id', 'support_staff_id'];\n     \n \n     public function messages()\n     {\n@@ -26,9 +26,9 @@\n \n     //for mobile \n     public function member()\n     {\n-        return $this->belongsTo(User::class, 'user_id');\n+        return $this->belongsTo(User::class, 'user_id', 'member_id');\n     }\n \n     \n }\n"
+                },
+                {
+                    "date": 1765201718469,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n use Illuminate\\Database\\Eloquent\\Model;\n \n class Chat extends Model\n {\n-    protected $fillable = ['admin_id','member_id', 'user_id', 'support_staff_id'];\n+    protected $fillable = ['admin_id', 'user_id', 'support_staff_id'];\n     \n \n     public function messages()\n     {\n@@ -26,9 +26,9 @@\n \n     //for mobile \n     public function member()\n     {\n-        return $this->belongsTo(User::class, 'user_id', 'member_id');\n+        return $this->belongsTo(User::class, 'user_id');\n     }\n \n     \n }\n"
+                }
+            ],
+            "date": 1765178254957,
+            "name": "Commit-0",
+            "content": "<?php\n\nnamespace App\\Models;\n\nuse Illuminate\\Database\\Eloquent\\Model;\n\nclass Chat extends Model\n{\n    protected $fillable = ['admin_id', 'member_id', 'support_staff_id'];\n    \n\n    public function messages()\n    {\n        return $this->hasMany(Message::class);\n    }\n\n    public function admin()\n    {\n        return $this->belongsTo(User::class, 'admin_id');\n    }\n\n    public function supportStaff()\n    {\n        return $this->belongsTo(User::class, 'support_staff_id');\n    }\n\n    //for mobile \n    public function member()\n    {\n        return $this->belongsTo(User::class, 'member_id');\n    }\n\n    \n}\n"
+        }
+    ]
+}

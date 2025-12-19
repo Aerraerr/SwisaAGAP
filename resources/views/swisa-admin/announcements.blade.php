@@ -11,9 +11,6 @@
                 <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Announcement</h2>
                 <p class="text-sm text-gray-600">Manage, track, and publish important information for SWISA members.</p>
             </div>
-            
-            <!-- Right side -->
-            @include('components.UserTab')
         </div>
 
         <!-- Main Grid Layout -->

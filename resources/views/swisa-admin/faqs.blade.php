@@ -36,17 +36,13 @@
         
         <!-- Page Header -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
-            <div class="text-customIT flex flex-col">
-                <h2 class="text-[20px] sm:text-[25px] font-bold text-custom">Frequently Asked Questions</h2>
-                <p class="text-sm text-gray-600">Find answers to common questions</p>
-            </div>
-            @include('components.UserTab')
+
         </div>
         @include('filters.forFaqs')
         <!-- Intro Header -->
         <header class="text-center py-12 mb-10 bg-gradient-to-r from-green-300 via-white to-green-300 rounded-xl shadow-md">
             <h1 class="text-4xl md:text-5xl font-extrabold text-green-800 tracking-tight">
-                SWISA-AGAP Knowledge Hub
+                SWISA-AGAP Frequently Asked Questions
             </h1>
             <p class="mt-3 text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
                 Find answers to common questions.
